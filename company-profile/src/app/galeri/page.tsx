@@ -57,13 +57,37 @@ export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState('Semua')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
 
-  const filteredItems = galleryItems.filter(item => {
-    const matchesCategory = selectedCategory === 'Semua' || item.category === selectedCategory
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesCategory && matchesSearch
+  // Fetch gallery items with React Query
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['gallery', page, selectedCategory, searchTerm],
+    queryFn: () => fetchGalleryItems({
+      page,
+      category: selectedCategory,
+      search: searchTerm
+    }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [selectedCategory, searchTerm])
+
+  const galleryItems = data?.data || []
+  const pagination = data?.pagination
+
+  if (error) {
+    return (
+      <SidebarLayout title="Galeri">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-4">Gagal memuat galeri</p>
+          <Button onClick={() => refetch()}>Coba Lagi</Button>
+        </div>
+      </SidebarLayout>
+    )
+  }
 
   return (
     <SidebarLayout title="Galeri">
@@ -116,19 +140,26 @@ export default function GalleryPage() {
           ))}
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
+          </div>
+        )}
+
         {/* Gallery Grid */}
-        {viewMode === 'grid' ? (
+        {!isLoading && viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => (
-              <Card key={item.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
+            {galleryItems.map((item) => (
+              <Card key={item._id} className="group cursor-pointer hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <div className="relative aspect-video overflow-hidden rounded-t-lg">
                     <img
-                      src={item.image}
+                      src={item.thumbnailUrl || item.imageUrl}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${item.title}%3C/text%3E%3C/svg%3E`
+                        e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(item.title)}%3C/text%3E%3C/svg%3E`
                       }}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
@@ -151,7 +182,7 @@ export default function GalleryPage() {
                         {item.category}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {new Date(item.date).toLocaleDateString('id-ID')}
+                        {new Date(item.createdAt).toLocaleDateString('id-ID')}
                       </span>
                     </div>
                   </div>
