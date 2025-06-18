@@ -34,7 +34,7 @@ export function About() {
     { number: '95%', label: 'Tingkat Kepuasan Masyarakat' },
     { number: '100%', label: 'Transparansi Anggaran' },
     { number: '24/7', label: 'Layanan Online' },
-    { number: '72', label: 'Desa/Kelurahan Terlayani' },
+    { number: '63', label: 'Desa/Kelurahan Terlayani' },
   ]
 
   return (
@@ -48,14 +48,19 @@ export function About() {
               Tentang Kabupaten Sabu Raijua
             </h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Kabupaten Sabu Raijua adalah kabupaten kepulauan yang terletak di Provinsi Nusa Tenggara Timur.
-              Dengan keindahan alam yang memukau dan kekayaan budaya yang unik, kami berkomitmen untuk
-              membangun daerah yang maju dan sejahtera.
+              Kabupaten Sabu Raijua adalah kabupaten kepulauan yang terdiri dari Pulau Sabu dan Pulau Raijua,
+              terletak di Laut Sawu, Provinsi Nusa Tenggara Timur. Dibentuk pada 26 November 2008 berdasarkan
+              UU No. 52 Tahun 2008, dengan ibu kota di Menia, Kecamatan Sabu Barat.
+            </p>
+            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              Dengan luas wilayah 459,58 km² dan populasi 94.860 jiwa (2024), kabupaten ini memiliki kekayaan
+              budaya Hawu yang unik, termasuk tradisi tenun ikat yang terkenal hingga mancanegara, tarian Ledo Hawu
+              yang sakral, dan bahasa Hawu sebagai bahasa daerah yang masih lestari.
             </p>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              Melalui tata kelola pemerintahan yang baik, transparan, dan akuntabel, kami terus berupaya
-              memberikan pelayanan terbaik kepada masyarakat dan menciptakan lingkungan yang kondusif
-              untuk pembangunan berkelanjutan.
+              Melalui motto "Mira Kaddi" (Membangun Bersama), kami berkomitmen membangun daerah yang maju,
+              sejahtera, dan berkelanjutan dengan mengedepankan kearifan lokal, transparansi, dan akuntabilitas
+              dalam setiap aspek pemerintahan.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -93,7 +98,7 @@ export function About() {
                       <div className="text-sm text-gray-600">Kecamatan</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-blue-600">72</div>
+                      <div className="text-2xl font-bold text-blue-600">63</div>
                       <div className="text-sm text-gray-600">Desa/Kelurahan</div>
                     </div>
                   </div>

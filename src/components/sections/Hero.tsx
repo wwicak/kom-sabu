@@ -36,16 +36,16 @@ export function Hero() {
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
-              <span className="block text-yellow-400 mb-2">KEINDAHAN GUNUNG</span>
-              <span className="block">TERSEYUM SABU RAIJUA</span>
+              <span className="block text-yellow-400 mb-2">MIRA KADDI</span>
+              <span className="block">SABU RAIJUA</span>
             </h1>
 
             <p className="mt-6 text-xl leading-8 text-gray-200 max-w-2xl">
-              {COMPANY_INFO.tagline}
+              Membangun bersama menuju Kabupaten Sabu Raijua yang maju, sejahtera, dan berkelanjutan berbasis kearifan lokal dan inovasi.
             </p>
 
             <p className="mt-4 text-lg leading-7 text-gray-300 max-w-2xl">
-              Membangun daerah yang maju, sejahtera, dan berkelanjutan melalui tata kelola pemerintahan yang baik, transparan, dan akuntabel.
+              Kepulauan indah di Laut Sawu dengan kekayaan budaya Hawu yang unik, pantai-pantai eksotis, dan tradisi tenun ikat yang mendunia.
             </p>
 
             {/* CTA Buttons */}
@@ -71,7 +71,7 @@ export function Hero() {
             {/* Stats */}
             <div className="mt-16 grid grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold text-yellow-400">72</div>
+                <div className="text-3xl font-bold text-yellow-400">63</div>
                 <div className="text-sm text-blue-200">Desa/Kelurahan</div>
               </div>
               <div className="text-center lg:text-left">
@@ -79,8 +79,8 @@ export function Hero() {
                 <div className="text-sm text-blue-200">Kecamatan</div>
               </div>
               <div className="text-center lg:text-left col-span-2 lg:col-span-1">
-                <div className="text-3xl font-bold text-yellow-400">~90K</div>
-                <div className="text-sm text-blue-200">Penduduk</div>
+                <div className="text-3xl font-bold text-yellow-400">94.8K</div>
+                <div className="text-sm text-blue-200">Penduduk (2024)</div>
               </div>
             </div>
           </div>
