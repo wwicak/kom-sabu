@@ -348,6 +348,74 @@ const auditLogSchema = new mongoose.Schema({
   }
 })
 
+// General Information Schema
+const generalInfoSchema = new mongoose.Schema({
+  logo: String,
+  address: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 500
+  },
+  longitude: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: (v: string) => !v || (!isNaN(parseFloat(v)) && parseFloat(v) >= -180 && parseFloat(v) <= 180),
+      message: 'Longitude must be between -180 and 180'
+    }
+  },
+  latitude: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: (v: string) => !v || (!isNaN(parseFloat(v)) && parseFloat(v) >= -90 && parseFloat(v) <= 90),
+      message: 'Latitude must be between -90 and 90'
+    }
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 20
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+      message: 'Please enter a valid email address'
+    }
+  },
+  instagram: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  facebook: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  linkedin: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
 // Create indexes for better performance
 contactFormSchema.index({ createdAt: -1 })
 contactFormSchema.index({ status: 1 })
@@ -370,3 +438,4 @@ export const News = mongoose.models.News || mongoose.model('News', newsSchema)
 export const Agenda = mongoose.models.Agenda || mongoose.model('Agenda', agendaSchema)
 export const User = mongoose.models.User || mongoose.model('User', userSchema)
 export const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema)
+export const GeneralInfo = mongoose.models.GeneralInfo || mongoose.model('GeneralInfo', generalInfoSchema)
