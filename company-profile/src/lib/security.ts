@@ -138,25 +138,68 @@ export function setSecurityHeaders(response: NextResponse): NextResponse {
 // Rate limiting store (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
-// Rate limiting function
-export function checkRateLimit(ip: string): boolean {
+// Enhanced rate limiting function with configurable options
+export function checkRateLimit(
+  ip: string,
+  options?: { windowMs?: number; max?: number }
+): boolean {
   const now = Date.now()
-  const windowMs = SECURITY_CONFIG.RATE_LIMIT.windowMs
-  const maxRequests = SECURITY_CONFIG.RATE_LIMIT.max
-  
+  const windowMs = options?.windowMs || SECURITY_CONFIG.RATE_LIMIT.windowMs
+  const maxRequests = options?.max || SECURITY_CONFIG.RATE_LIMIT.max
+
   const record = rateLimitStore.get(ip)
-  
+
   if (!record || now > record.resetTime) {
     rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs })
     return true
   }
-  
+
   if (record.count >= maxRequests) {
     return false
   }
-  
+
   record.count++
   return true
+}
+
+// Clean up expired rate limit records
+export function cleanupRateLimitStore(): void {
+  const now = Date.now()
+  for (const [ip, record] of rateLimitStore.entries()) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(ip)
+    }
+  }
+}
+
+// Get rate limit info for an IP
+export function getRateLimitInfo(ip: string): {
+  count: number
+  remaining: number
+  resetTime: number
+  isLimited: boolean
+} {
+  const now = Date.now()
+  const windowMs = SECURITY_CONFIG.RATE_LIMIT.windowMs
+  const maxRequests = SECURITY_CONFIG.RATE_LIMIT.max
+
+  const record = rateLimitStore.get(ip)
+
+  if (!record || now > record.resetTime) {
+    return {
+      count: 0,
+      remaining: maxRequests,
+      resetTime: now + windowMs,
+      isLimited: false
+    }
+  }
+
+  return {
+    count: record.count,
+    remaining: Math.max(0, maxRequests - record.count),
+    resetTime: record.resetTime,
+    isLimited: record.count >= maxRequests
+  }
 }
 
 // CSRF token validation
