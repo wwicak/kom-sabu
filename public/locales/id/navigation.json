@@ -1,0 +1,15 @@
+{
+  "home": "Beranda",
+  "profile": "Profil",
+  "kecamatan": "Kecamatan",
+  "culture": "Budaya",
+  "tourism": "Wisata",
+  "services": "Layanan",
+  "news": "Berita",
+  "gallery": "Galeri",
+  "contact": "Kontak",
+  "admin": "Admin",
+  "dashboard": "Dashboard",
+  "login": "Masuk",
+  "logout": "Keluar"
+}

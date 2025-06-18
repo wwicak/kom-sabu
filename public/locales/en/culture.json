@@ -1,0 +1,78 @@
+{
+  "title": "Hawu Cultural Heritage",
+  "subtitle": "The cultural wealth of Sabu Raijua that has been passed down through generations, reflecting the unique and authentic identity of the Hawu people.",
+  "assets": {
+    "tenun": {
+      "title": "Hawu Ikat Weaving",
+      "description": "Traditional weaving craft with distinctive motifs known internationally. Each motif has deep philosophical meaning in Hawu culture.",
+      "category": "Traditional Crafts"
+    },
+    "dance": {
+      "title": "Ledo Hawu Dance",
+      "description": "Sacred dance believed to guide souls to eternal peace. This dance features sword-drawing movements with deep spiritual meaning.",
+      "category": "Performing Arts"
+    },
+    "language": {
+      "title": "Hawu Language",
+      "description": "Regional language that remains vibrant and used in daily life of Sabu Raijua people. This language has unique vocabulary richness.",
+      "category": "Language & Literature"
+    },
+    "beach": {
+      "title": "White Sand Beaches",
+      "description": "Beauty of exotic beaches with fine white sand and crystal-clear seawater. Raemea Beach and beaches in Raijua Island are main attractions.",
+      "category": "Natural Tourism"
+    }
+  },
+  "traditions": {
+    "title": "Traditions & Customary Ceremonies",
+    "subtitle": "Various traditions and customary ceremonies still preserved as part of Sabu Raijua people's cultural identity.",
+    "items": {
+      "jingi_tiu": {
+        "name": "Jingi Tiu",
+        "description": "Traditional beliefs of Raijua people still preserved today"
+      },
+      "wara_tada": {
+        "name": "Wara Tada",
+        "description": "Traditional dance depicting daily life of Hawu people"
+      },
+      "habba_koorai": {
+        "name": "Habba Koorai",
+        "description": "Customary ceremony performed in various important celebrations"
+      },
+      "pe_iu_manu": {
+        "name": "Pe Iu Manu",
+        "description": "Traditional ritual related to the life cycle of the community"
+      }
+    }
+  },
+  "tourism": {
+    "title": "Featured Tourist Destinations",
+    "attractions": {
+      "raemea": {
+        "title": "Raemea Beach",
+        "description": "Beach with unique colored cliffs and fine white sand, ideal for snorkeling and diving."
+      },
+      "raijua": {
+        "title": "Raijua Island",
+        "description": "Small island with pristine natural beauty and authentic traditional culture."
+      },
+      "village": {
+        "title": "Traditional Tourism Village",
+        "description": "Experience staying in homestays and witnessing the ikat weaving process firsthand."
+      },
+      "culinary": {
+        "title": "Local Cuisine",
+        "description": "Wolapa, budu, due, donahu, and various traditional cuisines with unique flavors."
+      }
+    },
+    "cta": {
+      "explore": "Explore Tourism",
+      "learn": "Learn Culture"
+    },
+    "stats": {
+      "islands": "Main Islands",
+      "beaches": "Exotic Beaches",
+      "christian": "Christian"
+    }
+  }
+}

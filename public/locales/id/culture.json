@@ -1,0 +1,78 @@
+{
+  "title": "Warisan Budaya Hawu",
+  "subtitle": "Kekayaan budaya Sabu Raijua yang telah diwariskan turun-temurun, mencerminkan identitas dan jati diri masyarakat Hawu yang unik dan autentik.",
+  "assets": {
+    "tenun": {
+      "title": "Tenun Ikat Hawu",
+      "description": "Kerajinan tenun tradisional dengan motif khas yang telah dikenal hingga mancanegara. Setiap motif memiliki makna filosofis yang mendalam dalam budaya Hawu.",
+      "category": "Kerajinan Tradisional"
+    },
+    "dance": {
+      "title": "Tarian Ledo Hawu",
+      "description": "Tarian sakral yang dipercaya dapat mengantarkan arwah ke tempat kedamaian abadi. Tarian ini menampilkan gerakan menghunus pedang dengan makna spiritual yang mendalam.",
+      "category": "Seni Pertunjukan"
+    },
+    "language": {
+      "title": "Bahasa Hawu",
+      "description": "Bahasa daerah yang masih lestari dan digunakan dalam kehidupan sehari-hari masyarakat Sabu Raijua. Bahasa ini memiliki kekayaan kosakata yang unik.",
+      "category": "Bahasa & Sastra"
+    },
+    "beach": {
+      "title": "Pantai Pasir Putih",
+      "description": "Keindahan pantai-pantai eksotis dengan pasir putih halus dan air laut yang jernih. Pantai Raemea dan pantai-pantai di Pulau Raijua menjadi daya tarik utama.",
+      "category": "Wisata Alam"
+    }
+  },
+  "traditions": {
+    "title": "Tradisi & Upacara Adat",
+    "subtitle": "Berbagai tradisi dan upacara adat yang masih dilestarikan sebagai bagian dari identitas budaya masyarakat Sabu Raijua.",
+    "items": {
+      "jingi_tiu": {
+        "name": "Jingi Tiu",
+        "description": "Kepercayaan tradisional masyarakat Raijua yang masih dilestarikan hingga kini"
+      },
+      "wara_tada": {
+        "name": "Wara Tada",
+        "description": "Tarian tradisional yang menggambarkan kehidupan sehari-hari masyarakat Hawu"
+      },
+      "habba_koorai": {
+        "name": "Habba Koorai",
+        "description": "Upacara adat yang dilakukan dalam berbagai perayaan penting"
+      },
+      "pe_iu_manu": {
+        "name": "Pe Iu Manu",
+        "description": "Ritual tradisional yang berkaitan dengan siklus kehidupan masyarakat"
+      }
+    }
+  },
+  "tourism": {
+    "title": "Destinasi Wisata Unggulan",
+    "attractions": {
+      "raemea": {
+        "title": "Pantai Raemea",
+        "description": "Pantai dengan tebing berwarna unik dan pasir putih halus, ideal untuk snorkeling dan diving."
+      },
+      "raijua": {
+        "title": "Pulau Raijua",
+        "description": "Pulau kecil dengan keindahan alam yang masih alami dan budaya tradisional yang autentik."
+      },
+      "village": {
+        "title": "Desa Wisata Tradisional",
+        "description": "Pengalaman menginap di homestay dan menyaksikan proses pembuatan tenun ikat secara langsung."
+      },
+      "culinary": {
+        "title": "Kuliner Khas",
+        "description": "Wolapa, budu, due, donahu, dan berbagai kuliner tradisional dengan cita rasa yang unik."
+      }
+    },
+    "cta": {
+      "explore": "Jelajahi Wisata",
+      "learn": "Pelajari Budaya"
+    },
+    "stats": {
+      "islands": "Pulau Utama",
+      "beaches": "Pantai Eksotis",
+      "christian": "Kristen"
+    }
+  }
+}
