@@ -235,26 +235,78 @@ export default function GalleryPage() {
           </div>
         )}
 
-        {/* Pagination */}
-        <div className="flex justify-center mt-8">
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm" disabled>
-              Previous
-            </Button>
-            <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600">
-              1
-            </Button>
-            <Button variant="outline" size="sm">
-              2
-            </Button>
-            <Button variant="outline" size="sm">
-              3
-            </Button>
-            <Button variant="outline" size="sm">
-              Next
-            </Button>
+        {/* Empty State */}
+        {!isLoading && galleryItems.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">Tidak ada item galeri yang ditemukan</p>
+            {(selectedCategory !== 'Semua' || searchTerm) && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedCategory('Semua')
+                  setSearchTerm('')
+                }}
+              >
+                Reset Filter
+              </Button>
+            )}
           </div>
-        </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center mt-8">
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!pagination.hasPrev}
+                onClick={() => setPage(page - 1)}
+              >
+                Previous
+              </Button>
+
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(
+                  pagination.totalPages - 4,
+                  Math.max(1, page - 2)
+                )) + i
+
+                if (pageNum <= pagination.totalPages) {
+                  return (
+                    <Button
+                      key={pageNum}
+                      size="sm"
+                      variant={pageNum === page ? 'default' : 'outline'}
+                      className={pageNum === page ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+                      onClick={() => setPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                }
+                return null
+              })}
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!pagination.hasNext}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Pagination Info */}
+        {!isLoading && pagination && (
+          <div className="text-center text-sm text-gray-500 mt-4">
+            Menampilkan {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} dari {pagination.total} item
+          </div>
+        )}
       </div>
     </SidebarLayout>
   )
