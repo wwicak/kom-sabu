@@ -1,64 +1,57 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SidebarLayout } from '@/components/layout/SidebarLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Filter, Grid, List } from 'lucide-react'
+import { Search, Filter, Grid, List, Loader2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
-// Sample gallery data
-const galleryItems = [
-  {
-    id: 1,
-    title: 'Kegiatan Pemerintahan Daerah',
-    description: 'Dokumentasi kegiatan rutin pemerintahan daerah',
-    image: '/images/gallery/government-activity-1.jpg',
-    category: 'Pemerintahan',
-    date: '2024-01-15'
-  },
-  {
-    id: 2,
-    title: 'Pembangunan Infrastruktur',
-    description: 'Progress pembangunan infrastruktur daerah',
-    image: '/images/gallery/infrastructure-1.jpg',
-    category: 'Pembangunan',
-    date: '2024-01-10'
-  },
-  {
-    id: 3,
-    title: 'Kegiatan Sosial Masyarakat',
-    description: 'Program pemberdayaan masyarakat',
-    image: '/images/gallery/social-activity-1.jpg',
-    category: 'Sosial',
-    date: '2024-01-08'
-  },
-  {
-    id: 4,
-    title: 'Festival Budaya Sabu Raijua',
-    description: 'Perayaan budaya lokal dan tradisi',
-    image: '/images/gallery/culture-festival-1.jpg',
-    category: 'Budaya',
-    date: '2024-01-05'
-  },
-  {
-    id: 5,
-    title: 'Pelayanan Kesehatan',
-    description: 'Program kesehatan masyarakat',
-    image: '/images/gallery/health-service-1.jpg',
-    category: 'Kesehatan',
-    date: '2024-01-03'
-  },
-  {
-    id: 6,
-    title: 'Pendidikan dan Pelatihan',
-    description: 'Program pendidikan dan pelatihan SDM',
-    image: '/images/gallery/education-1.jpg',
-    category: 'Pendidikan',
-    date: '2024-01-01'
+interface GalleryItem {
+  _id: string
+  title: string
+  description: string
+  imageUrl: string
+  thumbnailUrl?: string
+  category: string
+  createdAt: string
+  isPublished: boolean
+}
+
+interface GalleryResponse {
+  success: boolean
+  data: GalleryItem[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
   }
-]
+}
 
 const categories = ['Semua', 'Pemerintahan', 'Pembangunan', 'Sosial', 'Budaya', 'Kesehatan', 'Pendidikan']
+
+// Fetch gallery items
+async function fetchGalleryItems(params: {
+  page: number
+  category: string
+  search: string
+}): Promise<GalleryResponse> {
+  const searchParams = new URLSearchParams({
+    page: params.page.toString(),
+    limit: '12',
+    ...(params.category !== 'Semua' && { category: params.category }),
+    ...(params.search && { search: params.search })
+  })
+
+  const response = await fetch(`/api/gallery?${searchParams}`)
+  if (!response.ok) {
+    throw new Error('Failed to fetch gallery items')
+  }
+  return response.json()
+}
 
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState('Semua')
@@ -68,7 +61,7 @@ export default function GalleryPage() {
   const filteredItems = galleryItems.filter(item => {
     const matchesCategory = selectedCategory === 'Semua' || item.category === selectedCategory
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase())
+      item.description.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
