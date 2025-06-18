@@ -1,30 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/mongodb'
 import { Kecamatan } from '@/lib/models'
 import { z } from 'zod'
+import mongoose from 'mongoose'
+
+// Ensure mongoose connection
+async function connectToMongoDB() {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    })
+  }
+}
 
 // GET /api/kecamatan - Get all kecamatan data
 export async function GET(request: NextRequest) {
   try {
     // Ensure database connection
-    await connectToDatabase()
+    await connectToMongoDB()
 
     const { searchParams } = new URL(request.url)
     const includeInactive = searchParams.get('includeInactive') === 'true'
 
     const filter = includeInactive ? {} : { isActive: true }
 
-    // Add timeout and error handling
-    const kecamatanData = await Promise.race([
-      Kecamatan.find(filter)
-        .select('-__v')
-        .sort({ name: 1 })
-        .lean()
-        .exec(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Database query timeout')), 8000)
-      )
-    ])
+    // Remove the timeout wrapper and use direct query
+    const kecamatanData = await Kecamatan.find(filter)
+      .select('-__v')
+      .sort({ name: 1 })
+      .lean()
+      .exec()
 
     return NextResponse.json({
       success: true,
@@ -130,8 +136,8 @@ const createKecamatanSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await connectToDatabase()
-    
+    await connectToMongoDB()
+
     const body = await request.json()
     const validatedData = createKecamatanSchema.parse(body)
     

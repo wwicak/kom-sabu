@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/mongodb'
 import { Kecamatan } from '@/lib/models'
 import { z } from 'zod'
+import mongoose from 'mongoose'
+
+// Ensure mongoose connection
+async function connectToMongoDB() {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    })
+  }
+}
 
 // GET /api/kecamatan/[slug] - Get specific kecamatan data
 export async function GET(
@@ -9,7 +20,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    await connectToDatabase()
+    await connectToMongoDB()
     
     const kecamatan = await Kecamatan.findOne({ 
       slug: params.slug,
@@ -134,7 +145,7 @@ export async function PUT(
   { params }: { params: { slug: string } }
 ) {
   try {
-    await connectToDatabase()
+    await connectToMongoDB()
     
     const body = await request.json()
     const validatedData = updateKecamatanSchema.parse(body)
@@ -194,7 +205,7 @@ export async function DELETE(
   { params }: { params: { slug: string } }
 ) {
   try {
-    await connectToDatabase()
+    await connectToMongoDB()
     
     const updatedKecamatan = await Kecamatan.findOneAndUpdate(
       { slug: params.slug },
