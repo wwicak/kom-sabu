@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Users, Building2, Wheat, Fish, Camera } from 'lucide-react'
 
-// Dynamically import the map component to avoid SSR issues
-const MapComponent = dynamic(() => import('./MapComponent').then(mod => ({ default: mod.MapComponent })), {
+// Dynamically import the MapLibre component to avoid SSR issues
+const MapLibreComponent = dynamic(() => import('./MapLibreComponent').then(mod => ({ default: mod.MapLibreComponent })), {
   ssr: false,
   loading: () => (
     <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -107,7 +107,7 @@ interface InteractiveMapProps {
 
 export function InteractiveMap({ kecamatanData, selectedKecamatan, onKecamatanSelect }: InteractiveMapProps) {
   return (
-    <MapComponent
+    <MapLibreComponent
       kecamatanData={kecamatanData}
       selectedKecamatan={selectedKecamatan}
       onKecamatanSelect={onKecamatanSelect}

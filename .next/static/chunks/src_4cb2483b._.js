@@ -1740,13 +1740,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 ;
 ;
 ;
-// Dynamically import the map component to avoid SSR issues
-const MapComponent = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$shared$2f$lib$2f$app$2d$dynamic$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.r("[project]/src/components/sections/MapComponent.tsx [app-client] (ecmascript, next/dynamic entry, async loader)")(__turbopack_context__.i).then((mod)=>({
-            default: mod.MapComponent
+// Dynamically import the MapLibre component to avoid SSR issues
+const MapLibreComponent = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$shared$2f$lib$2f$app$2d$dynamic$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.r("[project]/src/components/sections/MapLibreComponent.tsx [app-client] (ecmascript, next/dynamic entry, async loader)")(__turbopack_context__.i).then((mod)=>({
+            default: mod.MapLibreComponent
         })), {
     loadableGenerated: {
         modules: [
-            "[project]/src/components/sections/MapComponent.tsx [app-client] (ecmascript, next/dynamic entry)"
+            "[project]/src/components/sections/MapLibreComponent.tsx [app-client] (ecmascript, next/dynamic entry)"
         ]
     },
     ssr: false,
@@ -1766,9 +1766,9 @@ const MapComponent = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_mo
             columnNumber: 5
         }, this)
 });
-_c = MapComponent;
+_c = MapLibreComponent;
 function InteractiveMap({ kecamatanData, selectedKecamatan, onKecamatanSelect }) {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MapComponent, {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MapLibreComponent, {
         kecamatanData: kecamatanData,
         selectedKecamatan: selectedKecamatan,
         onKecamatanSelect: onKecamatanSelect
@@ -2084,7 +2084,7 @@ function KecamatanDetailCard({ kecamatan, onClose }) {
 }
 _c2 = KecamatanDetailCard;
 var _c, _c1, _c2;
-__turbopack_context__.k.register(_c, "MapComponent");
+__turbopack_context__.k.register(_c, "MapLibreComponent");
 __turbopack_context__.k.register(_c1, "InteractiveMap");
 __turbopack_context__.k.register(_c2, "KecamatanDetailCard");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
