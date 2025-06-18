@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'File uploaded successfully and pending approval',
       data: {
-        id: savedGalleryItem?.[0]?._id,
+        id: (savedGalleryItem as any)?.[0]?._id,
         title,
         imageUrl: uploadResult.original.url,
         thumbnailUrl: uploadResult.thumbnail?.url,

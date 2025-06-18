@@ -76,7 +76,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
       style: 'https://tiles.openfreemap.org/styles/liberty',
       center: center,
       zoom: zoom,
-      attributionControl: true
+      attributionControl: { compact: false }
     })
 
     // Convert kecamatan data to GeoJSON format
@@ -98,7 +98,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
       // Add kecamatan polygons source
       map.current.addSource('kecamatan', {
         type: 'geojson',
-        data: geoJsonData
+        data: geoJsonData as any
       })
 
       // Add fill layer
@@ -163,13 +163,13 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         if (e.features && e.features[0]) {
           const kecamatan = e.features[0].properties as KecamatanData
           onKecamatanSelect?.(kecamatan)
-          
+
           // Fit to bounds
-          const coordinates = e.features[0].geometry.coordinates[0] as number[][]
+          const coordinates = (e.features[0].geometry as any).coordinates[0] as number[][]
           const bounds = coordinates.reduce((bounds, coord) => {
             return bounds.extend(coord as [number, number])
           }, new maplibregl.LngLatBounds(coordinates[0] as [number, number], coordinates[0] as [number, number]))
-          
+
           map.current?.fitBounds(bounds, { padding: 20 })
         }
       })

@@ -168,7 +168,8 @@ export async function uploadImage(
 
   // Optimize image if it's an image file and optimization is enabled
   if (ALLOWED_IMAGE_TYPES[file.type as keyof typeof ALLOWED_IMAGE_TYPES] && optimize) {
-    processedBuffer = await optimizeImage(buffer)
+    const optimizedBuffer = await optimizeImage(buffer)
+    processedBuffer = Buffer.from(optimizedBuffer)
     optimizedSize = processedBuffer.length
 
     // Get dimensions

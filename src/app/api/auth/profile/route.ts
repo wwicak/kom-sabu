@@ -43,29 +43,31 @@ export const GET = requireAuth(async function(request: NextRequest) {
     const userProfile = await User.findById(user.id)
       .select('-password -passwordResetToken -passwordResetExpires -twoFactorSecret')
       .lean()
-    
+
     if (!userProfile) {
       return NextResponse.json(
         { success: false, error: 'User not found' },
         { status: 404 }
       )
     }
-    
+
+    const profile = userProfile as any
+
     return NextResponse.json({
       success: true,
       data: {
-        id: userProfile._id.toString(),
-        username: userProfile.username,
-        email: userProfile.email,
-        fullName: userProfile.fullName,
-        role: userProfile.role,
-        department: userProfile.department,
-        position: userProfile.position,
-        isActive: userProfile.isActive,
-        lastLogin: userProfile.lastLogin,
-        twoFactorEnabled: userProfile.twoFactorEnabled,
-        createdAt: userProfile.createdAt,
-        updatedAt: userProfile.updatedAt
+        id: profile._id.toString(),
+        username: profile.username,
+        email: profile.email,
+        fullName: profile.fullName,
+        role: profile.role,
+        department: profile.department,
+        position: profile.position,
+        isActive: profile.isActive,
+        lastLogin: profile.lastLogin,
+        twoFactorEnabled: profile.twoFactorEnabled,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt
       }
     })
     

@@ -193,13 +193,13 @@ export default function GalleryPage() {
         ) : (
           /* List View */
           <div className="space-y-4">
-            {filteredItems.map((item) => (
-              <Card key={item.id} className="hover:shadow-md transition-shadow">
+            {galleryItems.map((item) => (
+              <Card key={item._id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <img
-                        src={item.image}
+                        src={item.thumbnailUrl || item.imageUrl}
                         alt={item.title}
                         className="w-24 h-16 object-cover rounded-lg"
                         onError={(e) => {
@@ -219,7 +219,7 @@ export default function GalleryPage() {
                           {item.category}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {new Date(item.date).toLocaleDateString('id-ID')}
+                          {new Date(item.createdAt).toLocaleDateString('id-ID')}
                         </span>
                       </div>
                     </div>
