@@ -83,7 +83,7 @@ const ACCURATE_KECAMATAN_DATA = [
       {
         url: '/images/kecamatan/sabu-barat-menia.jpg',
         caption: 'Pusat Kota Menia, Ibu Kota Kabupaten Sabu Raijua',
-        category: 'cityscape'
+        category: 'infrastructure'
       }
     ],
     headOffice: {
