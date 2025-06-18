@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Kecamatan } from '@/lib/models'
 import { z } from 'zod'
 import mongoose from 'mongoose'
+import { requirePermission, AuthenticatedRequest } from '@/lib/auth-middleware'
+import { Permission } from '@/lib/rbac'
 
 // Ensure mongoose connection
 async function connectToMongoDB() {
@@ -134,10 +136,11 @@ const createKecamatanSchema = z.object({
   }).optional()
 })
 
-export async function POST(request: NextRequest) {
+export const POST = requirePermission(Permission.CREATE_KECAMATAN)(async function(request: NextRequest) {
   try {
     await connectToMongoDB()
 
+    const user = (request as AuthenticatedRequest).user!
     const body = await request.json()
     const validatedData = createKecamatanSchema.parse(body)
     
@@ -153,9 +156,12 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const newKecamatan = new Kecamatan(validatedData)
+    const newKecamatan = new Kecamatan({
+      ...validatedData,
+      updatedBy: user.id
+    })
     await newKecamatan.save()
-    
+
     return NextResponse.json({
       success: true,
       data: newKecamatan
@@ -181,4 +187,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

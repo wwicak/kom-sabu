@@ -290,7 +290,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'editor', 'viewer'],
+    enum: ['super_admin', 'admin', 'editor', 'viewer'],
     default: 'viewer'
   },
   department: String,

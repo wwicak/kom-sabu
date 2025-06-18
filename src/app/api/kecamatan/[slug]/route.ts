@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Kecamatan } from '@/lib/models'
 import { z } from 'zod'
 import mongoose from 'mongoose'
+import { requirePermission, AuthenticatedRequest } from '@/lib/auth-middleware'
+import { Permission } from '@/lib/rbac'
 
 // Ensure mongoose connection
 async function connectToMongoDB() {
@@ -140,23 +142,26 @@ const updateKecamatanSchema = z.object({
   isActive: z.boolean().optional()
 })
 
-export async function PUT(
+export const PUT = requirePermission(Permission.UPDATE_KECAMATAN)(async function(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {
     await connectToMongoDB()
+
+    const user = (request as AuthenticatedRequest).user!
     
     const body = await request.json()
     const validatedData = updateKecamatanSchema.parse(body)
     
     const updatedKecamatan = await Kecamatan.findOneAndUpdate(
       { slug: params.slug },
-      { 
+      {
         ...validatedData,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        updatedBy: user.id
       },
-      { 
+      {
         new: true,
         runValidators: true
       }
@@ -197,10 +202,10 @@ export async function PUT(
       { status: 500 }
     )
   }
-}
+})
 
 // DELETE /api/kecamatan/[slug] - Soft delete kecamatan (admin only)
-export async function DELETE(
+export const DELETE = requirePermission(Permission.DELETE_KECAMATAN)(async function(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
@@ -240,4 +245,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})
