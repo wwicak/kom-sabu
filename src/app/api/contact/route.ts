@@ -12,7 +12,7 @@ if (!mongoose.connections[0].readyState) {
 }
 
 // Email transporter configuration
-const emailTransporter = nodemailer.createTransporter({
+const emailTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
@@ -28,7 +28,7 @@ const emailTransporter = nodemailer.createTransporter({
 export async function POST(request: NextRequest) {
   try {
     // Get client information
-    const ip = request.ip ||
+    const ip = request.headers.get('x-forwarded-for') ||
                request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                'unknown'
     const userAgent = request.headers.get('user-agent') || ''
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Save to MongoDB with transaction for data integrity
     const session = await mongoose.startSession()
-    let savedContact
+    let savedContact: any
 
     try {
       await session.withTransaction(async () => {
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
           action: 'EMAIL_NOTIFICATION_FAILED',
           resource: 'contact_form',
           resourceId: savedContact[0]._id.toString(),
-          details: { error: emailError.message },
+          details: { error: (emailError as Error).message },
           ipAddress: ip,
           userAgent,
         })
@@ -203,10 +203,10 @@ export async function POST(request: NextRequest) {
         action: 'CONTACT_FORM_ERROR',
         resource: 'contact_form',
         details: {
-          error: error.message,
-          stack: error.stack
+          error: (error as Error).message,
+          stack: (error as Error).stack
         },
-        ipAddress: request.ip || 'unknown',
+        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
         userAgent: request.headers.get('user-agent') || '',
       })
     } catch (logError) {

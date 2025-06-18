@@ -44,7 +44,7 @@ export async function verifyToken(token: string): Promise<AuthenticatedUser | nu
       .select('-password -passwordResetToken -passwordResetExpires -twoFactorSecret')
       .lean()
 
-    if (!user || !user.isActive) {
+    if (!user || !(user as any).isActive) {
       return null
     }
 
@@ -248,15 +248,20 @@ export function generateToken(user: AuthenticatedUser): string {
     throw new Error('JWT_SECRET not configured')
   }
   
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error('JWT_SECRET not configured')
+  }
+
   return jwt.sign(
     {
       userId: user.id,
       username: user.username,
       role: user.role
     },
-    process.env.JWT_SECRET as string,
+    secret,
     {
-      expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+      expiresIn: '24h',
       issuer: 'sabu-raijua-gov',
       audience: 'sabu-raijua-admin'
     }
@@ -298,7 +303,7 @@ export async function logSecurityEvent(
       action,
       resource,
       details,
-      ipAddress: request.ip || request.headers.get('x-forwarded-for') || 'unknown',
+      ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       userAgent: request.headers.get('user-agent') || '',
       timestamp: new Date()
     })

@@ -48,7 +48,7 @@ export function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || ''
 
   // Get client IP with multiple fallbacks
-  const ip = request.ip ||
+  const ip = request.headers.get('x-forwarded-for') ||
              request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
              request.headers.get('x-real-ip') ||
              request.headers.get('cf-connecting-ip') || // Cloudflare

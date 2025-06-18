@@ -11,7 +11,7 @@ if (!mongoose.connections[0].readyState) {
 export async function POST(request: NextRequest) {
   try {
     // Get client information
-    const ip = request.ip || 
+    const ip = request.headers.get('x-forwarded-for') ||
                request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                'unknown'
     const userAgent = request.headers.get('user-agent') || ''
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'File uploaded successfully and pending approval',
       data: {
-        id: savedGalleryItem[0]._id,
+        id: savedGalleryItem?.[0]?._id,
         title,
         imageUrl: uploadResult.original.url,
         thumbnailUrl: uploadResult.thumbnail?.url,
@@ -135,10 +135,10 @@ export async function POST(request: NextRequest) {
         action: 'FILE_UPLOAD_ERROR',
         resource: 'gallery_item',
         details: { 
-          error: error.message,
-          stack: error.stack 
+          error: (error as Error).message,
+          stack: (error as Error).stack
         },
-        ipAddress: request.ip || 'unknown',
+        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
         userAgent: request.headers.get('user-agent') || '',
       })
     } catch (logError) {
