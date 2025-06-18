@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/constants'
 import { ArrowRight, Play } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function Hero() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const { t } = useTranslation('hero')
 
   return (
     <section className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
@@ -36,16 +38,16 @@ export function Hero() {
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
-              <span className="block text-yellow-400 mb-2">MIRA KADDI</span>
-              <span className="block">SABU RAIJUA</span>
+              <span className="block text-yellow-400 mb-2">{t('title')}</span>
+              <span className="block">{t('subtitle')}</span>
             </h1>
 
             <p className="mt-6 text-xl leading-8 text-gray-200 max-w-2xl">
-              Membangun bersama menuju Kabupaten Sabu Raijua yang maju, sejahtera, dan berkelanjutan berbasis kearifan lokal dan inovasi.
+              {t('tagline')}
             </p>
 
             <p className="mt-4 text-lg leading-7 text-gray-300 max-w-2xl">
-              Kepulauan indah di Laut Sawu dengan kekayaan budaya Hawu yang unik, pantai-pantai eksotis, dan tradisi tenun ikat yang mendunia.
+              {t('description')}
             </p>
 
             {/* CTA Buttons */}

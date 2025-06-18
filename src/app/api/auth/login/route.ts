@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { User, AuditLog } from '@/lib/models'
 import { generateToken, generateRefreshToken, logSecurityEvent } from '@/lib/auth-middleware'
 import { Role } from '@/lib/rbac'
+import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
 import { z } from 'zod'
 import mongoose from 'mongoose'
 
@@ -20,6 +21,7 @@ async function connectToMongoDB() {
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
+  turnstileToken: z.string().min(1, 'Security verification is required'),
   rememberMe: z.boolean().optional()
 })
 
@@ -41,7 +43,47 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const { username, password, rememberMe } = validationResult.data
+    const { username, password, turnstileToken, rememberMe } = validationResult.data
+
+    // Get client IP for rate limiting and Turnstile verification
+    const clientIP = request.headers.get('x-forwarded-for') ||
+                     request.headers.get('x-real-ip') ||
+                     'unknown'
+
+    // Check rate limiting
+    if (!checkRateLimit(clientIP)) {
+      await logSecurityEvent(
+        null,
+        'LOGIN_RATE_LIMITED',
+        'auth',
+        { username, clientIP },
+        request
+      )
+
+      return NextResponse.json(
+        { success: false, error: 'Too many failed attempts. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
+    // Verify Turnstile token
+    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, clientIP)
+    if (!isTurnstileValid) {
+      recordFailedAttempt(clientIP)
+
+      await logSecurityEvent(
+        null,
+        'LOGIN_FAILED_TURNSTILE_VERIFICATION',
+        'auth',
+        { username, clientIP },
+        request
+      )
+
+      return NextResponse.json(
+        { success: false, error: 'Security verification failed. Please try again.' },
+        { status: 400 }
+      )
+    }
     
     // Find user by username or email
     const user = await User.findOne({
@@ -52,14 +94,16 @@ export async function POST(request: NextRequest) {
     }).select('+password')
     
     if (!user) {
+      recordFailedAttempt(clientIP)
+
       await logSecurityEvent(
         null,
         'LOGIN_FAILED_USER_NOT_FOUND',
         'auth',
-        { username },
+        { username, clientIP },
         request
       )
-      
+
       return NextResponse.json(
         { success: false, error: 'Invalid credentials' },
         { status: 401 }
@@ -105,43 +149,49 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await bcrypt.compare(password, user.password)
     
     if (!isPasswordValid) {
+      recordFailedAttempt(clientIP)
+
       // Increment login attempts
       const loginAttempts = (user.loginAttempts || 0) + 1
       const maxAttempts = 5
       const lockDuration = 30 * 60 * 1000 // 30 minutes
-      
+
       const updateData: any = { loginAttempts }
-      
+
       if (loginAttempts >= maxAttempts) {
         updateData.lockUntil = new Date(Date.now() + lockDuration)
       }
-      
+
       await User.findByIdAndUpdate(user._id, updateData)
-      
+
       await logSecurityEvent(
         null,
         'LOGIN_FAILED_INVALID_PASSWORD',
         'auth',
-        { 
-          userId: user._id.toString(), 
-          username, 
+        {
+          userId: user._id.toString(),
+          username,
+          clientIP,
           loginAttempts,
           locked: loginAttempts >= maxAttempts
         },
         request
       )
-      
+
       return NextResponse.json(
         { success: false, error: 'Invalid credentials' },
         { status: 401 }
       )
     }
     
-    // Reset login attempts on successful login
+    // Reset login attempts and rate limiting on successful login
     await User.findByIdAndUpdate(user._id, {
       $unset: { loginAttempts: 1, lockUntil: 1 },
       lastLogin: new Date()
     })
+
+    // Clear failed attempts for this IP
+    clearFailedAttempts(clientIP)
     
     // Generate tokens
     const userForToken = {
