@@ -32,7 +32,12 @@ export const SECURITY_CONFIG = {
   
   // Session configuration
   SESSION: {
-    secret: process.env.SESSION_SECRET || 'default-session-secret-change-in-production',
+    secret: process.env.SESSION_SECRET || (() => {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('SESSION_SECRET environment variable is required in production')
+      }
+      return 'dev-session-secret-not-for-production'
+    })(),
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
@@ -42,14 +47,17 @@ export const SECURITY_CONFIG = {
   // Content Security Policy
   CSP: {
     'default-src': ["'self'"],
-    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    'script-src': ["'self'", "'unsafe-inline'", 'https://challenges.cloudflare.com'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
-    'img-src': ["'self'", 'data:', 'https:'],
-    'connect-src': ["'self'"],
+    'img-src': ["'self'", 'data:', 'https://*.cloudflare.com', 'https://*.r2.cloudflarestorage.com'],
+    'connect-src': ["'self'", 'https://challenges.cloudflare.com'],
+    'frame-src': ["'none'"],
     'frame-ancestors': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
+    'object-src': ["'none'"],
+    'upgrade-insecure-requests': [],
   },
 }
 
@@ -90,13 +98,19 @@ export const validateInput = {
 
 // Encrypt sensitive data
 export function encryptData(data: string): string {
-  const key = process.env.ENCRYPTION_KEY || 'default-encryption-key-change-in-production'
+  const key = process.env.ENCRYPTION_KEY
+  if (!key) {
+    throw new Error('ENCRYPTION_KEY environment variable is required')
+  }
   return CryptoJS.AES.encrypt(data, key).toString()
 }
 
 // Decrypt sensitive data
 export function decryptData(encryptedData: string): string {
-  const key = process.env.ENCRYPTION_KEY || 'default-encryption-key-change-in-production'
+  const key = process.env.ENCRYPTION_KEY
+  if (!key) {
+    throw new Error('ENCRYPTION_KEY environment variable is required')
+  }
   const bytes = CryptoJS.AES.decrypt(encryptedData, key)
   return bytes.toString(CryptoJS.enc.Utf8)
 }
@@ -108,20 +122,31 @@ export function generateSecureToken(): string {
 
 // Security headers middleware
 export function setSecurityHeaders(response: NextResponse): NextResponse {
-  // Prevent XSS attacks
+  // Prevent XSS attacks (deprecated but still useful for older browsers)
   response.headers.set('X-XSS-Protection', '1; mode=block')
-  
+
   // Prevent clickjacking
   response.headers.set('X-Frame-Options', 'DENY')
-  
+
   // Prevent MIME type sniffing
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  
+
+  // Referrer policy
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  // Permissions policy
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()')
+
+  // Cross-Origin policies
+  response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp')
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
+  response.headers.set('Cross-Origin-Resource-Policy', 'same-origin')
+
   // Enforce HTTPS
   if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   }
-  
+
   // Content Security Policy
   const cspString = Object.entries(SECURITY_CONFIG.CSP)
     .map(([directive, sources]) => `${directive} ${sources.join(' ')}`)

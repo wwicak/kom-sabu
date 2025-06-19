@@ -324,138 +324,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 })
 
-// Kecamatan Schema
-const kecamatanSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100,
-    unique: true
-  },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: 1000
-  },
-  area: {
-    type: Number, // in km²
-    required: true
-  },
-  population: {
-    type: Number,
-    required: true
-  },
-  villages: {
-    type: Number, // number of villages/desa
-    required: true
-  },
-  coordinates: {
-    center: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true }
-    },
-    bounds: {
-      north: Number,
-      south: Number,
-      east: Number,
-      west: Number
-    }
-  },
-  polygon: {
-    type: {
-      type: String,
-      enum: ['Polygon', 'MultiPolygon'],
-      default: 'Polygon'
-    },
-    coordinates: {
-      type: [[[Number]]], // GeoJSON polygon coordinates
-      required: true
-    }
-  },
-  potency: {
-    agriculture: {
-      mainCrops: [String],
-      productivity: String,
-      farmingArea: Number // in hectares
-    },
-    fishery: {
-      mainSpecies: [String],
-      productivity: String,
-      fishingArea: Number // in hectares
-    },
-    tourism: {
-      attractions: [String],
-      facilities: [String],
-      annualVisitors: Number
-    },
-    economy: {
-      mainSectors: [String],
-      averageIncome: Number,
-      businessUnits: Number
-    },
-    infrastructure: {
-      roads: String, // condition description
-      electricity: Number, // percentage coverage
-      water: Number, // percentage coverage
-      internet: Number // percentage coverage
-    }
-  },
-  demographics: {
-    ageGroups: {
-      children: Number, // 0-14 years
-      adults: Number, // 15-64 years
-      elderly: Number // 65+ years
-    },
-    education: {
-      elementary: Number,
-      junior: Number,
-      senior: Number,
-      higher: Number
-    },
-    occupation: {
-      agriculture: Number,
-      fishery: Number,
-      trade: Number,
-      services: Number,
-      others: Number
-    }
-  },
-  images: [{
-    url: String,
-    caption: String,
-    category: {
-      type: String,
-      enum: ['landscape', 'culture', 'economy', 'infrastructure', 'tourism']
-    }
-  }],
-  headOffice: {
-    address: String,
-    phone: String,
-    email: String,
-    head: String // Camat name
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  lastUpdated: {
-    type: Date,
-    default: Date.now
-  },
-  updatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
-}, {
-  timestamps: true
-})
+// Note: Kecamatan schema moved to dedicated file src/lib/models/kecamatan.ts
 
 // Audit Log Schema
 const auditLogSchema = new mongoose.Schema({
@@ -492,9 +361,6 @@ newsSchema.index({ publishedAt: -1 })
 agendaSchema.index({ startDate: 1 })
 agendaSchema.index({ isPublic: 1, status: 1 })
 // userSchema email and username already have unique: true, no need for manual indexes
-// kecamatanSchema slug and name already have unique: true, no need for manual indexes
-kecamatanSchema.index({ isActive: 1 })
-kecamatanSchema.index({ 'coordinates.center': '2dsphere' })
 auditLogSchema.index({ timestamp: -1 })
 auditLogSchema.index({ userId: 1 })
 
@@ -504,5 +370,7 @@ export const GalleryItem = mongoose.models.GalleryItem || mongoose.model('Galler
 export const News = mongoose.models.News || mongoose.model('News', newsSchema)
 export const Agenda = mongoose.models.Agenda || mongoose.model('Agenda', agendaSchema)
 export const User = mongoose.models.User || mongoose.model('User', userSchema)
-export const Kecamatan = mongoose.models.Kecamatan || mongoose.model('Kecamatan', kecamatanSchema)
 export const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema)
+
+// Export the comprehensive Kecamatan model from the dedicated file
+export { Kecamatan } from './kecamatan'

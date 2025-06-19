@@ -4,6 +4,7 @@ import { sanitizeHtml, validateInput, generateSecureToken } from '@/lib/security
 import { ContactForm, AuditLog } from '@/lib/models'
 import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
 import { withCSRF } from '@/lib/csrf'
+import { withRateLimit, rateLimiters } from '@/lib/enhanced-rate-limit'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
 
@@ -297,5 +298,5 @@ export async function DELETE() {
   )
 }
 
-// Export POST with CSRF protection
-export const POST = withCSRF(handlePOST)
+// Export POST with CSRF protection and enhanced rate limiting
+export const POST = withRateLimit(rateLimiters.contact, withCSRF(handlePOST))

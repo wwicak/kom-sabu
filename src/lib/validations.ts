@@ -244,8 +244,263 @@ export const validateUrl = (url: string): boolean => {
 }
 
 export const sanitizeString = (str: string): string => {
-  return str.trim().replace(/[<>]/g, '')
+  return str.trim()
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/on\w+=/gi, '')
 }
+
+// Enhanced validation utilities
+export const validateSlug = (slug: string): boolean => {
+  return /^[a-z0-9-]+$/.test(slug) && slug.length >= 3 && slug.length <= 100
+}
+
+export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = []
+
+  if (password.length < 12) {
+    errors.push('Password must be at least 12 characters long')
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter')
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter')
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push('Password must contain at least one number')
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    errors.push('Password must contain at least one special character')
+  }
+
+  // Check for common patterns
+  if (/(.)\1{2,}/.test(password)) {
+    errors.push('Password cannot contain repeated characters')
+  }
+
+  if (/123|abc|qwe|password|admin/i.test(password)) {
+    errors.push('Password cannot contain common patterns')
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
+}
+
+export const validateFileUpload = (file: File): { isValid: boolean; error?: string } => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+  const maxSize = 10 * 1024 * 1024 // 10MB
+
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      isValid: false,
+      error: `File type ${file.type} is not allowed. Allowed types: ${allowedTypes.join(', ')}`
+    }
+  }
+
+  if (file.size > maxSize) {
+    return {
+      isValid: false,
+      error: `File size ${(file.size / 1024 / 1024).toFixed(2)}MB exceeds maximum allowed size of ${(maxSize / 1024 / 1024).toFixed(2)}MB`
+    }
+  }
+
+  // Check for suspicious file names
+  if (/\.(php|js|html|htm|exe|bat|cmd|scr|vbs|jar)$/i.test(file.name)) {
+    return {
+      isValid: false,
+      error: 'File name contains suspicious extension'
+    }
+  }
+
+  return { isValid: true }
+}
+
+// Kecamatan validation schemas
+export const geoJSONPointSchema = z.object({
+  type: z.literal('Point'),
+  coordinates: z.array(z.number()).length(2)
+})
+
+export const geoJSONPolygonSchema = z.object({
+  type: z.literal('Polygon'),
+  coordinates: z.array(z.array(z.array(z.number().array().length(2))))
+})
+
+export const geoJSONMultiPolygonSchema = z.object({
+  type: z.literal('MultiPolygon'),
+  coordinates: z.array(z.array(z.array(z.array(z.number().array().length(2)))))
+})
+
+export const geoJSONGeometrySchema = z.union([
+  geoJSONPointSchema,
+  geoJSONPolygonSchema,
+  geoJSONMultiPolygonSchema
+])
+
+export const demographicDataSchema = z.object({
+  totalPopulation: z.number().min(0),
+  malePopulation: z.number().min(0),
+  femalePopulation: z.number().min(0),
+  households: z.number().min(0),
+  populationDensity: z.number().min(0),
+  ageGroups: z.object({
+    under15: z.number().min(0),
+    age15to64: z.number().min(0),
+    over64: z.number().min(0)
+  }),
+  education: z.object({
+    noEducation: z.number().min(0).default(0),
+    elementary: z.number().min(0).default(0),
+    juniorHigh: z.number().min(0).default(0),
+    seniorHigh: z.number().min(0).default(0),
+    university: z.number().min(0).default(0)
+  }).optional(),
+  religion: z.object({
+    christian: z.number().min(0).default(0),
+    catholic: z.number().min(0).default(0),
+    islam: z.number().min(0).default(0),
+    hindu: z.number().min(0).default(0),
+    buddhist: z.number().min(0).default(0),
+    other: z.number().min(0).default(0)
+  }).optional(),
+  lastUpdated: z.date().optional()
+})
+
+export const economicDataSchema = z.object({
+  gdpPerCapita: z.number().min(0).optional(),
+  mainIndustries: z.array(z.string()),
+  employmentRate: z.number().min(0).max(100),
+  unemploymentRate: z.number().min(0).max(100),
+  povertyRate: z.number().min(0).max(100),
+  averageIncome: z.number().min(0).optional(),
+  economicSectors: z.object({
+    agriculture: z.number().min(0).max(100),
+    industry: z.number().min(0).max(100),
+    services: z.number().min(0).max(100)
+  }),
+  lastUpdated: z.date().optional()
+})
+
+export const agriculturalDataSchema = z.object({
+  totalAgriculturalArea: z.number().min(0),
+  riceFields: z.number().min(0).default(0),
+  dryFields: z.number().min(0).default(0),
+  plantations: z.number().min(0).default(0),
+  mainCrops: z.array(z.object({
+    name: z.string().min(1),
+    area: z.number().min(0),
+    production: z.number().min(0),
+    productivity: z.number().min(0)
+  })),
+  livestock: z.array(z.object({
+    type: z.string().min(1),
+    count: z.number().min(0)
+  })),
+  fishery: z.object({
+    marineCapture: z.number().min(0).default(0),
+    aquaculture: z.number().min(0).default(0)
+  }),
+  lastUpdated: z.date().optional()
+})
+
+export const kecamatanCreateSchema = z.object({
+  name: z.string().min(1).max(100),
+  nameEnglish: z.string().max(100).optional(),
+  code: z.string().min(1).max(20),
+  regencyCode: z.string().min(1).max(20),
+  regencyName: z.string().min(1).max(100),
+  provinceCode: z.string().min(1).max(20),
+  provinceName: z.string().min(1).max(100),
+  geometry: z.union([geoJSONPolygonSchema, geoJSONMultiPolygonSchema]),
+  centroid: geoJSONPointSchema,
+  area: z.number().min(0),
+  capital: z.string().min(1).max(100),
+  villages: z.array(z.object({
+    name: z.string().min(1).max(100),
+    type: z.enum(['desa', 'kelurahan']),
+    population: z.number().min(0).optional()
+  })),
+  demographics: demographicDataSchema,
+  economy: economicDataSchema,
+  agriculture: agriculturalDataSchema,
+  naturalResources: z.object({
+    minerals: z.array(z.object({
+      type: z.string().min(1),
+      reserves: z.string().optional(),
+      status: z.enum(['explored', 'exploited', 'potential'])
+    })),
+    forestArea: z.number().min(0).default(0),
+    coastalLength: z.number().min(0).optional(),
+    waterResources: z.array(z.object({
+      type: z.enum(['river', 'lake', 'spring', 'reservoir']),
+      name: z.string().min(1),
+      capacity: z.number().optional()
+    })),
+    renewableEnergy: z.array(z.object({
+      type: z.enum(['solar', 'wind', 'hydro', 'biomass']),
+      potential: z.string().min(1),
+      status: z.enum(['developed', 'planned', 'potential'])
+    })),
+    lastUpdated: z.date().optional()
+  }),
+  infrastructure: z.object({
+    roads: z.object({
+      totalLength: z.number().min(0).default(0),
+      pavedRoads: z.number().min(0).default(0),
+      unpavedRoads: z.number().min(0).default(0)
+    }),
+    healthFacilities: z.object({
+      hospitals: z.number().min(0).default(0),
+      healthCenters: z.number().min(0).default(0),
+      clinics: z.number().min(0).default(0),
+      doctors: z.number().min(0).default(0),
+      nurses: z.number().min(0).default(0)
+    }),
+    education: z.object({
+      kindergartens: z.number().min(0).default(0),
+      elementarySchools: z.number().min(0).default(0),
+      juniorHighSchools: z.number().min(0).default(0),
+      seniorHighSchools: z.number().min(0).default(0),
+      universities: z.number().min(0).default(0),
+      teachers: z.number().min(0).default(0)
+    }),
+    utilities: z.object({
+      electricityAccess: z.number().min(0).max(100).default(0),
+      cleanWaterAccess: z.number().min(0).max(100).default(0),
+      internetAccess: z.number().min(0).max(100).default(0),
+      wasteManagement: z.boolean().default(false)
+    }),
+    lastUpdated: z.date().optional()
+  }),
+  tourism: z.object({
+    attractions: z.array(z.object({
+      name: z.string().min(1),
+      type: z.enum(['beach', 'cultural', 'historical', 'natural', 'religious']),
+      description: z.string().min(1),
+      coordinates: geoJSONPointSchema.optional()
+    })),
+    accommodations: z.object({
+      hotels: z.number().min(0).default(0),
+      guesthouses: z.number().min(0).default(0),
+      homestays: z.number().min(0).default(0)
+    }),
+    annualVisitors: z.number().min(0).optional(),
+    lastUpdated: z.date().optional()
+  }),
+  isActive: z.boolean().default(true),
+  displayOrder: z.number().default(0)
+})
+
+export const kecamatanUpdateSchema = kecamatanCreateSchema.partial().omit({ code: true })
 
 // Type exports for form data
 export type ContactFormData = z.infer<typeof contactFormSchema>

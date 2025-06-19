@@ -26,6 +26,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { name: 'Beranda', href: '/' },
   { name: 'Profil', href: '/profil' },
   { name: 'Kecamatan', href: '/kecamatan' },
+  { name: 'Peta Kecamatan', href: '/peta-kecamatan' },
   { name: 'Budaya', href: '/budaya' },
   { name: 'Wisata', href: '/wisata' },
   { name: 'Layanan', href: '/layanan' },

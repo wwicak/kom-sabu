@@ -1,190 +1,119 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Kecamatan } from '@/lib/models'
-import { z } from 'zod'
-import mongoose from 'mongoose'
+import { Kecamatan } from '@/lib/models/kecamatan'
+import { kecamatanCreateSchema } from '@/lib/validations'
 import { requirePermission, AuthenticatedRequest } from '@/lib/auth-middleware'
 import { Permission } from '@/lib/rbac'
-
-// Ensure mongoose connection
-async function connectToMongoDB() {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGODB_URI!, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    })
-  }
-}
+import { withRateLimit, rateLimiters } from '@/lib/enhanced-rate-limit'
+import { connectToDatabase } from '@/lib/mongodb'
+import mongoose from 'mongoose'
 
 // GET /api/kecamatan - Get all kecamatan data
-export async function GET(request: NextRequest) {
+export const GET = withRateLimit(rateLimiters.api, async function(request: NextRequest) {
   try {
-    // Ensure database connection
-    await connectToMongoDB()
+    await connectToDatabase()
 
     const { searchParams } = new URL(request.url)
-    const includeInactive = searchParams.get('includeInactive') === 'true'
+    const includeGeometry = searchParams.get('includeGeometry') === 'true'
+    const activeOnly = searchParams.get('activeOnly') !== 'false'
+    const regencyCode = searchParams.get('regencyCode')
 
-    const filter = includeInactive ? {} : { isActive: true }
+    // Build query
+    const query: any = {}
+    if (activeOnly) {
+      query.isActive = true
+    }
+    if (regencyCode) {
+      query.regencyCode = regencyCode
+    }
 
-    // Remove the timeout wrapper and use direct query
-    const kecamatanData = await Kecamatan.find(filter)
-      .select('-__v')
-      .sort({ name: 1 })
+    // Build projection
+    let projection: any = {}
+    if (!includeGeometry) {
+      projection.geometry = 0 // Exclude geometry for lighter response
+    }
+
+    const kecamatanList = await Kecamatan
+      .find(query, projection)
+      .sort({ displayOrder: 1, name: 1 })
       .lean()
-      .exec()
 
     return NextResponse.json({
       success: true,
-      data: kecamatanData
+      data: kecamatanList,
+      count: kecamatanList.length
     })
+
   } catch (error) {
-    console.error('Error fetching kecamatan data:', error)
+    console.error('Error fetching kecamatan:', error)
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch kecamatan data',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: (error as Error).message
       },
       { status: 500 }
     )
   }
-}
+})
 
 // POST /api/kecamatan - Create new kecamatan (admin only)
-const createKecamatanSchema = z.object({
-  name: z.string().min(1).max(100),
-  slug: z.string().min(1).max(100),
-  description: z.string().max(1000).optional(),
-  area: z.number().positive(),
-  population: z.number().int().positive(),
-  villages: z.number().int().positive(),
-  coordinates: z.object({
-    center: z.object({
-      lat: z.number(),
-      lng: z.number()
-    }),
-    bounds: z.object({
-      north: z.number(),
-      south: z.number(),
-      east: z.number(),
-      west: z.number()
-    }).optional()
-  }),
-  polygon: z.object({
-    type: z.enum(['Polygon', 'MultiPolygon']),
-    coordinates: z.array(z.array(z.array(z.number())))
-  }),
-  potency: z.object({
-    agriculture: z.object({
-      mainCrops: z.array(z.string()),
-      productivity: z.string(),
-      farmingArea: z.number()
-    }).optional(),
-    fishery: z.object({
-      mainSpecies: z.array(z.string()),
-      productivity: z.string(),
-      fishingArea: z.number()
-    }).optional(),
-    tourism: z.object({
-      attractions: z.array(z.string()),
-      facilities: z.array(z.string()),
-      annualVisitors: z.number()
-    }).optional(),
-    economy: z.object({
-      mainSectors: z.array(z.string()),
-      averageIncome: z.number(),
-      businessUnits: z.number()
-    }).optional(),
-    infrastructure: z.object({
-      roads: z.string(),
-      electricity: z.number(),
-      water: z.number(),
-      internet: z.number()
-    }).optional()
-  }).optional(),
-  demographics: z.object({
-    ageGroups: z.object({
-      children: z.number(),
-      adults: z.number(),
-      elderly: z.number()
-    }),
-    education: z.object({
-      elementary: z.number(),
-      junior: z.number(),
-      senior: z.number(),
-      higher: z.number()
-    }),
-    occupation: z.object({
-      agriculture: z.number(),
-      fishery: z.number(),
-      trade: z.number(),
-      services: z.number(),
-      others: z.number()
-    })
-  }),
-  images: z.array(z.object({
-    url: z.string(),
-    caption: z.string(),
-    category: z.enum(['landscape', 'culture', 'economy', 'infrastructure', 'tourism'])
-  })).optional(),
-  headOffice: z.object({
-    address: z.string(),
-    phone: z.string(),
-    email: z.string(),
-    head: z.string()
-  }).optional()
-})
+export const POST = requirePermission(Permission.CREATE_KECAMATAN)(
+  withRateLimit(rateLimiters.api, async function(request: NextRequest, context: any) {
+    try {
+      await connectToDatabase()
 
-export const POST = requirePermission(Permission.CREATE_KECAMATAN)(async function(request: NextRequest) {
-  try {
-    await connectToMongoDB()
+      const body = await request.json()
+      const validatedData = kecamatanCreateSchema.parse(body)
 
-    const user = (request as AuthenticatedRequest).user!
-    const body = await request.json()
-    const validatedData = createKecamatanSchema.parse(body)
-    
-    // Check if slug already exists
-    const existingKecamatan = await Kecamatan.findOne({ slug: validatedData.slug })
-    if (existingKecamatan) {
+      // Check if kecamatan code already exists
+      const existingKecamatan = await Kecamatan.findOne({ code: validatedData.code })
+      if (existingKecamatan) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Kecamatan with this code already exists'
+          },
+          { status: 400 }
+        )
+      }
+
+      // Create new kecamatan
+      const newKecamatan = new Kecamatan({
+        ...validatedData,
+        createdBy: context.user.id,
+        updatedBy: context.user.id
+      })
+
+      await newKecamatan.save()
+
+      return NextResponse.json({
+        success: true,
+        data: newKecamatan,
+        message: 'Kecamatan created successfully'
+      }, { status: 201 })
+
+    } catch (error) {
+      console.error('Error creating kecamatan:', error)
+
+      if (error instanceof mongoose.Error.ValidationError) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Validation error',
+            details: Object.values(error.errors).map(err => err.message)
+          },
+          { status: 400 }
+        )
+      }
+
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Kecamatan with this slug already exists' 
+        {
+          success: false,
+          error: 'Failed to create kecamatan',
+          details: (error as Error).message
         },
-        { status: 400 }
+        { status: 500 }
       )
     }
-    
-    const newKecamatan = new Kecamatan({
-      ...validatedData,
-      updatedBy: user.id
-    })
-    await newKecamatan.save()
-
-    return NextResponse.json({
-      success: true,
-      data: newKecamatan
-    }, { status: 201 })
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Validation error',
-          details: error.errors
-        },
-        { status: 400 }
-      )
-    }
-    
-    console.error('Error creating kecamatan:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to create kecamatan' 
-      },
-      { status: 500 }
-    )
-  }
-})
+  })
+)

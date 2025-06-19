@@ -9,6 +9,13 @@ const options = {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
+  // Security options
+  tls: process.env.NODE_ENV === 'production',
+  tlsAllowInvalidCertificates: process.env.NODE_ENV !== 'production',
+  retryWrites: true,
+  // Connection monitoring
+  heartbeatFrequencyMS: 10000,
+  maxIdleTimeMS: 30000,
 }
 
 let client: MongoClient

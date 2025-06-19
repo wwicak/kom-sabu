@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth, AuthenticatedRequest } from '@/lib/auth-middleware'
 import { User } from '@/lib/models'
+import { validatePassword } from '@/lib/validations'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
@@ -135,14 +136,27 @@ export const PUT = requireAuth(async function(request: NextRequest) {
     // Handle password change
     if (newPassword && currentPassword) {
       const isCurrentPasswordValid = await bcrypt.compare(currentPassword, currentUser.password)
-      
+
       if (!isCurrentPasswordValid) {
         return NextResponse.json(
           { success: false, error: 'Current password is incorrect' },
           { status: 400 }
         )
       }
-      
+
+      // Validate new password strength
+      const passwordValidation = validatePassword(newPassword)
+      if (!passwordValidation.isValid) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Password does not meet security requirements',
+            details: passwordValidation.errors
+          },
+          { status: 400 }
+        )
+      }
+
       const saltRounds = 12
       updateData.password = await bcrypt.hash(newPassword, saltRounds)
     }
