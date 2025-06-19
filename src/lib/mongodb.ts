@@ -21,9 +21,13 @@ const options = {
 let client: MongoClient
 let clientPromise: Promise<MongoClient>
 
+// Force fresh connection in development to avoid DNS caching issues
 if (process.env.NODE_ENV === 'development') {
-  // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  console.log('Creating fresh MongoDB connection with URI:', uri?.substring(0, 50) + '...')
+  client = new MongoClient(uri, options)
+  clientPromise = client.connect()
+} else {
+  // In production mode, use global caching
   let globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>
   }
@@ -33,10 +37,6 @@ if (process.env.NODE_ENV === 'development') {
     globalWithMongo._mongoClientPromise = client.connect()
   }
   clientPromise = globalWithMongo._mongoClientPromise
-} else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri, options)
-  clientPromise = client.connect()
 }
 
 // Database connection helper
