@@ -3,6 +3,7 @@ import { contactFormSchema } from '@/lib/validations'
 import { sanitizeHtml, validateInput, generateSecureToken } from '@/lib/security'
 import { ContactForm, AuditLog } from '@/lib/models'
 import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
+import { withCSRF } from '@/lib/csrf'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
 
@@ -25,7 +26,7 @@ const emailTransporter = nodemailer.createTransport({
   }
 })
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     // Get client information
     const ip = request.headers.get('x-forwarded-for') ||
@@ -295,3 +296,6 @@ export async function DELETE() {
     { status: 405 }
   )
 }
+
+// Export POST with CSRF protection
+export const POST = withCSRF(handlePOST)

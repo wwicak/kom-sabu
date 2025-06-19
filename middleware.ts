@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { setSecurityHeaders, checkRateLimit, validateCSRFToken } from './src/lib/security'
+import { setSecurityHeaders, checkRateLimit } from './src/lib/security'
 
 // Security configuration
 const SECURITY_CONFIG = {
-  // Paths that require CSRF protection
-  csrfProtectedPaths: ['/api/contact', '/api/upload', '/api/admin'],
-
   // Paths that require authentication
   protectedPaths: ['/admin', '/api/admin'],
 
@@ -93,21 +90,7 @@ export function middleware(request: NextRequest) {
     })
   }
 
-  // 5. CSRF Protection for state-changing operations
-  if (request.method !== 'GET' && request.method !== 'HEAD' && request.method !== 'OPTIONS') {
-    if (SECURITY_CONFIG.csrfProtectedPaths.some(path => pathname.startsWith(path))) {
-      const csrfToken = request.headers.get('x-csrf-token') ||
-                       request.headers.get('x-xsrf-token')
-      const sessionToken = request.cookies.get('csrf-token')?.value
-
-      if (!csrfToken || !sessionToken || !validateCSRFToken(csrfToken, sessionToken)) {
-        console.warn(`CSRF token validation failed for IP: ${ip} on path: ${pathname}`)
-        return new NextResponse('Forbidden - Invalid CSRF Token', { status: 403 })
-      }
-    }
-  }
-
-  // 6. Check for SQL injection patterns in query parameters
+  // 5. Check for SQL injection patterns in query parameters
   const queryString = search.toLowerCase()
   const sqlInjectionPatterns = [
     /union\s+select/i,
@@ -126,13 +109,13 @@ export function middleware(request: NextRequest) {
     return new NextResponse('Bad Request', { status: 400 })
   }
 
-  // 7. Validate HTTP methods
+  // 6. Validate HTTP methods
   const allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
   if (!allowedMethods.includes(request.method)) {
     return new NextResponse('Method Not Allowed', { status: 405 })
   }
 
-  // 8. Check for path traversal attempts
+  // 7. Check for path traversal attempts
   if (pathname.includes('../') || pathname.includes('..\\')) {
     console.warn(`Blocked path traversal attempt: ${pathname} from IP: ${ip}`)
     return new NextResponse('Bad Request', { status: 400 })
@@ -141,27 +124,16 @@ export function middleware(request: NextRequest) {
   // Create response and apply security headers
   const response = NextResponse.next()
 
-  // 9. Set comprehensive security headers
+  // 8. Set comprehensive security headers
   const secureResponse = setSecurityHeaders(response)
 
-  // 10. Add additional security headers
+  // 9. Add additional security headers
   secureResponse.headers.set('X-Request-ID', crypto.randomUUID())
   secureResponse.headers.set('X-Timestamp', new Date().toISOString())
 
-  // 11. Remove server information
+  // 10. Remove server information
   secureResponse.headers.delete('Server')
   secureResponse.headers.delete('X-Powered-By')
-
-  // 12. Set CSRF token for GET requests
-  if (request.method === 'GET' && !request.cookies.get('csrf-token')) {
-    const csrfToken = crypto.randomUUID()
-    secureResponse.cookies.set('csrf-token', csrfToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 3600, // 1 hour
-    })
-  }
 
   return secureResponse
 }

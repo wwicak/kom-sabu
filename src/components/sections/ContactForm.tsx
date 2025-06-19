@@ -11,9 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TurnstileWidget } from '@/components/security/TurnstileWidget'
 import { contactFormSchema, type ContactFormData } from '@/lib/validations'
 import { CONTACT_FORM_CONFIG } from '@/constants'
+import { useCSRF, createCSRFHeaders } from '@/hooks/useCSRF'
 import { Loader2, CheckCircle, AlertCircle, Shield } from 'lucide-react'
 
 export function ContactForm() {
+  const { csrfToken, isLoading: csrfLoading, error: csrfError, refreshToken } = useCSRF()
+
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
@@ -68,6 +71,12 @@ export function ContactForm() {
         return false
       }
 
+      // Check CSRF token
+      if (!csrfToken) {
+        setErrors({ csrf: 'Security token is required' })
+        return false
+      }
+
       setErrors({})
       return true
     } catch (error: any) {
@@ -81,6 +90,11 @@ export function ContactForm() {
       // Add Turnstile validation
       if (!turnstileToken) {
         fieldErrors.turnstile = 'Security verification is required'
+      }
+
+      // Add CSRF validation
+      if (!csrfToken) {
+        fieldErrors.csrf = 'Security token is required'
       }
 
       setErrors(fieldErrors)
@@ -101,9 +115,7 @@ export function ContactForm() {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: createCSRFHeaders(csrfToken),
         body: JSON.stringify({
           ...formData,
           turnstileToken
@@ -136,6 +148,11 @@ export function ContactForm() {
         setTurnstileToken('')
         setTurnstileKey(prev => prev + 1)
 
+        // Refresh CSRF token on error (might be expired)
+        if (result.message?.includes('CSRF') || result.message?.includes('token')) {
+          refreshToken()
+        }
+
         if (result.errors) {
           setErrors(result.errors)
         }
@@ -147,6 +164,9 @@ export function ContactForm() {
       // Reset Turnstile on network error
       setTurnstileToken('')
       setTurnstileKey(prev => prev + 1)
+
+      // Refresh CSRF token on network error
+      refreshToken()
     } finally {
       setIsSubmitting(false)
     }
@@ -180,6 +200,21 @@ export function ContactForm() {
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
                 <p className="text-red-800">{submitMessage}</p>
+              </div>
+            )}
+
+            {csrfError && (
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
+                <AlertCircle className="h-5 w-5 text-yellow-600 mr-3" />
+                <div>
+                  <p className="text-yellow-800">Security token error: {csrfError}</p>
+                  <button
+                    onClick={refreshToken}
+                    className="text-yellow-600 hover:text-yellow-800 text-sm underline mt-1"
+                  >
+                    Refresh security token
+                  </button>
+                </div>
               </div>
             )}
 
@@ -314,6 +349,9 @@ export function ContactForm() {
                 {errors.turnstile && (
                   <p className="text-sm text-red-600">{errors.turnstile}</p>
                 )}
+                {errors.csrf && (
+                  <p className="text-sm text-red-600">{errors.csrf}</p>
+                )}
                 <p className="text-xs text-gray-500">
                   Verifikasi keamanan diperlukan untuk mencegah spam dan penyalahgunaan
                 </p>
@@ -323,13 +361,18 @@ export function ContactForm() {
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !turnstileToken}
+                  disabled={isSubmitting || !turnstileToken || !csrfToken || csrfLoading}
                   className="bg-yellow-500 hover:bg-yellow-600 min-w-[120px]"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Mengirim...
+                    </>
+                  ) : csrfLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
                     </>
                   ) : (
                     'Kirim Pesan'

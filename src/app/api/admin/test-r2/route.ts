@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { testR2Connection, getR2ConfigSummary, validateR2Config } from '@/lib/r2-test'
+import { requirePermission } from '@/lib/auth-middleware'
+import { Permission } from '@/lib/rbac'
 
-export async function GET(request: NextRequest) {
+export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function(request: NextRequest) {
   try {
-    // For now, skip auth for testing - in production, add proper auth
-    // TODO: Add proper authentication middleware
 
     // Get configuration summary
     const configSummary = getR2ConfigSummary()
@@ -56,13 +56,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
 // Test upload endpoint
-export async function POST(request: NextRequest) {
+export const POST = requirePermission(Permission.MANAGE_SETTINGS)(async function(request: NextRequest) {
   try {
-    // For now, skip auth for testing - in production, add proper auth
-    // TODO: Add proper authentication middleware
 
     // Test connection first
     const connectionTest = await testR2Connection()
@@ -93,4 +91,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

@@ -19,14 +19,16 @@ async function connectToMongoDB() {
 // GET /api/kecamatan/[slug] - Get specific kecamatan data
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectToMongoDB()
-    
-    const kecamatan = await Kecamatan.findOne({ 
-      slug: params.slug,
-      isActive: true 
+
+    const { slug } = await params
+
+    const kecamatan = await Kecamatan.findOne({
+      slug: slug,
+      isActive: true
     })
       .select('-__v')
       .lean()
@@ -144,18 +146,19 @@ const updateKecamatanSchema = z.object({
 
 export const PUT = requirePermission(Permission.UPDATE_KECAMATAN)(async function(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectToMongoDB()
 
     const user = (request as AuthenticatedRequest).user!
-    
+    const { slug } = await params
+
     const body = await request.json()
     const validatedData = updateKecamatanSchema.parse(body)
-    
+
     const updatedKecamatan = await Kecamatan.findOneAndUpdate(
-      { slug: params.slug },
+      { slug: slug },
       {
         ...validatedData,
         lastUpdated: new Date(),
@@ -207,13 +210,15 @@ export const PUT = requirePermission(Permission.UPDATE_KECAMATAN)(async function
 // DELETE /api/kecamatan/[slug] - Soft delete kecamatan (admin only)
 export const DELETE = requirePermission(Permission.DELETE_KECAMATAN)(async function(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectToMongoDB()
-    
+
+    const { slug } = await params
+
     const updatedKecamatan = await Kecamatan.findOneAndUpdate(
-      { slug: params.slug },
+      { slug: slug },
       { 
         isActive: false,
         lastUpdated: new Date()

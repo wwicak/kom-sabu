@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter, usePathname } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Globe, ChevronDown } from 'lucide-react'
@@ -25,6 +25,7 @@ const languages: Language[] = [
 
 export function LanguageSwitcher() {
   const router = useRouter()
+  const pathname = usePathname()
   const { i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -34,21 +35,18 @@ export function LanguageSwitcher() {
     try {
       // Change i18next language
       await i18n.changeLanguage(languageCode)
-      
-      // Update URL with new locale
-      const { pathname, asPath, query } = router
-      
+
       // Remove current locale from pathname if it exists
       const cleanPathname = pathname.replace(/^\/[a-z]{2}/, '') || '/'
-      
+
       // Construct new path with locale
-      const newPath = languageCode === 'id' 
-        ? cleanPathname 
+      const newPath = languageCode === 'id'
+        ? cleanPathname
         : `/${languageCode}${cleanPathname}`
-      
+
       // Navigate to new path
-      router.push(newPath, asPath, { locale: languageCode })
-      
+      router.push(newPath)
+
       setIsOpen(false)
     } catch (error) {
       console.error('Failed to change language:', error)
@@ -58,9 +56,9 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="h-9 px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
         >
           <Globe className="h-4 w-4 mr-2" />
@@ -76,17 +74,16 @@ export function LanguageSwitcher() {
           <ChevronDown className="h-3 w-3 ml-1" />
         </Button>
       </DropdownMenuTrigger>
-      
+
       <DropdownMenuContent align="end" className="w-48">
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={`cursor-pointer ${
-              language.code === i18n.language 
-                ? 'bg-blue-50 text-blue-700' 
-                : 'text-gray-700'
-            }`}
+            className={`cursor-pointer ${language.code === i18n.language
+              ? 'bg-blue-50 text-blue-700'
+              : 'text-gray-700'
+              }`}
           >
             <span className="mr-3 text-lg">{language.flag}</span>
             <span className="flex-1">{language.name}</span>
@@ -104,18 +101,18 @@ export function LanguageSwitcher() {
 export function useLanguage() {
   const { i18n } = useTranslation()
   const router = useRouter()
+  const pathname = usePathname()
 
   const changeLanguage = async (languageCode: string) => {
     try {
       await i18n.changeLanguage(languageCode)
-      
-      const { pathname, asPath, query } = router
+
       const cleanPathname = pathname.replace(/^\/[a-z]{2}/, '') || '/'
-      const newPath = languageCode === 'id' 
-        ? cleanPathname 
+      const newPath = languageCode === 'id'
+        ? cleanPathname
         : `/${languageCode}${cleanPathname}`
-      
-      router.push(newPath, asPath, { locale: languageCode })
+
+      router.push(newPath)
     } catch (error) {
       console.error('Failed to change language:', error)
     }

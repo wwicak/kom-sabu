@@ -17,15 +17,17 @@ export const SECURITY_CONFIG = {
     message: 'Too many requests from this IP, please try again later.',
   },
   
-  // CSRF protection
+  // CSRF protection configuration for @dr.pogodin/csurf
   CSRF: {
-    secret: process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
     cookie: {
+      key: '_csrf',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
-      maxAge: 3600000, // 1 hour
+      sameSite: 'lax' as const,
+      maxAge: 3600, // 1 hour in seconds
+      signed: true, // Enable signed cookies for better security
     },
+    ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
   },
   
   // Session configuration
@@ -200,11 +202,6 @@ export function getRateLimitInfo(ip: string): {
     resetTime: record.resetTime,
     isLimited: record.count >= maxRequests
   }
-}
-
-// CSRF token validation
-export function validateCSRFToken(token: string, sessionToken: string): boolean {
-  return token === sessionToken && token.length === 64
 }
 
 // Secure password hashing (for future authentication)

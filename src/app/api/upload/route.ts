@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadImage, validateFile } from '@/lib/storage'
 import { GalleryItem, AuditLog } from '@/lib/models'
+import { withCSRF } from '@/lib/csrf'
 import mongoose from 'mongoose'
 
 // Initialize MongoDB connection
@@ -8,7 +9,7 @@ if (!mongoose.connections[0].readyState) {
   mongoose.connect(process.env.MONGODB_URI!)
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     // Get client information
     const ip = request.headers.get('x-forwarded-for') ||
@@ -176,3 +177,6 @@ export async function DELETE() {
     { status: 405 }
   )
 }
+
+// Export POST with CSRF protection
+export const POST = withCSRF(handlePOST)

@@ -26,8 +26,8 @@ interface UserDocument {
   isActive: boolean
 }
 
-// Handler function type for middleware
-type RouteHandler = (request: NextRequest, ...args: unknown[]) => Promise<NextResponse> | NextResponse
+// Handler function type for middleware - flexible to handle both regular routes and dynamic routes
+type RouteHandler = (request: NextRequest, context?: any) => Promise<NextResponse> | NextResponse
 
 // Ensure mongoose connection
 async function connectToMongoDB() {
@@ -118,7 +118,7 @@ export async function authenticate(request: NextRequest): Promise<AuthenticatedU
 
 // Authorization middleware
 export function requireAuth(handler: RouteHandler) {
-  return async function(request: NextRequest, ...args: unknown[]) {
+  return async function(request: NextRequest, context?: any) {
     const user = await authenticate(request)
 
     if (!user) {
@@ -131,14 +131,14 @@ export function requireAuth(handler: RouteHandler) {
     // Attach user to request
     (request as AuthenticatedRequest).user = user
 
-    return handler(request, ...args)
+    return handler(request, context)
   }
 }
 
 // Permission-based authorization
 export function requirePermission(permission: Permission) {
   return function(handler: RouteHandler) {
-    return async function(request: NextRequest, ...args: unknown[]) {
+    return async function(request: NextRequest, context?: any) {
       const user = await authenticate(request)
 
       if (!user) {
@@ -158,7 +158,7 @@ export function requirePermission(permission: Permission) {
       // Attach user to request
       (request as AuthenticatedRequest).user = user
 
-      return handler(request, ...args)
+      return handler(request, context)
     }
   }
 }
@@ -166,7 +166,7 @@ export function requirePermission(permission: Permission) {
 // Role-based authorization
 export function requireRole(allowedRoles: Role[]) {
   return function(handler: RouteHandler) {
-    return async function(request: NextRequest, ...args: unknown[]) {
+    return async function(request: NextRequest, context?: any) {
       const user = await authenticate(request)
 
       if (!user) {
@@ -186,7 +186,7 @@ export function requireRole(allowedRoles: Role[]) {
       // Attach user to request
       (request as AuthenticatedRequest).user = user
 
-      return handler(request, ...args)
+      return handler(request, context)
     }
   }
 }
@@ -194,7 +194,7 @@ export function requireRole(allowedRoles: Role[]) {
 // Multiple permission check
 export function requireAnyPermission(permissions: Permission[]) {
   return function(handler: RouteHandler) {
-    return async function(request: NextRequest, ...args: unknown[]) {
+    return async function(request: NextRequest, context?: any) {
       const user = await authenticate(request)
 
       if (!user) {
@@ -218,15 +218,15 @@ export function requireAnyPermission(permissions: Permission[]) {
       // Attach user to request
       (request as AuthenticatedRequest).user = user
 
-      return handler(request, ...args)
+      return handler(request, context)
     }
   }
 }
 
 // Owner-based authorization (for resource ownership)
-export function requireOwnership(getResourceOwnerId: (request: NextRequest, ...args: unknown[]) => Promise<string>) {
+export function requireOwnership(getResourceOwnerId: (request: NextRequest, context?: any) => Promise<string>) {
   return function(handler: RouteHandler) {
-    return async function(request: NextRequest, ...args: unknown[]) {
+    return async function(request: NextRequest, context?: any) {
       const user = await authenticate(request)
 
       if (!user) {
@@ -239,10 +239,10 @@ export function requireOwnership(getResourceOwnerId: (request: NextRequest, ...a
       // Super admins can access everything
       if (user.role === Role.SUPER_ADMIN) {
         (request as AuthenticatedRequest).user = user
-        return handler(request, ...args)
+        return handler(request, context)
       }
 
-      const resourceOwnerId = await getResourceOwnerId(request, ...args)
+      const resourceOwnerId = await getResourceOwnerId(request, context)
 
       if (user.id !== resourceOwnerId) {
         return NextResponse.json(
@@ -254,7 +254,7 @@ export function requireOwnership(getResourceOwnerId: (request: NextRequest, ...a
       // Attach user to request
       (request as AuthenticatedRequest).user = user
 
-      return handler(request, ...args)
+      return handler(request, context)
     }
   }
 }
