@@ -5,10 +5,13 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { NAVIGATION_ITEMS, COMPANY_INFO } from '@/constants'
 import { Menu, X } from 'lucide-react'
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { t } = useTranslation('navigation')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,8 +25,8 @@ export function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-white'
+        ? 'bg-white/95 backdrop-blur-md shadow-lg'
+        : 'bg-white'
         }`}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
@@ -56,11 +59,12 @@ export function Header() {
             ))}
           </div>
 
-          {/* CTA Button */}
+          {/* Language Switcher & CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageSwitcher />
             <Button asChild>
               <Link href="/contact">
-                Get Started
+                {t('contact')}
               </Link>
             </Button>
           </div>

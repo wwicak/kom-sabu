@@ -54,7 +54,7 @@ export function Hero() {
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold">
                 <Link href="/layanan" className="flex items-center">
-                  Layanan Publik
+                  {t('cta_services')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -66,7 +66,7 @@ export function Hero() {
                 onClick={() => setIsVideoPlaying(true)}
               >
                 <Play className="mr-2 h-5 w-5" />
-                Profil Daerah
+                {t('cta_explore')}
               </Button>
             </div>
 
@@ -74,15 +74,15 @@ export function Hero() {
             <div className="mt-16 grid grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center lg:text-left">
                 <div className="text-3xl font-bold text-yellow-400">63</div>
-                <div className="text-sm text-blue-200">Desa/Kelurahan</div>
+                <div className="text-sm text-blue-200">{t('stats.villages')}</div>
               </div>
               <div className="text-center lg:text-left">
                 <div className="text-3xl font-bold text-yellow-400">6</div>
-                <div className="text-sm text-blue-200">Kecamatan</div>
+                <div className="text-sm text-blue-200">{t('stats.districts')}</div>
               </div>
               <div className="text-center lg:text-left col-span-2 lg:col-span-1">
                 <div className="text-3xl font-bold text-yellow-400">94.8K</div>
-                <div className="text-sm text-blue-200">Penduduk (2024)</div>
+                <div className="text-sm text-blue-200">{t('stats.population')}</div>
               </div>
             </div>
           </div>

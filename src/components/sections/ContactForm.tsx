@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TurnstileWidget } from '@/components/security/TurnstileWidget'
 import { contactFormSchema, type ContactFormData } from '@/lib/validations'
 import { CONTACT_FORM_CONFIG } from '@/constants'
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle, AlertCircle, Shield } from 'lucide-react'
 
 export function ContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({
@@ -27,19 +28,46 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [submitMessage, setSubmitMessage] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileKey, setTurnstileKey] = useState(0)
 
   const handleInputChange = (field: keyof ContactFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
   }
 
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token)
+    // Clear turnstile error if exists
+    if (errors.turnstile) {
+      setErrors(prev => ({ ...prev, turnstile: '' }))
+    }
+  }
+
+  const handleTurnstileError = (error: string) => {
+    setTurnstileToken('')
+    setErrors(prev => ({ ...prev, turnstile: `Security verification failed: ${error}` }))
+  }
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken('')
+    setErrors(prev => ({ ...prev, turnstile: 'Security verification expired. Please verify again.' }))
+  }
+
   const validateForm = () => {
     try {
       contactFormSchema.parse(formData)
+
+      // Check Turnstile token
+      if (!turnstileToken) {
+        setErrors({ turnstile: 'Security verification is required' })
+        return false
+      }
+
       setErrors({})
       return true
     } catch (error: any) {
@@ -49,6 +77,12 @@ export function ContactForm() {
           fieldErrors[err.path[0]] = err.message
         }
       })
+
+      // Add Turnstile validation
+      if (!turnstileToken) {
+        fieldErrors.turnstile = 'Security verification is required'
+      }
+
       setErrors(fieldErrors)
       return false
     }
@@ -56,7 +90,7 @@ export function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
@@ -70,7 +104,10 @@ export function ContactForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          turnstileToken
+        })
       })
 
       const result = await response.json()
@@ -78,7 +115,7 @@ export function ContactForm() {
       if (result.success) {
         setSubmitStatus('success')
         setSubmitMessage(result.message)
-        
+
         // Reset form
         setFormData({
           name: '',
@@ -89,10 +126,16 @@ export function ContactForm() {
           message: '',
           consent: false
         })
+        setTurnstileToken('')
+        setTurnstileKey(prev => prev + 1) // Reset Turnstile widget
       } else {
         setSubmitStatus('error')
         setSubmitMessage(result.message || 'Terjadi kesalahan saat mengirim pesan')
-        
+
+        // Reset Turnstile on error
+        setTurnstileToken('')
+        setTurnstileKey(prev => prev + 1)
+
         if (result.errors) {
           setErrors(result.errors)
         }
@@ -100,6 +143,10 @@ export function ContactForm() {
     } catch (error) {
       setSubmitStatus('error')
       setSubmitMessage('Terjadi kesalahan jaringan. Silakan coba lagi.')
+
+      // Reset Turnstile on network error
+      setTurnstileToken('')
+      setTurnstileKey(prev => prev + 1)
     } finally {
       setIsSubmitting(false)
     }
@@ -249,11 +296,34 @@ export function ContactForm() {
                 </div>
               </div>
 
+              {/* Security Verification */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  Verifikasi Keamanan *
+                </Label>
+                <TurnstileWidget
+                  key={turnstileKey}
+                  onVerify={handleTurnstileVerify}
+                  onError={handleTurnstileError}
+                  onExpire={handleTurnstileExpire}
+                  theme="light"
+                  size="normal"
+                  className="w-full"
+                />
+                {errors.turnstile && (
+                  <p className="text-sm text-red-600">{errors.turnstile}</p>
+                )}
+                <p className="text-xs text-gray-500">
+                  Verifikasi keamanan diperlukan untuk mencegah spam dan penyalahgunaan
+                </p>
+              </div>
+
               {/* Submit Button */}
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !turnstileToken}
                   className="bg-yellow-500 hover:bg-yellow-600 min-w-[120px]"
                 >
                   {isSubmitting ? (

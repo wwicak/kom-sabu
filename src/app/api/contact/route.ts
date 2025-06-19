@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { contactFormSchema } from '@/lib/validations'
 import { sanitizeHtml, validateInput, generateSecureToken } from '@/lib/security'
-import { connectToDatabase } from '@/lib/mongodb'
 import { ContactForm, AuditLog } from '@/lib/models'
+import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
 
@@ -44,8 +44,56 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
 
+    // Check rate limiting first
+    if (!checkRateLimit(ip)) {
+      recordFailedAttempt(ip)
+
+      await AuditLog.create({
+        action: 'CONTACT_FORM_RATE_LIMITED',
+        resource: 'contact_form',
+        details: { ip },
+        ipAddress: ip,
+        userAgent,
+      })
+
+      return NextResponse.json(
+        { success: false, message: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
+    // Verify Turnstile token
+    const { turnstileToken, ...formData } = body
+
+    if (!turnstileToken) {
+      recordFailedAttempt(ip)
+
+      return NextResponse.json(
+        { success: false, message: 'Security verification is required' },
+        { status: 400 }
+      )
+    }
+
+    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, ip)
+    if (!isTurnstileValid) {
+      recordFailedAttempt(ip)
+
+      await AuditLog.create({
+        action: 'CONTACT_FORM_TURNSTILE_FAILED',
+        resource: 'contact_form',
+        details: { ip },
+        ipAddress: ip,
+        userAgent,
+      })
+
+      return NextResponse.json(
+        { success: false, message: 'Security verification failed. Please try again.' },
+        { status: 400 }
+      )
+    }
+
     // Validate with Zod schema
-    const validationResult = contactFormSchema.safeParse(body)
+    const validationResult = contactFormSchema.safeParse(formData)
 
     if (!validationResult.success) {
       // Log validation failure for security monitoring
@@ -187,6 +235,9 @@ export async function POST(request: NextRequest) {
         })
       }
     })
+
+    // Clear failed attempts on successful submission
+    clearFailedAttempts(ip)
 
     return NextResponse.json({
       success: true,
