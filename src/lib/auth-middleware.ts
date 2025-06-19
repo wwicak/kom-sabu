@@ -4,6 +4,31 @@ import { User } from '@/lib/models'
 import { Role, Permission, hasPermission } from '@/lib/rbac'
 import mongoose from 'mongoose'
 
+// JWT payload interface
+interface JWTPayload {
+  userId: string
+  username: string
+  role: Role
+  iat?: number
+  exp?: number
+  iss?: string
+  aud?: string
+}
+
+// User document interface from MongoDB
+interface UserDocument {
+  _id: mongoose.Types.ObjectId
+  username: string
+  email: string
+  fullName: string
+  role: Role
+  department?: string
+  isActive: boolean
+}
+
+// Handler function type for middleware
+type RouteHandler = (request: NextRequest, ...args: unknown[]) => Promise<NextResponse> | NextResponse
+
 // Ensure mongoose connection
 async function connectToMongoDB() {
   if (mongoose.connection.readyState === 0) {
@@ -36,26 +61,26 @@ export async function verifyToken(token: string): Promise<AuthenticatedUser | nu
       throw new Error('JWT_SECRET not configured')
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as any
-    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload
+
     await connectToMongoDB()
-    
+
     const user = await User.findById(decoded.userId)
       .select('-password -passwordResetToken -passwordResetExpires -twoFactorSecret')
-      .lean()
+      .lean() as UserDocument | null
 
-    if (!user || !(user as any).isActive) {
+    if (!user || !user.isActive) {
       return null
     }
 
     return {
-      id: (user as any)._id.toString(),
-      username: (user as any).username,
-      email: (user as any).email,
-      fullName: (user as any).fullName,
-      role: (user as any).role as Role,
-      department: (user as any).department,
-      isActive: (user as any).isActive
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      department: user.department,
+      isActive: user.isActive
     }
   } catch (error) {
     console.error('Token verification failed:', error)
@@ -92,47 +117,47 @@ export async function authenticate(request: NextRequest): Promise<AuthenticatedU
 }
 
 // Authorization middleware
-export function requireAuth(handler: Function) {
-  return async function(request: NextRequest, ...args: any[]) {
+export function requireAuth(handler: RouteHandler) {
+  return async function(request: NextRequest, ...args: unknown[]) {
     const user = await authenticate(request)
-    
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
       )
     }
-    
+
     // Attach user to request
     (request as AuthenticatedRequest).user = user
-    
+
     return handler(request, ...args)
   }
 }
 
 // Permission-based authorization
 export function requirePermission(permission: Permission) {
-  return function(handler: Function) {
-    return async function(request: NextRequest, ...args: any[]) {
+  return function(handler: RouteHandler) {
+    return async function(request: NextRequest, ...args: unknown[]) {
       const user = await authenticate(request)
-      
+
       if (!user) {
         return NextResponse.json(
           { success: false, error: 'Authentication required' },
           { status: 401 }
         )
       }
-      
+
       if (!hasPermission(user.role, permission)) {
         return NextResponse.json(
           { success: false, error: 'Insufficient permissions' },
           { status: 403 }
         )
       }
-      
+
       // Attach user to request
       (request as AuthenticatedRequest).user = user
-      
+
       return handler(request, ...args)
     }
   }
@@ -140,27 +165,27 @@ export function requirePermission(permission: Permission) {
 
 // Role-based authorization
 export function requireRole(allowedRoles: Role[]) {
-  return function(handler: Function) {
-    return async function(request: NextRequest, ...args: any[]) {
+  return function(handler: RouteHandler) {
+    return async function(request: NextRequest, ...args: unknown[]) {
       const user = await authenticate(request)
-      
+
       if (!user) {
         return NextResponse.json(
           { success: false, error: 'Authentication required' },
           { status: 401 }
         )
       }
-      
+
       if (!allowedRoles.includes(user.role)) {
         return NextResponse.json(
           { success: false, error: 'Insufficient role permissions' },
           { status: 403 }
         )
       }
-      
+
       // Attach user to request
       (request as AuthenticatedRequest).user = user
-      
+
       return handler(request, ...args)
     }
   }
@@ -168,67 +193,67 @@ export function requireRole(allowedRoles: Role[]) {
 
 // Multiple permission check
 export function requireAnyPermission(permissions: Permission[]) {
-  return function(handler: Function) {
-    return async function(request: NextRequest, ...args: any[]) {
+  return function(handler: RouteHandler) {
+    return async function(request: NextRequest, ...args: unknown[]) {
       const user = await authenticate(request)
-      
+
       if (!user) {
         return NextResponse.json(
           { success: false, error: 'Authentication required' },
           { status: 401 }
         )
       }
-      
-      const hasAnyPermission = permissions.some(permission => 
+
+      const hasAnyPermission = permissions.some(permission =>
         hasPermission(user.role, permission)
       )
-      
+
       if (!hasAnyPermission) {
         return NextResponse.json(
           { success: false, error: 'Insufficient permissions' },
           { status: 403 }
         )
       }
-      
+
       // Attach user to request
       (request as AuthenticatedRequest).user = user
-      
+
       return handler(request, ...args)
     }
   }
 }
 
 // Owner-based authorization (for resource ownership)
-export function requireOwnership(getResourceOwnerId: (request: NextRequest, ...args: any[]) => Promise<string>) {
-  return function(handler: Function) {
-    return async function(request: NextRequest, ...args: any[]) {
+export function requireOwnership(getResourceOwnerId: (request: NextRequest, ...args: unknown[]) => Promise<string>) {
+  return function(handler: RouteHandler) {
+    return async function(request: NextRequest, ...args: unknown[]) {
       const user = await authenticate(request)
-      
+
       if (!user) {
         return NextResponse.json(
           { success: false, error: 'Authentication required' },
           { status: 401 }
         )
       }
-      
+
       // Super admins can access everything
       if (user.role === Role.SUPER_ADMIN) {
         (request as AuthenticatedRequest).user = user
         return handler(request, ...args)
       }
-      
+
       const resourceOwnerId = await getResourceOwnerId(request, ...args)
-      
+
       if (user.id !== resourceOwnerId) {
         return NextResponse.json(
           { success: false, error: 'Access denied: not resource owner' },
           { status: 403 }
         )
       }
-      
+
       // Attach user to request
       (request as AuthenticatedRequest).user = user
-      
+
       return handler(request, ...args)
     }
   }

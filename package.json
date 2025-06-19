@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "seed:admin": "node scripts/seed-admin.js",
-    "seed:admin:list": "node scripts/seed-admin.js list",
-    "seed:admin:reset": "node scripts/seed-admin.js reset",
-    "seed:kecamatan": "node scripts/seed-kecamatan.js",
-    "seed:kecamatan:update": "node scripts/seed-kecamatan.js update"
+    "dev": "bun --bun next dev --turbopack",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "lint": "bun --bun next lint",
+    "seed:admin": "bun scripts/seed-admin.js",
+    "seed:admin:list": "bun scripts/seed-admin.js list",
+    "seed:admin:reset": "bun scripts/seed-admin.js reset",
+    "seed:kecamatan": "bun scripts/seed-kecamatan.js",
+    "seed:kecamatan:update": "bun scripts/seed-kecamatan.js update"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.830.0",

@@ -1,0 +1,21 @@
+# Bun configuration file
+[install]
+# Use exact versions for better reproducibility
+exact = true
+
+# Enable peer dependencies auto-install
+auto = true
+
+# Registry configuration
+registry = "https://registry.npmjs.org/"
+
+[run]
+# Enable shell expansion for scripts
+shell = "system"
+
+# Set environment
+env = "development"
+
+[test]
+# Test configuration
+preload = ["./test/setup.ts"]
