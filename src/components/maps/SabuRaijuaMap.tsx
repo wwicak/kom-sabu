@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
+import { SABU_RAIJUA_CENTER } from '@/lib/data/real-sabu-raijua-boundaries'
+import { useRealBoundaries, getBoundaryQuality } from '@/hooks/useRealBoundaries'
 
 // Fix for default markers in Leaflet with Next.js
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
@@ -42,11 +44,18 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   const [tooltip, setTooltip] = useState<TooltipData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Use real boundaries hook
+  const {
+    enhancedKecamatanData,
+    isLoading: boundariesLoading,
+    error: boundariesError,
+    boundarySource
+  } = useRealBoundaries(kecamatanData)
+
   // OpenFreeMap tile layer URL
   const OPENFREE_MAP_URL = 'https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png'
 
-  // Sabu Raijua coordinates (approximate center)
-  const SABU_RAIJUA_CENTER: [number, number] = [-10.5629, 121.7889]
+  // Use real Sabu Raijua center coordinates
   const DEFAULT_ZOOM = 11
 
   // Color scheme for different kecamatan
@@ -117,7 +126,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
   // Add kecamatan layers
   useEffect(() => {
-    if (!mapInstanceRef.current || !kecamatanData.length) return
+    if (!mapInstanceRef.current || !enhancedKecamatanData.length) return
 
     // Clear existing layers
     Object.values(layersRef.current).forEach(layer => {
@@ -125,8 +134,8 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
     })
     layersRef.current = {}
 
-    // Add each kecamatan as a GeoJSON layer
-    kecamatanData.forEach(kecamatan => {
+    // Add each kecamatan as a GeoJSON layer with real boundaries
+    enhancedKecamatanData.forEach(kecamatan => {
       const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
         style: () => getKecamatanStyle(kecamatan),
         onEachFeature: (_, layer) => {
@@ -171,11 +180,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
     })
 
     // Fit map to show all kecamatan
-    if (kecamatanData.length > 0) {
+    if (enhancedKecamatanData.length > 0) {
       const group = new L.FeatureGroup(Object.values(layersRef.current))
       mapInstanceRef.current.fitBounds(group.getBounds(), { padding: [20, 20] })
     }
-  }, [kecamatanData, onKecamatanClick, onKecamatanHover])
+  }, [enhancedKecamatanData, onKecamatanClick, onKecamatanHover])
 
   // Update selected kecamatan styling
   useEffect(() => {
@@ -198,83 +207,203 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       <div ref={mapRef} className="w-full h-full rounded-lg shadow-lg" />
 
       {/* Loading overlay */}
-      {isLoading && (
+      {(isLoading || boundariesLoading) && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Memuat peta...</p>
+            <p className="text-gray-600">
+              {isLoading ? 'Memuat peta...' : 'Memuat batas wilayah...'}
+            </p>
           </div>
         </div>
       )}
 
-      {/* Tooltip */}
+      {/* Enhanced Tooltip */}
       {tooltip && (
         <div
-          className="absolute z-[1000] bg-white rounded-lg shadow-lg border p-4 pointer-events-none transform -translate-x-1/2 -translate-y-full"
+          className="absolute z-[1000] bg-white rounded-lg shadow-xl border-2 border-blue-200 pointer-events-none transform -translate-x-1/2 -translate-y-full"
           style={{
             left: tooltip.x,
             top: tooltip.y - 10,
-            maxWidth: '300px',
-            minWidth: '250px'
+            maxWidth: '380px',
+            minWidth: '320px'
           }}
         >
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg text-gray-900">
-              Kecamatan {tooltip.kecamatan.name}
-            </h3>
-
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <span className="text-gray-600">Populasi:</span>
-                <div className="font-semibold">
-                  {formatNumber(tooltip.kecamatan.demographics.totalPopulation)} jiwa
+          <div className="space-y-3 p-4">
+            {/* Header with Flag */}
+            <div className="border-b border-gray-200 pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900">
+                    {tooltip.kecamatan.name}
+                  </h3>
+                  {tooltip.kecamatan.nameEnglish && (
+                    <p className="text-sm text-gray-600 italic">{tooltip.kecamatan.nameEnglish}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-gray-500">Kode</div>
+                  <div className="font-mono text-sm font-medium">{tooltip.kecamatan.code}</div>
                 </div>
               </div>
-
-              <div>
-                <span className="text-gray-600">Luas:</span>
-                <div className="font-semibold">
-                  {tooltip.kecamatan.area.toFixed(2)} km²
-                </div>
-              </div>
-
-              <div>
-                <span className="text-gray-600">Kepadatan:</span>
-                <div className="font-semibold">
-                  {Math.round(tooltip.kecamatan.demographics.populationDensity)} jiwa/km²
-                </div>
-              </div>
-
-              <div>
-                <span className="text-gray-600">Desa/Kelurahan:</span>
-                <div className="font-semibold">
-                  {tooltip.kecamatan.villages.length}
-                </div>
+              <div className="mt-2 text-xs text-gray-600">
+                Ibukota: <span className="font-medium">{tooltip.kecamatan.capital}</span>
               </div>
             </div>
 
-            {tooltip.kecamatan.agriculture.mainCrops.length > 0 && (
-              <div>
-                <span className="text-gray-600 text-sm">Komoditas Utama:</span>
-                <div className="text-sm font-medium">
-                  {tooltip.kecamatan.agriculture.mainCrops.slice(0, 3).map(crop => crop.name).join(', ')}
+            {/* Key Statistics */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="bg-blue-50 p-2 rounded">
+                  <div className="text-xs text-blue-600 font-medium">POPULASI</div>
+                  <div className="text-lg font-bold text-blue-900">
+                    {formatNumber(tooltip.kecamatan.demographics.totalPopulation)}
+                  </div>
+                  <div className="text-xs text-blue-700">
+                    {Math.round(tooltip.kecamatan.demographics.populationDensity)} jiwa/km²
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-2 rounded">
+                  <div className="text-xs text-green-600 font-medium">LUAS WILAYAH</div>
+                  <div className="text-lg font-bold text-green-900">
+                    {tooltip.kecamatan.area.toFixed(1)} km²
+                  </div>
+                  <div className="text-xs text-green-700">
+                    {tooltip.kecamatan.villages.length} desa/kelurahan
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {tooltip.kecamatan.economy && (
+                  <div className="bg-orange-50 p-2 rounded">
+                    <div className="text-xs text-orange-600 font-medium">EKONOMI</div>
+                    <div className="text-sm font-bold text-orange-900">
+                      Kemiskinan: {tooltip.kecamatan.economy.povertyRate.toFixed(1)}%
+                    </div>
+                    <div className="text-xs text-orange-700">
+                      Pengangguran: {tooltip.kecamatan.economy.unemploymentRate.toFixed(1)}%
+                    </div>
+                  </div>
+                )}
+
+                {tooltip.kecamatan.infrastructure && (
+                  <div className="bg-purple-50 p-2 rounded">
+                    <div className="text-xs text-purple-600 font-medium">INFRASTRUKTUR</div>
+                    <div className="text-sm font-bold text-purple-900">
+                      Listrik: {tooltip.kecamatan.infrastructure.utilities.electricityAccess}%
+                    </div>
+                    <div className="text-xs text-purple-700">
+                      Air Bersih: {tooltip.kecamatan.infrastructure.utilities.cleanWaterAccess}%
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Economic Sectors */}
+            {tooltip.kecamatan.economy && (
+              <div className="border-t border-gray-200 pt-3">
+                <h4 className="font-medium text-gray-900 mb-2 text-sm">Sektor Ekonomi Utama</h4>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-600">Pertanian</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-500 h-2 rounded-full"
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.agriculture}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium w-8 text-right">
+                        {tooltip.kecamatan.economy.economicSectors.agriculture}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-600">Industri</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full"
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.industry}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium w-8 text-right">
+                        {tooltip.kecamatan.economy.economicSectors.industry}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-600">Jasa</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-purple-500 h-2 rounded-full"
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.services}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium w-8 text-right">
+                        {tooltip.kecamatan.economy.economicSectors.services}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {tooltip.kecamatan.naturalResources.minerals.length > 0 && (
-              <div>
-                <span className="text-gray-600 text-sm">Sumber Daya:</span>
-                <div className="text-sm font-medium">
-                  {tooltip.kecamatan.naturalResources.minerals.slice(0, 2).map(mineral => mineral.type).join(', ')}
+            {/* Main Industries Tags */}
+            {tooltip.kecamatan.economy && tooltip.kecamatan.economy.mainIndustries.length > 0 && (
+              <div className="border-t border-gray-200 pt-3">
+                <h4 className="font-medium text-gray-900 mb-2 text-sm">Industri Utama</h4>
+                <div className="flex flex-wrap gap-1">
+                  {tooltip.kecamatan.economy.mainIndustries.slice(0, 4).map((industry, index) => (
+                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                      {industry}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
+
+            {/* Agriculture & Natural Resources */}
+            <div className="border-t border-gray-200 pt-3">
+              <div className="grid grid-cols-2 gap-3">
+                {tooltip.kecamatan.agriculture.mainCrops.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-1 text-sm">Komoditas Utama</h4>
+                    <div className="text-xs text-gray-600">
+                      {tooltip.kecamatan.agriculture.mainCrops.slice(0, 3).map(crop => crop.name).join(', ')}
+                    </div>
+                  </div>
+                )}
+
+                {tooltip.kecamatan.naturalResources.minerals.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-1 text-sm">Sumber Daya</h4>
+                    <div className="text-xs text-gray-600">
+                      {tooltip.kecamatan.naturalResources.minerals.slice(0, 2).map(mineral => mineral.type).join(', ')}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="text-center border-t border-gray-200 pt-3">
+              <div className="text-xs text-gray-500 mb-1">
+                💡 Klik polygon untuk informasi lengkap
+              </div>
+              <div className="text-xs font-medium text-blue-600">
+                Data terkini • {new Date().getFullYear()}
+              </div>
+            </div>
           </div>
 
           {/* Tooltip arrow */}
           <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-            <div className="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+            <div className="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-200"></div>
           </div>
         </div>
       )}
@@ -292,6 +421,25 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             <span>Terpilih</span>
           </div>
           <p className="text-gray-600 mt-2">Klik untuk detail informasi</p>
+
+          {/* Boundary quality indicator */}
+          {boundarySource && (
+            <div className="border-t pt-2 mt-2">
+              <div className="text-xs text-gray-500">
+                Batas wilayah: {
+                  boundarySource === 'local' ? '🗺️ Data lokal' :
+                    boundarySource === 'osm' ? '🌍 OpenStreetMap' :
+                      boundarySource === 'gadm' ? '📊 GADM' :
+                        '⚠️ Perkiraan'
+                }
+              </div>
+              {boundariesError && (
+                <div className="text-xs text-orange-600 mt-1">
+                  ⚠️ {boundariesError}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
