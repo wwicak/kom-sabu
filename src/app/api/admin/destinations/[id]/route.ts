@@ -121,7 +121,7 @@ export async function PUT(
     }
 
     // Generate new slug if name is being updated
-    let updateData = { ...validatedData }
+    let updateData: any = { ...validatedData }
     if (validatedData.name) {
       const newSlug = validatedData.name
         .toLowerCase()
@@ -131,11 +131,11 @@ export async function PUT(
         .trim()
 
       // Check if new slug conflicts with existing destinations (excluding current one)
-      const slugConflict = await Destination.findOne({ 
-        slug: newSlug, 
-        _id: { $ne: params.id } 
+      const slugConflict = await Destination.findOne({
+        slug: newSlug,
+        _id: { $ne: params.id }
       })
-      
+
       if (slugConflict) {
         return NextResponse.json(
           { error: 'Destination with this name already exists' },

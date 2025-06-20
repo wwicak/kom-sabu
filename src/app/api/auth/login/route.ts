@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { User } from '@/lib/models'
 import { generateToken, generateRefreshToken, logSecurityEvent } from '@/lib/auth-middleware'
 import { Role } from '@/lib/rbac'
-import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
+import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts, getClientIP } from '@/lib/server-security'
 import { z } from 'zod'
 import mongoose from 'mongoose'
 
@@ -46,9 +46,7 @@ export async function POST(request: NextRequest) {
     const { username, password, turnstileToken, rememberMe } = validationResult.data
 
     // Get client IP for rate limiting and Turnstile verification
-    const clientIP = request.headers.get('x-forwarded-for') ||
-                     request.headers.get('x-real-ip') ||
-                     'unknown'
+    const clientIP = getClientIP(request)
 
     // Check rate limiting
     if (!checkRateLimit(clientIP)) {

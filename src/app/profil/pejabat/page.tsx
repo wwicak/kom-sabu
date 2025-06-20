@@ -1,45 +1,112 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Crown, 
-  Shield, 
-  Briefcase, 
-  Users, 
-  Phone, 
-  Mail, 
+import {
+  Crown,
+  Shield,
+  Briefcase,
+  Users,
+  Phone,
+  Mail,
   Calendar,
   Award,
   GraduationCap,
   MapPin
 } from 'lucide-react'
 
+interface Official {
+  _id: string
+  name: string
+  position: string
+  level: string
+  category: string
+  department: string
+  period?: {
+    start: string
+    end: string
+  }
+  education?: string
+  experience: string[]
+  achievements: string[]
+  vision?: string
+  contact?: {
+    phone?: string
+    email?: string
+    office?: string
+  }
+  photo?: {
+    url?: string
+    alt?: string
+  }
+  biography?: string
+  socialMedia?: {
+    facebook?: string
+    instagram?: string
+    twitter?: string
+    linkedin?: string
+  }
+  order: number
+  status: string
+  featured: boolean
+}
+
 export default function PejabatPage() {
-  const mainOfficials = [
-    {
-      id: 1,
-      name: 'H. Nikodemus N. Rihi Heke, S.Sos',
-      position: 'Bupati Sabu Raijua',
-      period: '2021-2026',
-      photo: '/images/officials/bupati.jpg',
-      education: 'S1 Ilmu Sosial dan Politik',
-      experience: [
-        'Anggota DPRD Sabu Raijua (2014-2019)',
-        'Ketua Fraksi Partai Demokrat DPRD (2016-2019)',
-        'Aktivis Pemuda dan Mahasiswa'
-      ],
-      achievements: [
-        'Peningkatan infrastruktur jalan 40%',
-        'Program Sabu Raijua Digital',
-        'Pengembangan sektor pariwisata'
-      ],
-      vision: 'Mewujudkan Sabu Raijua yang maju, mandiri, dan berbudaya',
-      phone: '(0380) 21001',
-      email: 'bupati@saburajua.go.id',
-      icon: Crown,
-      color: 'bg-blue-600'
-    },
+  const [officials, setOfficials] = useState<Official[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedLevel, setSelectedLevel] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('all')
+
+  useEffect(() => {
+    fetchOfficials()
+  }, [])
+
+  const fetchOfficials = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/officials')
+      const data = await response.json()
+
+      if (data.success) {
+        setOfficials(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch officials:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Filter officials based on selection
+  const filteredOfficials = officials.filter(official => {
+    const matchesLevel = selectedLevel === 'all' || official.level === selectedLevel
+    const matchesCategory = selectedCategory === 'all' || official.category === selectedCategory
+    return matchesLevel && matchesCategory
+  })
+
+  // Group officials by level and category
+  const groupedOfficials = filteredOfficials.reduce((acc: any, official) => {
+    const key = `${official.level}_${official.category}`
+    if (!acc[key]) {
+      acc[key] = {
+        level: official.level,
+        category: official.category,
+        officials: []
+      }
+    }
+    acc[key].officials.push(official)
+    return acc
+  }, {})
+
+  // Get main officials (pimpinan level)
+  const mainOfficials = officials.filter(official =>
+    official.level === 'kabupaten' && official.category === 'pimpinan'
+  ).sort((a, b) => a.order - b.order)
+
+  const staticMainOfficials = [
     {
       id: 2,
       name: 'Drs. Yohanis Uly Kale',
@@ -184,84 +251,152 @@ export default function PejabatPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Pimpinan Daerah
           </h2>
-          <div className="space-y-8">
-            {mainOfficials.map((official) => (
-              <Card key={official.id} className="overflow-hidden">
-                <div className="md:flex">
-                  <div className="md:w-1/3 bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex flex-col items-center justify-center">
-                    <div className={`p-4 ${official.color} rounded-full mb-4`}>
-                      <official.icon className="h-12 w-12 text-white" />
-                    </div>
-                    <Badge className={official.color} variant="default">
-                      {official.position}
-                    </Badge>
-                  </div>
-                  
-                  <div className="md:w-2/3 p-6">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                          {official.name}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            Periode: {official.period}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <GraduationCap className="h-4 w-4" />
-                            {official.education}
-                          </div>
+          {loading ? (
+            <div className="space-y-8">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} className="overflow-hidden animate-pulse">
+                  <div className="md:flex">
+                    <div className="md:w-1/3 bg-gray-200 p-6 h-48"></div>
+                    <div className="md:w-2/3 p-6">
+                      <div className="w-3/4 h-8 bg-gray-200 rounded mb-4"></div>
+                      <div className="w-1/2 h-4 bg-gray-200 rounded mb-6"></div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <div className="w-full h-4 bg-gray-200 rounded"></div>
+                          <div className="w-3/4 h-4 bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="w-full h-4 bg-gray-200 rounded"></div>
+                          <div className="w-2/3 h-4 bg-gray-200 rounded"></div>
                         </div>
                       </div>
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <Briefcase className="h-4 w-4" />
-                          Pengalaman
-                        </h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {official.experience.map((exp, idx) => (
-                            <li key={idx}>• {exp}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <Award className="h-4 w-4" />
-                          Pencapaian
-                        </h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {official.achievements.map((achievement, idx) => (
-                            <li key={idx}>• {achievement}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                      <h4 className="font-semibold text-blue-900 mb-2">Visi</h4>
-                      <p className="text-blue-800 text-sm italic">"{official.vision}"</p>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-4 text-sm">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Phone className="h-4 w-4" />
-                        {official.phone}
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Mail className="h-4 w-4" />
-                        {official.email}
-                      </div>
-                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+          ) : mainOfficials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Belum ada data pimpinan daerah tersedia.</p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {mainOfficials.map((official) => {
+                const getIcon = (position: string) => {
+                  if (position.toLowerCase().includes('bupati') && !position.toLowerCase().includes('wakil')) return Crown
+                  if (position.toLowerCase().includes('wakil')) return Shield
+                  return Briefcase
+                }
+                const getColor = (position: string) => {
+                  if (position.toLowerCase().includes('bupati') && !position.toLowerCase().includes('wakil')) return 'bg-blue-600'
+                  if (position.toLowerCase().includes('wakil')) return 'bg-green-600'
+                  return 'bg-purple-600'
+                }
+
+                const Icon = getIcon(official.position)
+                const color = getColor(official.position)
+
+                return (
+                  <Card key={official._id} className="overflow-hidden">
+                    <div className="md:flex">
+                      <div className="md:w-1/3 bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex flex-col items-center justify-center">
+                        {official.photo?.url ? (
+                          <img
+                            src={official.photo.url}
+                            alt={official.photo.alt || official.name}
+                            className="w-24 h-24 rounded-full object-cover mb-4"
+                          />
+                        ) : (
+                          <div className={`p-4 ${color} rounded-full mb-4`}>
+                            <Icon className="h-12 w-12 text-white" />
+                          </div>
+                        )}
+                        <Badge className={color} variant="default">
+                          {official.position}
+                        </Badge>
+                      </div>
+
+                      <div className="md:w-2/3 p-6">
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
+                          <div>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                              {official.name}
+                            </h3>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                              {official.period && (
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="h-4 w-4" />
+                                  Periode: {new Date(official.period.start).getFullYear()}-{new Date(official.period.end).getFullYear()}
+                                </div>
+                              )}
+                              {official.education && (
+                                <div className="flex items-center gap-1">
+                                  <GraduationCap className="h-4 w-4" />
+                                  {official.education}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {official.experience && official.experience.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <Briefcase className="h-4 w-4" />
+                                Pengalaman
+                              </h4>
+                              <ul className="text-sm text-gray-600 space-y-1">
+                                {official.experience.map((exp, idx) => (
+                                  <li key={idx}>• {exp}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {official.achievements && official.achievements.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <Award className="h-4 w-4" />
+                                Pencapaian
+                              </h4>
+                              <ul className="text-sm text-gray-600 space-y-1">
+                                {official.achievements.map((achievement, idx) => (
+                                  <li key={idx}>• {achievement}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+
+                        {official.vision && (
+                          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                            <h4 className="font-semibold text-blue-900 mb-2">Visi</h4>
+                            <p className="text-blue-800 text-sm italic">"{official.vision}"</p>
+                          </div>
+                        )}
+
+                        <div className="mt-4 flex flex-wrap gap-4 text-sm">
+                          {official.contact?.phone && (
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <Phone className="h-4 w-4" />
+                              {official.contact.phone}
+                            </div>
+                          )}
+                          {official.contact?.email && (
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <Mail className="h-4 w-4" />
+                              {official.contact.email}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {/* Department Heads */}

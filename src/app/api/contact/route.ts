@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { contactFormSchema } from '@/lib/validations'
 import { sanitizeHtml, validateInput, generateSecureToken } from '@/lib/security'
 import { ContactForm, AuditLog } from '@/lib/models'
-import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
+import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts, getClientIP } from '@/lib/server-security'
 import { withCSRF } from '@/lib/csrf'
 import { withRateLimit, rateLimiters } from '@/lib/enhanced-rate-limit'
 import mongoose from 'mongoose'
@@ -30,9 +30,7 @@ const emailTransporter = nodemailer.createTransport({
 async function handlePOST(request: NextRequest) {
   try {
     // Get client information
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               'unknown'
+    const ip = getClientIP(request)
     const userAgent = request.headers.get('user-agent') || ''
 
     // Parse and validate request body with size limit

@@ -12,15 +12,12 @@ import {
   Calendar,
   Users,
   Waves,
-  Mountain,
-  TreePine,
   Utensils,
   Bed,
   ChevronRight,
   ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface Destination {
   _id: string

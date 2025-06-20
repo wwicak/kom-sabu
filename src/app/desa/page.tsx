@@ -107,58 +107,7 @@ export default function DesaPage() {
     }
   }
 
-  const staticVillages = [
-    // Sabu Barat
-    { name: 'Menia', type: 'kelurahan', district: 'Sabu Barat', population: 2500, head: 'Yohanes Rihi', phone: '(0380) 21101' },
-    { name: 'Dimu', type: 'desa', district: 'Sabu Barat', population: 1200, head: 'Maria Seran', phone: '(0380) 21102' },
-    { name: 'Namosain', type: 'desa', district: 'Sabu Barat', population: 1100, head: 'Kornelius Haning', phone: '(0380) 21103' },
-    { name: 'Bohela', type: 'desa', district: 'Sabu Barat', population: 980, head: 'Yosef Kale', phone: '(0380) 21104' },
-    { name: 'Lekik', type: 'desa', district: 'Sabu Barat', population: 850, head: 'Maria Rihi', phone: '(0380) 21105' },
-    { name: 'Tardamu', type: 'desa', district: 'Sabu Barat', population: 920, head: 'Drs. Marthen Seran', phone: '(0380) 21106' },
-    { name: 'Wunlah', type: 'desa', district: 'Sabu Barat', population: 780, head: 'Yustina Haning', phone: '(0380) 21107' },
-    { name: 'Ledefoho', type: 'desa', district: 'Sabu Barat', population: 650, head: 'Kornelius Manu', phone: '(0380) 21108' },
-
-    // Sabu Tengah
-    { name: 'Sabu Tengah', type: 'desa', district: 'Sabu Tengah', population: 2200, head: 'Drs. Yohanes Kale', phone: '(0380) 21201' },
-    { name: 'Liae', type: 'desa', district: 'Sabu Tengah', population: 1800, head: 'Maria Haning', phone: '(0380) 21202' },
-    { name: 'Bohela', type: 'desa', district: 'Sabu Tengah', population: 1600, head: 'Yosef Rihi', phone: '(0380) 21203' },
-    { name: 'Keka', type: 'desa', district: 'Sabu Tengah', population: 1400, head: 'Kornelius Seran', phone: '(0380) 21204' },
-    { name: 'Mesara', type: 'desa', district: 'Sabu Tengah', population: 1200, head: 'Maria Kale', phone: '(0380) 21205' },
-    { name: 'Tardamu Liae', type: 'desa', district: 'Sabu Tengah', population: 1100, head: 'Yohanes Haning', phone: '(0380) 21206' },
-    { name: 'Wunlah Liae', type: 'desa', district: 'Sabu Tengah', population: 950, head: 'Maria Manu', phone: '(0380) 21207' },
-    { name: 'Ledefoho Liae', type: 'desa', district: 'Sabu Tengah', population: 850, head: 'Yosef Seran', phone: '(0380) 21208' },
-
-    // Sabu Timur
-    { name: 'Timu', type: 'kelurahan', district: 'Sabu Timur', population: 2800, head: 'Dra. Maria Rihi', phone: '(0380) 21301' },
-    { name: 'Ae Tadu', type: 'desa', district: 'Sabu Timur', population: 1500, head: 'Kornelius Kale', phone: '(0380) 21302' },
-    { name: 'Dimu Timur', type: 'desa', district: 'Sabu Timur', population: 1300, head: 'Yohanes Manu', phone: '(0380) 21303' },
-    { name: 'Namosain Timur', type: 'desa', district: 'Sabu Timur', population: 1200, head: 'Maria Haning', phone: '(0380) 21304' },
-    { name: 'Bohela Timur', type: 'desa', district: 'Sabu Timur', population: 1100, head: 'Yosef Rihi', phone: '(0380) 21305' },
-    { name: 'Keka Timur', type: 'desa', district: 'Sabu Timur', population: 980, head: 'Kornelius Seran', phone: '(0380) 21306' },
-    { name: 'Mesara Timur', type: 'desa', district: 'Sabu Timur', population: 920, head: 'Maria Kale', phone: '(0380) 21307' },
-
-    // Raijua
-    { name: 'Raijua', type: 'desa', district: 'Raijua', population: 3000, head: 'Drs. Yosef Rihi', phone: '(0380) 21401' },
-    { name: 'Lela', type: 'desa', district: 'Raijua', population: 2500, head: 'Maria Seran', phone: '(0380) 21402' },
-    { name: 'Namo', type: 'desa', district: 'Raijua', population: 2200, head: 'Kornelius Haning', phone: '(0380) 21403' },
-    { name: 'Batudaka', type: 'desa', district: 'Raijua', population: 1800, head: 'Yohanes Kale', phone: '(0380) 21404' },
-    { name: 'Mukebuku', type: 'desa', district: 'Raijua', population: 1600, head: 'Maria Rihi', phone: '(0380) 21405' },
-    { name: 'Padira', type: 'desa', district: 'Raijua', population: 1400, head: 'Yosef Manu', phone: '(0380) 21406' },
-
-    // Sabu Liae
-    { name: 'Liae Barat', type: 'desa', district: 'Sabu Liae', population: 800, head: 'Kornelius Rihi', phone: '(0380) 21501' },
-    { name: 'Liae Tengah', type: 'desa', district: 'Sabu Liae', population: 750, head: 'Maria Haning', phone: '(0380) 21502' },
-    { name: 'Liae Timur', type: 'desa', district: 'Sabu Liae', population: 700, head: 'Yohanes Seran', phone: '(0380) 21503' },
-    { name: 'Tardamu Liae Barat', type: 'desa', district: 'Sabu Liae', population: 650, head: 'Yosef Kale', phone: '(0380) 21504' },
-    { name: 'Wunlah Liae Barat', type: 'desa', district: 'Sabu Liae', population: 600, head: 'Maria Manu', phone: '(0380) 21505' },
-
-    // Hawu Mehara
-    { name: 'Mehara', type: 'desa', district: 'Hawu Mehara', population: 900, head: 'Drs. Maria Haning', phone: '(0380) 21601' },
-    { name: 'Hawu', type: 'desa', district: 'Hawu Mehara', population: 850, head: 'Kornelius Rihi', phone: '(0380) 21602' },
-    { name: 'Dimu Mehara', type: 'desa', district: 'Hawu Mehara', population: 800, head: 'Yohanes Kale', phone: '(0380) 21603' },
-    { name: 'Namosain Mehara', type: 'desa', district: 'Hawu Mehara', population: 750, head: 'Maria Seran', phone: '(0380) 21604' },
-    { name: 'Bohela Mehara', type: 'desa', district: 'Hawu Mehara', population: 700, head: 'Yosef Rihi', phone: '(0380) 21605' },
-  ]
+  // Remove static data - now using dynamic content from API
 
   const districts = ['Sabu Barat', 'Sabu Tengah', 'Sabu Timur', 'Raijua', 'Sabu Liae', 'Hawu Mehara']
 
