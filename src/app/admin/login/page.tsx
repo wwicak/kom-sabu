@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
-  const [turnstileKey, setTurnstileKey] = useState(0) // For resetting Turnstile
+  const turnstileRef = useRef<any>(null) // Reference to Turnstile widget
 
   // Check if user is already logged in
   useEffect(() => {
@@ -80,6 +80,13 @@ export default function AdminLoginPage() {
 
   const handleTurnstileExpire = () => {
     setError('Security verification expired. Please verify again.')
+    setFormData(prev => ({ ...prev, turnstileToken: '' }))
+  }
+
+  const resetTurnstile = () => {
+    if (typeof window !== 'undefined' && (window as any).resetTurnstile) {
+      (window as any).resetTurnstile()
+    }
     setFormData(prev => ({ ...prev, turnstileToken: '' }))
   }
 
@@ -140,8 +147,7 @@ export default function AdminLoginPage() {
       setError(errorMessage)
 
       // Reset Turnstile widget on error
-      setTurnstileKey(prev => prev + 1)
-      setFormData(prev => ({ ...prev, turnstileToken: '' }))
+      resetTurnstile()
 
     } finally {
       setIsLoading(false)
@@ -228,7 +234,7 @@ export default function AdminLoginPage() {
               <div className="space-y-2">
                 <Label>Security Verification</Label>
                 <TurnstileWidget
-                  key={turnstileKey}
+                  ref={turnstileRef}
                   onVerify={handleTurnstileVerify}
                   onError={handleTurnstileError}
                   onExpire={handleTurnstileExpire}

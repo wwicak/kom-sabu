@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void
@@ -34,8 +34,26 @@ export function TurnstileWidget({
   const [error, setError] = useState<string | null>(null)
   const [widgetId, setWidgetId] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const isInitializedRef = useRef(false)
 
   const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY
+
+  // Memoize callback functions to prevent unnecessary re-renders
+  const handleVerify = useCallback((token: string) => {
+    setError(null)
+    onVerify(token)
+  }, [onVerify])
+
+  const handleError = useCallback((error: string) => {
+    console.error('Turnstile verification error:', error)
+    setError(error)
+    onError?.(error)
+  }, [onError])
+
+  const handleExpire = useCallback(() => {
+    setError('Verification expired. Please try again.')
+    onExpire?.()
+  }, [onExpire])
 
   useEffect(() => {
     if (!siteKey) {
@@ -46,15 +64,25 @@ export function TurnstileWidget({
       return
     }
 
-    // Prevent multiple widget creation
-    if (widgetId || isLoaded) {
+    // Prevent multiple initializations
+    if (isInitializedRef.current) {
       return
     }
 
+    isInitializedRef.current = true
+
     // Load Turnstile script
     const loadTurnstile = () => {
+      // Check if script is already loaded
       if (window.turnstile) {
         renderWidget()
+        return
+      }
+
+      // Check if script is already being loaded
+      const existingScript = document.querySelector('script[src*="turnstile"]')
+      if (existingScript) {
+        existingScript.addEventListener('load', renderWidget)
         return
       }
 
@@ -67,6 +95,7 @@ export function TurnstileWidget({
         console.error('Failed to load Turnstile script')
         setError('Failed to load security verification')
         onError?.('Failed to load security verification')
+        isInitializedRef.current = false
       }
       document.head.appendChild(script)
     }
@@ -99,6 +128,7 @@ export function TurnstileWidget({
         console.error('Error rendering Turnstile widget:', err)
         setError('Failed to render security verification')
         onError?.('Failed to render security verification')
+        isInitializedRef.current = false
       }
     }
 
@@ -109,34 +139,15 @@ export function TurnstileWidget({
       if (widgetId && window.turnstile) {
         try {
           window.turnstile.remove(widgetId)
+          setWidgetId(null)
+          setIsLoaded(false)
         } catch (err) {
           console.warn('Error removing Turnstile widget:', err)
         }
       }
+      isInitializedRef.current = false
     }
-  }, [siteKey]) // Removed dependencies that cause re-renders
-
-  const handleVerify = (token: string) => {
-    setError(null)
-    onVerify(token)
-  }
-
-  const handleError = (error: string) => {
-    console.error('Turnstile verification error:', error)
-    setError(error)
-    onError?.(error)
-  }
-
-  const handleExpire = () => {
-    setError('Verification expired. Please try again.')
-    onExpire?.()
-  }
-
-  const handleLoad = () => {
-    console.log('TurnstileWidget: Widget loaded successfully')
-    setIsLoaded(true)
-    setError(null)
-  }
+  }, [siteKey, handleVerify, handleError, handleExpire]) // Include memoized callbacks
 
   // Reset the widget
   const reset = () => {
