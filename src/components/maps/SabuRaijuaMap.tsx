@@ -171,47 +171,73 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
         return
       }
 
-      const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
-        style: () => getKecamatanStyle(kecamatan),
-        onEachFeature: (_, layer) => {
-          // Mouse events
-          layer.on({
-            mouseover: (e) => {
-              const layer = e.target
-              layer.setStyle(getKecamatanStyle(kecamatan, true))
+      try {
+        const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
+          style: () => getKecamatanStyle(kecamatan),
+          onEachFeature: (_, layer) => {
+            // Mouse events
+            layer.on({
+              mouseover: (e) => {
+                const layer = e.target
+                layer.setStyle(getKecamatanStyle(kecamatan, true))
 
-              // Show tooltip
-              const bounds = geoJsonLayer.getBounds()
-              const center = bounds.getCenter()
-              const point = mapInstanceRef.current!.latLngToContainerPoint(center)
+                // Show tooltip with proper positioning
+                const bounds = geoJsonLayer.getBounds()
+                const center = bounds.getCenter()
+                const point = mapInstanceRef.current!.latLngToContainerPoint(center)
 
-              setTooltip({
-                kecamatan,
-                x: point.x,
-                y: point.y
-              })
+                // Ensure tooltip stays within viewport
+                const mapContainer = mapInstanceRef.current!.getContainer()
+                const mapRect = mapContainer.getBoundingClientRect()
+                const tooltipHeight = 400 // Approximate tooltip height
+                const tooltipWidth = 380 // Approximate tooltip width
 
-              onKecamatanHover?.(kecamatan)
-            },
-            mouseout: (e) => {
-              const layer = e.target
-              layer.setStyle(getKecamatanStyle(kecamatan))
-              setTooltip(null)
-              onKecamatanHover?.(null)
-            },
-            click: () => {
-              onKecamatanClick?.(kecamatan)
+                let adjustedX = point.x
+                let adjustedY = point.y
 
-              // Zoom to kecamatan bounds
-              const bounds = geoJsonLayer.getBounds()
-              mapInstanceRef.current?.fitBounds(bounds, { padding: [20, 20] })
-            }
-          })
-        }
-      })
+                // Keep tooltip within horizontal bounds
+                if (point.x + tooltipWidth / 2 > mapRect.width) {
+                  adjustedX = mapRect.width - tooltipWidth / 2 - 20
+                } else if (point.x - tooltipWidth / 2 < 0) {
+                  adjustedX = tooltipWidth / 2 + 20
+                }
 
-      geoJsonLayer.addTo(mapInstanceRef.current!)
-      layersRef.current[kecamatan.code] = geoJsonLayer
+                // Keep tooltip within vertical bounds
+                if (point.y - tooltipHeight < 0) {
+                  adjustedY = tooltipHeight + 20 // Show below if too close to top
+                }
+
+                setTooltip({
+                  kecamatan,
+                  x: adjustedX,
+                  y: adjustedY
+                })
+
+                onKecamatanHover?.(kecamatan)
+              },
+              mouseout: (e) => {
+                const layer = e.target
+                layer.setStyle(getKecamatanStyle(kecamatan))
+                setTooltip(null)
+                onKecamatanHover?.(null)
+              },
+              click: () => {
+                onKecamatanClick?.(kecamatan)
+
+                // Zoom to kecamatan bounds
+                const bounds = geoJsonLayer.getBounds()
+                mapInstanceRef.current?.fitBounds(bounds, { padding: [20, 20] })
+              }
+            })
+          }
+        })
+
+        geoJsonLayer.addTo(mapInstanceRef.current!)
+        layersRef.current[kecamatan.code] = geoJsonLayer
+      } catch (error) {
+        console.error(`Error creating GeoJSON layer for ${kecamatan.name}:`, error)
+        console.error('Geometry data:', kecamatan.geometry)
+      }
     })
 
     // Fit map to show all kecamatan
