@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void
@@ -9,6 +9,10 @@ interface TurnstileWidgetProps {
   theme?: 'light' | 'dark' | 'auto'
   size?: 'normal' | 'compact'
   className?: string
+}
+
+export interface TurnstileWidgetRef {
+  reset: () => void
 }
 
 // Declare global turnstile
@@ -22,14 +26,14 @@ declare global {
   }
 }
 
-export function TurnstileWidget({
+export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(({
   onVerify,
   onError,
   onExpire,
   theme = 'light',
   size = 'normal',
   className = ''
-}: TurnstileWidgetProps) {
+}, ref) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [widgetId, setWidgetId] = useState<string | null>(null)
@@ -173,7 +177,12 @@ export function TurnstileWidget({
     }
   }, [widgetId])
 
-  // Expose reset method
+  // Expose reset method through ref
+  useImperativeHandle(ref, () => ({
+    reset
+  }), [reset])
+
+  // Expose reset method globally (for backward compatibility)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).resetTurnstile = reset
@@ -219,7 +228,9 @@ export function TurnstileWidget({
       )}
     </div>
   )
-}
+})
+
+TurnstileWidget.displayName = 'TurnstileWidget'
 
 // Server-side verification function
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {

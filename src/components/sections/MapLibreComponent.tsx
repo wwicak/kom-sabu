@@ -3,56 +3,17 @@
 import { useEffect, useRef } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-
-interface KecamatanData {
-  _id: string
-  name: string
-  slug: string
-  description?: string
-  area: number
-  population: number
-  villages: number
-  coordinates: {
-    center: { lat: number; lng: number }
-    bounds?: {
-      north: number
-      south: number
-      east: number
-      west: number
-    }
-  }
-  polygon?: {
-    type: 'Polygon' | 'MultiPolygon'
-    coordinates: number[][][]
-  }
-  geometry?: {
-    type: 'Polygon' | 'MultiPolygon'
-    coordinates: number[][][]
-  }
-  potency: any
-  demographics: any
-  images?: Array<{
-    url: string
-    caption: string
-    category: string
-  }>
-  headOffice?: {
-    address: string
-    phone: string
-    email: string
-    head: string
-  }
-}
+import { IKecamatan } from '@/lib/models/kecamatan'
 
 interface MapLibreComponentProps {
-  kecamatanData?: KecamatanData[]
+  kecamatanData?: IKecamatan[]
   selectedKecamatan?: string | null
-  onKecamatanSelect?: (kecamatan: KecamatanData | null) => void
-  onKecamatanHover?: (kecamatan: KecamatanData | null) => void
+  onKecamatanSelect?: (kecamatan: IKecamatan | null) => void
+  onKecamatanHover?: (kecamatan: IKecamatan | null) => void
   showHoverInfo?: boolean
 }
 
-export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamatanSelect, onKecamatanHover, showHoverInfo }: MapLibreComponentProps) {
+export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamatanSelect, onKecamatanHover }: MapLibreComponentProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
 
@@ -99,14 +60,12 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         type: 'FeatureCollection' as const,
         features: kecamatanData
           .filter(kecamatan => {
-            // Check for both polygon and geometry properties
-            const hasPolygon = kecamatan.polygon && kecamatan.polygon.coordinates && kecamatan.polygon.coordinates.length > 0
+            // Check for geometry property
             const hasGeometry = kecamatan.geometry && kecamatan.geometry.coordinates && kecamatan.geometry.coordinates.length > 0
-            return hasPolygon || hasGeometry
+            return hasGeometry
           })
-          .map((kecamatan: KecamatanData) => {
-            // Use geometry if available, otherwise fall back to polygon
-            const geometry = kecamatan.geometry || kecamatan.polygon
+          .map((kecamatan: IKecamatan) => {
+            const geometry = kecamatan.geometry
             if (!geometry) {
               console.error(`No geometry data found for kecamatan: ${kecamatan.name}`)
               throw new Error(`No geometry data found for kecamatan: ${kecamatan.name}`)
@@ -173,12 +132,14 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
           const bounds = new maplibregl.LngLatBounds()
           geoJsonData.features.forEach(feature => {
             if (feature.geometry.type === 'Polygon') {
-              feature.geometry.coordinates[0].forEach((coord: any) => {
+              const coords = feature.geometry.coordinates as number[][][]
+              coords[0].forEach((coord: number[]) => {
                 bounds.extend([coord[0], coord[1]])
               })
             } else if (feature.geometry.type === 'MultiPolygon') {
-              feature.geometry.coordinates.forEach((polygon: any) => {
-                polygon[0].forEach((coord: any) => {
+              const coords = feature.geometry.coordinates as number[][][][]
+              coords.forEach((polygon: number[][][]) => {
+                polygon[0].forEach((coord: number[]) => {
                   bounds.extend([coord[0], coord[1]])
                 })
               })
@@ -190,7 +151,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         // Add click event
         map.current.on('click', 'kecamatan-fill', (e) => {
           if (e.features && e.features[0]) {
-            const kecamatan = e.features[0].properties as KecamatanData
+            const kecamatan = e.features[0].properties as IKecamatan
             onKecamatanSelect?.(kecamatan)
 
             // Fit to bounds
@@ -211,7 +172,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
 
           // Call hover callback if provided
           if (onKecamatanHover && e.features && e.features[0]) {
-            const kecamatan = e.features[0].properties as KecamatanData
+            const kecamatan = e.features[0].properties as IKecamatan
             onKecamatanHover(kecamatan)
           }
         })

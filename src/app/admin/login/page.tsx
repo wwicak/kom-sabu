@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { TurnstileWidget } from '@/components/security/TurnstileWidget'
+import { TurnstileWidget, TurnstileWidgetRef } from '@/components/security/TurnstileWidget'
 import { Eye, EyeOff, Shield, Lock, User, AlertTriangle } from 'lucide-react'
 import { z } from 'zod'
 
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
-  const turnstileRef = useRef<any>(null) // Reference to Turnstile widget
+  const turnstileRef = useRef<TurnstileWidgetRef>(null) // Reference to Turnstile widget
 
   // Check if user is already logged in
   useEffect(() => {
