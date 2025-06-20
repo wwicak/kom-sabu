@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { IKecamatan } from '@/lib/models/kecamatan'
@@ -8,7 +8,7 @@ import { MOCK_KECAMATAN_DATA } from '@/lib/data/mock-kecamatan'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { MapPin, Users, BarChart3, Wheat, Fish, Building2 } from 'lucide-react'
+import { MapPin, Users, BarChart3, Wheat, Building2 } from 'lucide-react'
 
 // Dynamically import the map component to avoid SSR issues
 const SabuRaijuaMap = dynamic(

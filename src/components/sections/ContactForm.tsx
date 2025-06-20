@@ -79,9 +79,9 @@ export function ContactForm() {
 
       setErrors({})
       return true
-    } catch (error: any) {
+    } catch (error: { errors?: Array<{ path?: string[]; message: string }> }) {
       const fieldErrors: Record<string, string> = {}
-      error.errors?.forEach((err: any) => {
+      error.errors?.forEach((err: { path?: string[]; message: string }) => {
         if (err.path) {
           fieldErrors[err.path[0]] = err.message
         }
@@ -157,7 +157,7 @@ export function ContactForm() {
           setErrors(result.errors)
         }
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error')
       setSubmitMessage('Terjadi kesalahan jaringan. Silakan coba lagi.')
 

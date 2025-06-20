@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void
@@ -10,6 +9,17 @@ interface TurnstileWidgetProps {
   theme?: 'light' | 'dark' | 'auto'
   size?: 'normal' | 'compact'
   className?: string
+}
+
+// Declare global turnstile
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (element: string | HTMLElement, options: any) => string
+      reset: (widgetId?: string) => void
+      remove: (widgetId?: string) => void
+    }
+  }
 }
 
 export function TurnstileWidget({
@@ -22,44 +32,112 @@ export function TurnstileWidget({
 }: TurnstileWidgetProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const [widgetId, setWidgetId] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY
 
   useEffect(() => {
+    console.log('TurnstileWidget: Checking site key...')
+    console.log('Site key:', siteKey)
+    console.log('Site key length:', siteKey?.length)
+
     if (!siteKey) {
       const errorMsg = 'Cloudflare Turnstile site key not configured'
       setError(errorMsg)
       onError?.(errorMsg)
       console.error(errorMsg)
+      return
     }
-  }, [siteKey, onError])
+
+    console.log('TurnstileWidget: Site key is configured correctly')
+
+    // Load Turnstile script
+    const loadTurnstile = () => {
+      if (window.turnstile) {
+        console.log('TurnstileWidget: Turnstile already loaded')
+        renderWidget()
+        return
+      }
+
+      console.log('TurnstileWidget: Loading Turnstile script...')
+      const script = document.createElement('script')
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
+      script.async = true
+      script.defer = true
+      script.onload = () => {
+        console.log('TurnstileWidget: Script loaded successfully')
+        renderWidget()
+      }
+      script.onerror = () => {
+        console.error('TurnstileWidget: Failed to load Turnstile script')
+        setError('Failed to load security verification')
+        onError?.('Failed to load security verification')
+      }
+      document.head.appendChild(script)
+    }
+
+    const renderWidget = () => {
+      if (!window.turnstile || !containerRef.current) {
+        console.error('TurnstileWidget: Turnstile not available or container not found')
+        return
+      }
+
+      try {
+        console.log('TurnstileWidget: Rendering widget...')
+        const id = window.turnstile.render(containerRef.current, {
+          sitekey: siteKey,
+          callback: handleVerify,
+          'error-callback': handleError,
+          'expired-callback': handleExpire,
+          theme,
+          size,
+          action: 'admin-login',
+          cData: 'sabu-raijua-admin',
+        })
+        setWidgetId(id)
+        setIsLoaded(true)
+        console.log('TurnstileWidget: Widget rendered with ID:', id)
+      } catch (err) {
+        console.error('TurnstileWidget: Error rendering widget:', err)
+        setError('Failed to render security verification')
+        onError?.('Failed to render security verification')
+      }
+    }
+
+    loadTurnstile()
+  }, [siteKey, onError, theme, size])
 
   const handleVerify = (token: string) => {
+    console.log('TurnstileWidget: Verification successful, token:', token?.substring(0, 20) + '...')
     setError(null)
     onVerify(token)
   }
 
   const handleError = (error: string) => {
+    console.error('TurnstileWidget: Error occurred:', error)
     setError(error)
     onError?.(error)
-    console.error('Turnstile error:', error)
   }
 
   const handleExpire = () => {
+    console.log('TurnstileWidget: Token expired')
     setError('Verification expired. Please try again.')
     onExpire?.()
   }
 
   const handleLoad = () => {
+    console.log('TurnstileWidget: Widget loaded successfully')
     setIsLoaded(true)
     setError(null)
   }
 
   // Reset the widget
   const reset = () => {
-    turnstileRef.current?.reset()
-    setError(null)
+    if (window.turnstile && widgetId) {
+      window.turnstile.reset(widgetId)
+      setError(null)
+    }
   }
 
   // Expose reset method
@@ -67,7 +145,7 @@ export function TurnstileWidget({
     if (typeof window !== 'undefined') {
       (window as any).resetTurnstile = reset
     }
-  }, [])
+  }, [widgetId])
 
   if (!siteKey) {
     return (
@@ -75,37 +153,36 @@ export function TurnstileWidget({
         <p className="text-red-700 text-sm">
           Security verification unavailable. Please contact administrator.
         </p>
+        <p className="text-xs text-gray-500 mt-2">
+          Debug: Site key is {siteKey ? 'SET' : 'NOT SET'}
+        </p>
       </div>
     )
   }
 
   return (
     <div className={`turnstile-container ${className}`}>
+      {/* Debug info */}
+      <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+        <p>Debug: Site key: {siteKey?.substring(0, 10)}...</p>
+        <p>Debug: Is loaded: {isLoaded ? 'Yes' : 'No'}</p>
+        <p>Debug: Error: {error || 'None'}</p>
+      </div>
+
       {!isLoaded && (
         <div className="flex items-center justify-center p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
           <span className="ml-2 text-gray-600">Loading security verification...</span>
         </div>
       )}
-      
-      <Turnstile
-        ref={turnstileRef}
-        siteKey={siteKey}
-        onSuccess={handleVerify}
-        onError={handleError}
-        onExpire={handleExpire}
-        onLoad={handleLoad}
-        options={{
-          theme,
-          size,
-          action: 'admin-login',
-          cData: 'sabu-raijua-admin',
-        }}
+
+      <div
+        ref={containerRef}
         style={{
           display: isLoaded ? 'block' : 'none'
         }}
       />
-      
+
       {error && (
         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-700 text-sm">{error}</p>
@@ -124,7 +201,7 @@ export function TurnstileWidget({
 // Server-side verification function
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
   const secretKey = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY
-  
+
   if (!secretKey) {
     console.error('Cloudflare Turnstile secret key not configured')
     return false
@@ -144,7 +221,7 @@ export async function verifyTurnstileToken(token: string, ip?: string): Promise<
     })
 
     const result = await response.json()
-    
+
     if (!result.success) {
       console.error('Turnstile verification failed:', result['error-codes'])
       return false
@@ -163,24 +240,24 @@ const failedAttempts = new Map<string, { count: number; lastAttempt: number }>()
 export function checkRateLimit(ip: string, maxAttempts = 5, windowMs = 15 * 60 * 1000): boolean {
   const now = Date.now()
   const attempts = failedAttempts.get(ip)
-  
+
   if (!attempts) {
     return true
   }
-  
+
   // Reset if window has passed
   if (now - attempts.lastAttempt > windowMs) {
     failedAttempts.delete(ip)
     return true
   }
-  
+
   return attempts.count < maxAttempts
 }
 
 export function recordFailedAttempt(ip: string): void {
   const now = Date.now()
   const attempts = failedAttempts.get(ip) || { count: 0, lastAttempt: now }
-  
+
   failedAttempts.set(ip, {
     count: attempts.count + 1,
     lastAttempt: now

@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
 
 // Fix for default markers in Leaflet with Next.js
-delete (L.Icon.Default.prototype as any)._getIconUrl
+delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: '/leaflet/marker-icon-2x.png',
   iconUrl: '/leaflet/marker-icon.png',
@@ -129,7 +129,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
     kecamatanData.forEach(kecamatan => {
       const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
         style: () => getKecamatanStyle(kecamatan),
-        onEachFeature: (feature, layer) => {
+        onEachFeature: (_, layer) => {
           // Mouse events
           layer.on({
             mouseover: (e) => {
@@ -155,7 +155,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
               setTooltip(null)
               onKecamatanHover?.(null)
             },
-            click: (e) => {
+            click: () => {
               onKecamatanClick?.(kecamatan)
 
               // Zoom to kecamatan bounds

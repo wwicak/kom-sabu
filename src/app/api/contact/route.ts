@@ -168,7 +168,7 @@ async function handlePOST(request: NextRequest) {
 
     // Save to MongoDB with transaction for data integrity
     const session = await mongoose.startSession()
-    let savedContact: any
+    let savedContact: { _id: { toString(): string } }[]
 
     try {
       await session.withTransaction(async () => {

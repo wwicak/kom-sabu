@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { seedKecamatanData } from '@/lib/seedKecamatan'
 
 // POST /api/seed/kecamatan - Seed kecamatan data (development only)
-export async function POST(request: NextRequest) {
+export async function POST() {
   // Only allow in development environment
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json(

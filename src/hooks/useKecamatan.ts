@@ -102,18 +102,91 @@ export function useKecamatanList(includeInactive = false) {
       if (includeInactive) {
         params.append('includeInactive', 'true')
       }
-      
+
       const response = await fetch(`/api/kecamatan?${params}`)
       if (!response.ok) {
         throw new Error('Failed to fetch kecamatan data')
       }
-      
-      const result: ApiResponse<KecamatanData[]> = await response.json()
+
+      const result: ApiResponse<any[]> = await response.json()
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to fetch kecamatan data')
       }
-      
-      return result.data
+
+      // Transform API data to match expected structure
+      const transformedData: KecamatanData[] = result.data.map((item: any) => ({
+        _id: item._id,
+        name: item.name,
+        slug: item.code, // Use code as slug for now
+        description: `Kecamatan ${item.name} dengan ibu kota ${item.capital}`,
+        area: item.area,
+        population: item.demographics?.totalPopulation || 0,
+        villages: item.villages?.length || 0,
+        coordinates: {
+          center: {
+            lat: item.centroid?.coordinates?.[1] || 0,
+            lng: item.centroid?.coordinates?.[0] || 0
+          }
+        },
+        polygon: {
+          type: item.geometry?.type || 'Polygon',
+          coordinates: item.geometry?.coordinates || []
+        },
+        potency: {
+          agriculture: item.agriculture ? {
+            mainCrops: item.agriculture.mainCrops?.map((crop: any) => crop.name) || [],
+            productivity: 'Tinggi',
+            farmingArea: item.agriculture.totalAgriculturalArea || 0
+          } : undefined,
+          fishery: item.agriculture?.fishery ? {
+            mainSpecies: ['Ikan Laut'],
+            productivity: 'Sedang',
+            fishingArea: item.agriculture.fishery.marineCapture || 0
+          } : undefined,
+          tourism: item.tourism ? {
+            attractions: item.tourism.attractions?.map((attr: any) => attr.name) || [],
+            facilities: ['Homestay'],
+            annualVisitors: item.tourism.annualVisitors || 0
+          } : undefined,
+          economy: item.economy ? {
+            mainSectors: item.economy.mainIndustries || [],
+            averageIncome: item.economy.averageIncome || 0,
+            businessUnits: 0
+          } : undefined,
+          infrastructure: item.infrastructure ? {
+            roads: 'Baik',
+            electricity: item.infrastructure.utilities?.electricityAccess || 0,
+            water: item.infrastructure.utilities?.cleanWaterAccess || 0,
+            internet: item.infrastructure.utilities?.internetAccess || 0
+          } : undefined
+        },
+        demographics: {
+          ageGroups: {
+            children: item.demographics?.ageGroups?.under15 || 0,
+            adults: item.demographics?.ageGroups?.age15to64 || 0,
+            elderly: item.demographics?.ageGroups?.over64 || 0
+          },
+          education: {
+            elementary: item.infrastructure?.education?.elementarySchools || 0,
+            junior: item.infrastructure?.education?.juniorHighSchools || 0,
+            senior: item.infrastructure?.education?.seniorHighSchools || 0,
+            higher: item.infrastructure?.education?.universities || 0
+          },
+          occupation: {
+            agriculture: Math.round((item.economy?.economicSectors?.agriculture || 0) * (item.demographics?.totalPopulation || 0) / 100),
+            fishery: Math.round((item.economy?.economicSectors?.industry || 0) * (item.demographics?.totalPopulation || 0) / 100),
+            trade: Math.round((item.economy?.economicSectors?.services || 0) * (item.demographics?.totalPopulation || 0) / 100),
+            services: 0,
+            others: 0
+          }
+        },
+        isActive: item.isActive !== false,
+        createdAt: item.createdAt || new Date().toISOString(),
+        updatedAt: item.updatedAt || new Date().toISOString(),
+        lastUpdated: item.updatedAt || new Date().toISOString()
+      }))
+
+      return transformedData
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

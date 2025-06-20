@@ -52,7 +52,20 @@ export const GET = requireAuth(async function(request: NextRequest) {
       )
     }
 
-    const profile = userProfile as any
+    const profile = userProfile as unknown as {
+      _id: { toString(): string }
+      username: string
+      email: string
+      fullName: string
+      role: string
+      department?: string
+      position?: string
+      isActive: boolean
+      lastLogin?: Date
+      twoFactorEnabled: boolean
+      createdAt: Date
+      updatedAt: Date
+    }
 
     return NextResponse.json({
       success: true,
@@ -114,7 +127,13 @@ export const PUT = requireAuth(async function(request: NextRequest) {
       )
     }
     
-    const updateData: any = {}
+    const updateData: {
+      fullName?: string
+      department?: string
+      position?: string
+      email?: string
+      password?: string
+    } = {}
     
     // Update basic profile fields
     if (fullName !== undefined) updateData.fullName = fullName

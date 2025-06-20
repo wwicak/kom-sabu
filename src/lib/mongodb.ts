@@ -7,15 +7,18 @@ if (!process.env.MONGODB_URI) {
 const uri = process.env.MONGODB_URI
 const options = {
   maxPoolSize: 10,
-  serverSelectionTimeoutMS: 5000,
+  serverSelectionTimeoutMS: 30000, // Increased timeout for Atlas
   socketTimeoutMS: 45000,
-  // Security options
-  tls: process.env.NODE_ENV === 'production',
-  tlsAllowInvalidCertificates: process.env.NODE_ENV !== 'production',
+  connectTimeoutMS: 30000, // Added connection timeout
+  // Security options for MongoDB Atlas
+  tls: true, // Always use TLS for Atlas
   retryWrites: true,
   // Connection monitoring
   heartbeatFrequencyMS: 10000,
   maxIdleTimeMS: 30000,
+  // Additional Atlas-specific options
+  authSource: 'admin',
+  ssl: true,
 }
 
 let client: MongoClient
@@ -43,7 +46,7 @@ if (process.env.NODE_ENV === 'development') {
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
   try {
     const client = await clientPromise
-    const db = client.db('sabu-raijua')
+    const db = client.db('test') // Using test database where our data is located
     return { client, db }
   } catch (error) {
     console.error('Failed to connect to MongoDB:', error)

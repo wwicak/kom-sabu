@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { COMPANY_INFO } from '@/constants'
+
 import { ArrowRight, Play } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'

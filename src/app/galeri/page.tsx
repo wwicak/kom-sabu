@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { SidebarLayout } from '@/components/layout/SidebarLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Filter, Grid, List, Loader2 } from 'lucide-react'
+import { Search, Grid, List, Loader2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 interface GalleryItem {

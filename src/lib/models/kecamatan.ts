@@ -393,7 +393,7 @@ const KecamatanSchema = new Schema<IKecamatan>({
 })
 
 // Indexes for better performance
-KecamatanSchema.index({ code: 1 })
+// Note: code field already has unique index from schema definition
 KecamatanSchema.index({ regencyCode: 1 })
 KecamatanSchema.index({ name: 1 })
 KecamatanSchema.index({ isActive: 1 })

@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Kecamatan } from '@/lib/models/kecamatan'
 import { kecamatanCreateSchema } from '@/lib/validations'
-import { requirePermission, AuthenticatedRequest } from '@/lib/auth-middleware'
+import { requirePermission } from '@/lib/auth-middleware'
 import { Permission } from '@/lib/rbac'
 import { withRateLimit, rateLimiters } from '@/lib/enhanced-rate-limit'
-import { connectToDatabase } from '@/lib/mongodb'
 import mongoose from 'mongoose'
+
+// Connect to MongoDB using mongoose
+async function connectToMongoDB() {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+    })
+  }
+}
 
 // GET /api/kecamatan - Get all kecamatan data
 export const GET = withRateLimit(rateLimiters.api, async function(request: NextRequest) {
   try {
-    await connectToDatabase()
+    await connectToMongoDB()
 
     const { searchParams } = new URL(request.url)
     const includeGeometry = searchParams.get('includeGeometry') === 'true'
@@ -18,7 +28,7 @@ export const GET = withRateLimit(rateLimiters.api, async function(request: NextR
     const regencyCode = searchParams.get('regencyCode')
 
     // Build query
-    const query: any = {}
+    const query: { isActive?: boolean; regencyCode?: string } = {}
     if (activeOnly) {
       query.isActive = true
     }
@@ -27,7 +37,7 @@ export const GET = withRateLimit(rateLimiters.api, async function(request: NextR
     }
 
     // Build projection
-    let projection: any = {}
+    const projection: { geometry?: number } = {}
     if (!includeGeometry) {
       projection.geometry = 0 // Exclude geometry for lighter response
     }
@@ -58,9 +68,9 @@ export const GET = withRateLimit(rateLimiters.api, async function(request: NextR
 
 // POST /api/kecamatan - Create new kecamatan (admin only)
 export const POST = requirePermission(Permission.CREATE_KECAMATAN)(
-  withRateLimit(rateLimiters.api, async function(request: NextRequest, context: any) {
+  withRateLimit(rateLimiters.api, async function(request: NextRequest, context: { user: { id: string } }) {
     try {
-      await connectToDatabase()
+      await connectToMongoDB()
 
       const body = await request.json()
       const validatedData = kecamatanCreateSchema.parse(body)

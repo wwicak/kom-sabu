@@ -19,7 +19,15 @@ export async function GET(request: NextRequest) {
     const published = searchParams.get('published') !== 'false' // Default to published only
     
     // Build query
-    const query: any = {}
+    const query: {
+      isPublished?: boolean
+      category?: string
+      $or?: Array<{
+        title?: { $regex: string; $options: string }
+        description?: { $regex: string; $options: string }
+        tags?: { $in: RegExp[] }
+      }>
+    } = {}
     
     if (published) {
       query.isPublished = true
@@ -83,7 +91,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Get gallery categories and stats
-export async function HEAD(request: NextRequest) {
+export async function HEAD() {
   try {
     const stats = await GalleryItem.aggregate([
       { $match: { isPublished: true } },

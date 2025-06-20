@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { COMPANY_INFO } from '@/constants'
+
 import { Target, Eye, Award, Users } from 'lucide-react'
 import Link from 'next/link'
 
