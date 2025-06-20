@@ -86,113 +86,38 @@ export default function WisataAlamPage() {
       setLoading(false)
     }
   }
-  {
-    id: 1,
-      name: 'Pantai Namosain',
-        slug: 'pantai-namosain',
-          location: 'Sabu Barat',
-            category: 'Pantai',
-              description: 'Pantai dengan pasir putih yang halus dan air laut jernih berwarna biru kehijauan. Cocok untuk berenang, snorkeling, dan menikmati sunset.',
-                image: '/images/destinations/pantai-namosain.jpg',
-                  rating: 4.5,
-                    difficulty: 'Mudah',
-                      duration: '2-3 jam',
-                        bestTime: 'April - Oktober',
-                          facilities: ['Parkir', 'Toilet', 'Warung', 'Gazebo'],
-                            activities: ['Berenang', 'Snorkeling', 'Fotografi', 'Sunset viewing'],
-                              access: 'Jalan aspal 15 km dari pusat kota Seba',
-                                entrance: 'Gratis'
-  },
-  {
-    id: 2,
-      name: 'Pantai Pasir Putih Raijua',
-        slug: 'pantai-pasir-putih-raijua',
-          location: 'Raijua',
-            category: 'Pantai',
-              description: 'Pantai eksotis dengan pasir putih yang sangat halus dan air laut yang tenang. Dikelilingi oleh tebing karang yang indah.',
-                image: '/images/destinations/pantai-raijua.jpg',
-                  rating: 4.8,
-                    difficulty: 'Mudah',
-                      duration: '3-4 jam',
-                        bestTime: 'Mei - September',
-                          facilities: ['Parkir', 'Homestay', 'Warung'],
-                            activities: ['Berenang', 'Diving', 'Memancing', 'Camping'],
-                              access: 'Perahu dari Pelabuhan Seba (1 jam), lalu jalan kaki 20 menit',
-                                entrance: 'Rp 10.000'
-  },
-  {
-    id: 3,
-      name: 'Bukit Tardamu',
-        slug: 'bukit-tardamu',
-          location: 'Sabu Tengah',
-            category: 'Bukit',
-              description: 'Bukit dengan pemandangan 360 derajat ke seluruh Pulau Sabu. Tempat terbaik untuk melihat sunrise dan sunset.',
-                image: '/images/destinations/bukit-tardamu.jpg',
-                  rating: 4.6,
-                    difficulty: 'Sedang',
-                      duration: '1-2 jam',
-                        bestTime: 'Sepanjang tahun',
-                          facilities: ['Parkir', 'Gazebo', 'Toilet'],
-                            activities: ['Hiking', 'Fotografi', 'Sunrise/sunset viewing'],
-                              access: 'Jalan aspal 8 km dari Sabu Tengah, trekking 30 menit',
-                                entrance: 'Rp 5.000'
-  },
-  {
-    id: 4,
-      name: 'Mata Air Raijua',
-        location: 'Raijua',
-          category: 'Mata Air',
-            description: 'Mata air alami dengan air yang jernih dan segar. Dikelilingi oleh vegetasi tropis yang rimbun.',
-              image: '/images/destinations/mata-air-raijua.jpg',
-                rating: 4.3,
-                  difficulty: 'Mudah',
-                    duration: '1-2 jam',
-                      bestTime: 'Sepanjang tahun',
-                        facilities: ['Parkir', 'Gazebo'],
-                          activities: ['Berendam', 'Fotografi', 'Piknik'],
-                            access: 'Jalan setapak 1 km dari Desa Raijua',
-                              entrance: 'Gratis'
-  },
-  {
-    id: 5,
-      name: 'Hutan Mangrove Liae',
-        location: 'Sabu Liae',
-          category: 'Hutan',
-            description: 'Kawasan hutan mangrove yang masih alami dengan keanekaragaman hayati yang tinggi. Habitat berbagai jenis burung.',
-              image: '/images/destinations/mangrove-liae.jpg',
-                rating: 4.4,
-                  difficulty: 'Mudah',
-                    duration: '2-3 jam',
-                      bestTime: 'April - Oktober',
-                        facilities: ['Jembatan kayu', 'Gazebo', 'Toilet'],
-                          activities: ['Bird watching', 'Fotografi', 'Edukasi lingkungan'],
-                            access: 'Jalan aspal 12 km dari Liae',
-                              entrance: 'Rp 15.000'
-  },
-  {
-    id: 6,
-      name: 'Pantai Batu Karang Mehara',
-        location: 'Hawu Mehara',
-          category: 'Pantai',
-            description: 'Pantai dengan formasi batu karang yang unik dan air laut yang jernih. Cocok untuk snorkeling dan diving.',
-              image: '/images/destinations/pantai-mehara.jpg',
-                rating: 4.7,
-                  difficulty: 'Sedang',
-                    duration: '3-4 jam',
-                      bestTime: 'Mei - September',
-                        facilities: ['Parkir', 'Warung'],
-                          activities: ['Snorkeling', 'Diving', 'Rock climbing', 'Fotografi'],
-                            access: 'Jalan berbatu 20 km dari Mehara',
-                              entrance: 'Rp 8.000'
-  }
-  ]
 
-  const categories = [
-    { name: 'Pantai', count: 4, icon: Waves, color: 'bg-blue-500' },
-    { name: 'Bukit', count: 1, icon: Mountain, color: 'bg-green-500' },
-    { name: 'Hutan', count: 1, icon: TreePine, color: 'bg-emerald-500' },
-    { name: 'Mata Air', count: 1, icon: Waves, color: 'bg-cyan-500' }
-  ]
+  const formatPrice = (price: number, currency: string) => {
+    if (price === 0) return 'Gratis'
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: currency || 'IDR'
+    }).format(price)
+  }
+
+  // Dynamic categories based on fetched destinations
+  const getCategories = () => {
+    const categoryCount: { [key: string]: number } = {}
+    destinations.forEach(dest => {
+      const category = dest.subcategory || dest.category
+      categoryCount[category] = (categoryCount[category] || 0) + 1
+    })
+
+    return Object.entries(categoryCount).map(([name, count]) => ({
+      name,
+      count,
+      icon: name.toLowerCase().includes('pantai') ? Waves :
+        name.toLowerCase().includes('bukit') || name.toLowerCase().includes('gunung') ? Mountain :
+          name.toLowerCase().includes('hutan') || name.toLowerCase().includes('mangrove') ? TreePine :
+            Waves,
+      color: name.toLowerCase().includes('pantai') ? 'bg-blue-500' :
+        name.toLowerCase().includes('bukit') || name.toLowerCase().includes('gunung') ? 'bg-green-500' :
+          name.toLowerCase().includes('hutan') || name.toLowerCase().includes('mangrove') ? 'bg-emerald-500' :
+            'bg-cyan-500'
+    }))
+  }
+
+  const categories = getCategories()
 
   const tips = [
     {
@@ -223,6 +148,32 @@ export default function WisataAlamPage() {
       ]
     }
   ]
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Wisata Alam Sabu Raijua</h1>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchDestinations}>Coba Lagi</Button>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
@@ -256,93 +207,107 @@ export default function WisataAlamPage() {
         </div>
 
         {/* Destinations */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {naturalDestinations.map((destination) => (
-            <Card key={destination.id} className="overflow-hidden">
-              <div className="relative h-48 bg-gray-200">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-                <div className="absolute top-4 left-4 z-20">
-                  <Badge className="bg-white text-gray-900">
-                    {destination.category}
-                  </Badge>
-                </div>
-                <div className="absolute top-4 right-4 z-20">
-                  <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">{destination.rating}</span>
+        {destinations.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {destinations.map((destination) => (
+              <Card key={destination._id} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-200">
+                  {destination.images && destination.images.length > 0 && (
+                    <img
+                      src={destination.images[0].url}
+                      alt={destination.images[0].alt || destination.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+                  <div className="absolute top-4 left-4 z-20">
+                    <Badge className="bg-white text-gray-900">
+                      {destination.subcategory || destination.category}
+                    </Badge>
                   </div>
-                </div>
-                <div className="absolute bottom-4 left-4 z-20 text-white">
-                  <h3 className="text-xl font-bold mb-1">{destination.name}</h3>
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    <span className="text-sm">{destination.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <CardContent className="p-6">
-                <p className="text-gray-600 text-sm mb-4">{destination.description}</p>
-
-                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span>{destination.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span>{destination.difficulty}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Car className="h-4 w-4 text-gray-400" />
-                    <span>{destination.entrance}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Camera className="h-4 w-4 text-gray-400" />
-                    <span>{destination.bestTime}</span>
+                  {destination.statistics.rating > 0 && (
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">{destination.statistics.rating.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute bottom-4 left-4 z-20 text-white">
+                    <h3 className="text-xl font-bold mb-1">{destination.name}</h3>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">{destination.location.village}, {destination.location.district}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Aktivitas:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {destination.activities.map((activity, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
-                        {activity}
-                      </Badge>
-                    ))}
+                <CardContent className="p-6">
+                  <p className="text-gray-600 text-sm mb-4">{destination.description}</p>
+
+                  <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-gray-400" />
+                      <span>{destination.accessibility.duration}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-gray-400" />
+                      <span>{destination.accessibility.difficulty}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4 text-gray-400" />
+                      <span>{formatPrice(destination.entryFee.local, destination.entryFee.currency)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Camera className="h-4 w-4 text-gray-400" />
+                      <span>{destination.bestTimeToVisit}</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Fasilitas:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {destination.facilities.map((facility, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {facility}
-                      </Badge>
-                    ))}
+                  {destination.activities && destination.activities.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Aktivitas:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {destination.activities.map((activity, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {activity}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {destination.facilities && destination.facilities.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Fasilitas:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {destination.facilities.map((facility, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {facility}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-blue-900 mb-1 flex items-center gap-2">
+                      <Info className="h-4 w-4" />
+                      Akses
+                    </h4>
+                    <p className="text-blue-800 text-sm">{destination.access}</p>
                   </div>
-                </div>
 
-                <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                  <h4 className="font-semibold text-blue-900 mb-1 flex items-center gap-2">
-                    <Info className="h-4 w-4" />
-                    Akses
-                  </h4>
-                  <p className="text-blue-800 text-sm">{destination.access}</p>
-                </div>
-
-                <Button
-                  className="w-full"
-                  onClick={() => router.push(`/wisata/${destination.slug || destination.name.toLowerCase().replace(/\s+/g, '-')}`)}
-                >
-                  Lihat Detail & Rute
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <Button
+                    className="w-full"
+                    onClick={() => router.push(`/wisata/${destination.slug || destination.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                  >
+                    Lihat Detail & Rute
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
         {/* Tips */}
         <div className="mb-8">
