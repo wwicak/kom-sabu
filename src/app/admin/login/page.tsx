@@ -39,21 +39,21 @@ export default function AdminLoginPage() {
         const response = await fetch('/api/auth/profile', {
           credentials: 'include'
         })
-        
+
         if (response.ok) {
           router.push('/admin/dashboard')
         }
-      } catch (error) {
+      } catch {
         // User not logged in, continue with login page
       }
     }
-    
+
     checkAuth()
   }, [router])
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    
+
     // Clear validation error for this field
     if (validationErrors[field]) {
       setValidationErrors(prev => {
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
         return newErrors
       })
     }
-    
+
     // Clear general error
     if (error) {
       setError(null)
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
@@ -134,15 +134,15 @@ export default function AdminLoginPage() {
 
       // Success - redirect to dashboard
       router.push('/admin/dashboard')
-      
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed'
       setError(errorMessage)
-      
+
       // Reset Turnstile widget on error
       setTurnstileKey(prev => prev + 1)
       setFormData(prev => ({ ...prev, turnstileToken: '' }))
-      
+
     } finally {
       setIsLoading(false)
     }
@@ -171,7 +171,7 @@ export default function AdminLoginPage() {
               Enter your credentials to access the admin dashboard
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Username Field */}

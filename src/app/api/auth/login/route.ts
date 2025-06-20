@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { User, AuditLog } from '@/lib/models'
+import { User } from '@/lib/models'
 import { generateToken, generateRefreshToken, logSecurityEvent } from '@/lib/auth-middleware'
 import { Role } from '@/lib/rbac'
 import { verifyTurnstileToken, checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/components/security/TurnstileWidget'
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
       const maxAttempts = 5
       const lockDuration = 30 * 60 * 1000 // 30 minutes
 
-      const updateData: any = { loginAttempts }
+      const updateData: { loginAttempts: number; lockUntil?: Date } = { loginAttempts }
 
       if (loginAttempts >= maxAttempts) {
         updateData.lockUntil = new Date(Date.now() + lockDuration)

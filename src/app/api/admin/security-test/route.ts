@@ -3,7 +3,7 @@ import { requirePermission } from '@/lib/auth-middleware'
 import { Permission } from '@/lib/rbac'
 import { SecurityTests, SecurityMonitoring } from '@/lib/security-tests'
 
-export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function(request: NextRequest) {
+export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function() {
   try {
     // Run security configuration check
     const configCheck = SecurityMonitoring.checkSecurityConfiguration()

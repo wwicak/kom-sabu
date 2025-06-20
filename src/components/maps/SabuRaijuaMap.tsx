@@ -44,7 +44,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
   // OpenFreeMap tile layer URL
   const OPENFREE_MAP_URL = 'https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png'
-  
+
   // Sabu Raijua coordinates (approximate center)
   const SABU_RAIJUA_CENTER: [number, number] = [-10.5629, 121.7889]
   const DEFAULT_ZOOM = 11
@@ -52,7 +52,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   // Color scheme for different kecamatan
   const getKecamatanColor = (kecamatanCode: string, isSelected: boolean = false): string => {
     if (isSelected) return '#ef4444' // red-500 for selected
-    
+
     const colors = [
       '#3b82f6', // blue-500
       '#10b981', // emerald-500
@@ -61,7 +61,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       '#06b6d4', // cyan-500
       '#84cc16', // lime-500
     ]
-    
+
     // Use hash of kecamatan code to consistently assign colors
     let hash = 0
     for (let i = 0; i < kecamatanCode.length; i++) {
@@ -74,7 +74,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   const getKecamatanStyle = (kecamatan: IKecamatan, isHovered: boolean = false) => {
     const isSelected = selectedKecamatan === kecamatan.code
     const baseColor = getKecamatanColor(kecamatan.code, isSelected)
-    
+
     return {
       fillColor: baseColor,
       weight: isSelected ? 3 : isHovered ? 2 : 1,
@@ -135,18 +135,18 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             mouseover: (e) => {
               const layer = e.target
               layer.setStyle(getKecamatanStyle(kecamatan, true))
-              
+
               // Show tooltip
-              const bounds = layer.getBounds()
+              const bounds = geoJsonLayer.getBounds()
               const center = bounds.getCenter()
               const point = mapInstanceRef.current!.latLngToContainerPoint(center)
-              
+
               setTooltip({
                 kecamatan,
                 x: point.x,
                 y: point.y
               })
-              
+
               onKecamatanHover?.(kecamatan)
             },
             mouseout: (e) => {
@@ -157,9 +157,9 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             },
             click: (e) => {
               onKecamatanClick?.(kecamatan)
-              
+
               // Zoom to kecamatan bounds
-              const bounds = layer.getBounds()
+              const bounds = geoJsonLayer.getBounds()
               mapInstanceRef.current?.fitBounds(bounds, { padding: [20, 20] })
             }
           })
@@ -196,7 +196,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
     <div className={`relative ${className}`} style={{ height }}>
       {/* Map container */}
       <div ref={mapRef} className="w-full h-full rounded-lg shadow-lg" />
-      
+
       {/* Loading overlay */}
       {isLoading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg">
@@ -222,7 +222,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             <h3 className="font-bold text-lg text-gray-900">
               Kecamatan {tooltip.kecamatan.name}
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span className="text-gray-600">Populasi:</span>
@@ -230,21 +230,21 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   {formatNumber(tooltip.kecamatan.demographics.totalPopulation)} jiwa
                 </div>
               </div>
-              
+
               <div>
                 <span className="text-gray-600">Luas:</span>
                 <div className="font-semibold">
                   {tooltip.kecamatan.area.toFixed(2)} km²
                 </div>
               </div>
-              
+
               <div>
                 <span className="text-gray-600">Kepadatan:</span>
                 <div className="font-semibold">
                   {Math.round(tooltip.kecamatan.demographics.populationDensity)} jiwa/km²
                 </div>
               </div>
-              
+
               <div>
                 <span className="text-gray-600">Desa/Kelurahan:</span>
                 <div className="font-semibold">
@@ -271,7 +271,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
               </div>
             )}
           </div>
-          
+
           {/* Tooltip arrow */}
           <div className="absolute top-full left-1/2 transform -translate-x-1/2">
             <div className="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>

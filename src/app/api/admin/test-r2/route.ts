@@ -3,7 +3,7 @@ import { testR2Connection, getR2ConfigSummary, validateR2Config } from '@/lib/r2
 import { requirePermission } from '@/lib/auth-middleware'
 import { Permission } from '@/lib/rbac'
 
-export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function(request: NextRequest) {
+export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function() {
   try {
 
     // Get configuration summary
@@ -59,7 +59,7 @@ export const GET = requirePermission(Permission.MANAGE_SETTINGS)(async function(
 })
 
 // Test upload endpoint
-export const POST = requirePermission(Permission.MANAGE_SETTINGS)(async function(request: NextRequest) {
+export const POST = requirePermission(Permission.MANAGE_SETTINGS)(async function() {
   try {
 
     // Test connection first
