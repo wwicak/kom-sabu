@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,110 +18,78 @@ import {
   Share2
 } from 'lucide-react'
 
-// Mock news data
-const BERITA_DATA = [
-  {
-    id: '1',
-    title: 'Pembangunan Jembatan Penghubung Antar Pulau Dimulai',
-    slug: 'pembangunan-jembatan-penghubung-antar-pulau',
-    excerpt: 'Pemerintah Kabupaten Sabu Raijua memulai pembangunan jembatan yang akan menghubungkan Pulau Sabu dan Pulau Raijua untuk meningkatkan konektivitas.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Pembangunan',
-    author: 'Humas Pemkab',
-    publishedAt: '2024-01-15',
-    image: '/images/berita-jembatan.jpg',
-    featured: true,
-    views: 1250,
-    tags: ['Infrastruktur', 'Pembangunan', 'Konektivitas']
-  },
-  {
-    id: '2',
-    title: 'Festival Tenun Ikat Sabu Raijua 2024 Sukses Digelar',
-    slug: 'festival-tenun-ikat-sabu-raijua-2024',
-    excerpt: 'Festival Tenun Ikat tahunan berhasil menarik ribuan pengunjung dan memamerkan keindahan warisan budaya Sabu Raijua.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Budaya',
-    author: 'Dinas Pariwisata',
-    publishedAt: '2024-01-12',
-    image: '/images/berita-festival.jpg',
-    featured: true,
-    views: 980,
-    tags: ['Budaya', 'Festival', 'Tenun', 'Pariwisata']
-  },
-  {
-    id: '3',
-    title: 'Program Bantuan Sosial untuk Masyarakat Kurang Mampu',
-    slug: 'program-bantuan-sosial-masyarakat',
-    excerpt: 'Pemkab Sabu Raijua menyalurkan bantuan sosial kepada 500 keluarga kurang mampu di seluruh kecamatan.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Sosial',
-    author: 'Dinas Sosial',
-    publishedAt: '2024-01-10',
-    image: '/images/berita-bansos.jpg',
-    featured: false,
-    views: 750,
-    tags: ['Bantuan Sosial', 'Kesejahteraan', 'Masyarakat']
-  },
-  {
-    id: '4',
-    title: 'Peningkatan Kualitas Pendidikan Melalui Program Digitalisasi',
-    slug: 'peningkatan-kualitas-pendidikan-digitalisasi',
-    excerpt: 'Dinas Pendidikan meluncurkan program digitalisasi sekolah untuk meningkatkan kualitas pembelajaran di era modern.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Pendidikan',
-    author: 'Dinas Pendidikan',
-    publishedAt: '2024-01-08',
-    image: '/images/berita-pendidikan.jpg',
-    featured: false,
-    views: 620,
-    tags: ['Pendidikan', 'Digitalisasi', 'Teknologi']
-  },
-  {
-    id: '5',
-    title: 'Puskesmas Baru di Kecamatan Raijua Resmi Beroperasi',
-    slug: 'puskesmas-baru-raijua-beroperasi',
-    excerpt: 'Fasilitas kesehatan baru di Kecamatan Raijua mulai melayani masyarakat dengan peralatan medis modern.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Kesehatan',
-    author: 'Dinas Kesehatan',
-    publishedAt: '2024-01-05',
-    image: '/images/berita-puskesmas.jpg',
-    featured: false,
-    views: 890,
-    tags: ['Kesehatan', 'Fasilitas', 'Pelayanan']
-  },
-  {
-    id: '6',
-    title: 'Kunjungan Wisatawan Meningkat 30% di Tahun 2023',
-    slug: 'kunjungan-wisatawan-meningkat-2023',
-    excerpt: 'Data Dinas Pariwisata menunjukkan peningkatan signifikan kunjungan wisatawan domestik dan mancanegara.',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-    category: 'Pariwisata',
-    author: 'Dinas Pariwisata',
-    publishedAt: '2024-01-03',
-    image: '/images/berita-wisata.jpg',
-    featured: false,
-    views: 1100,
-    tags: ['Pariwisata', 'Statistik', 'Ekonomi']
+interface NewsArticle {
+  _id: string
+  title: string
+  slug: string
+  excerpt: string
+  category: string
+  tags: string[]
+  featuredImage?: {
+    url: string
+    alt?: string
   }
-]
+  author: {
+    fullName: string
+    username: string
+  }
+  publishedAt: string
+  featured: boolean
+  statistics: {
+    views: number
+  }
+}
 
-const CATEGORIES = ['Semua', 'Pembangunan', 'Budaya', 'Sosial', 'Pendidikan', 'Kesehatan', 'Pariwisata']
+const CATEGORIES = ['Semua', 'pemerintahan', 'pembangunan', 'sosial', 'ekonomi', 'budaya', 'pariwisata', 'pendidikan', 'kesehatan', 'lingkungan', 'olahraga']
 
 export default function BeritaPage() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
+  const [newsData, setNewsData] = useState<NewsArticle[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const filteredNews = BERITA_DATA.filter(news => {
-    const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      news.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'Semua' || news.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+  useEffect(() => {
+    fetchNews()
+  }, [selectedCategory, searchTerm])
 
-  const featuredNews = filteredNews.filter(news => news.featured)
-  const regularNews = filteredNews.filter(news => !news.featured)
+  const fetchNews = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams()
+
+      if (selectedCategory !== 'Semua') {
+        params.append('category', selectedCategory)
+      }
+
+      if (searchTerm) {
+        params.append('search', searchTerm)
+      }
+
+      params.append('limit', '20')
+      params.append('sort', 'newest')
+
+      const response = await fetch(`/api/news?${params.toString()}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch news')
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        setNewsData(data.data.news)
+      } else {
+        throw new Error(data.error || 'Failed to fetch news')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch news')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const featuredNews = newsData.filter(news => news.featured)
+  const regularNews = newsData.filter(news => !news.featured)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
@@ -240,7 +208,11 @@ export default function BeritaPage() {
                           </Badge>
                         ))}
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/berita/${news.slug}`)}
+                      >
                         Baca Selengkapnya
                       </Button>
                     </div>
@@ -301,7 +273,12 @@ export default function BeritaPage() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Button variant="outline" size="sm" className="text-xs">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => router.push(`/berita/${news.slug}`)}
+                      >
                         Baca
                       </Button>
                       <Button variant="ghost" size="sm" className="text-xs">

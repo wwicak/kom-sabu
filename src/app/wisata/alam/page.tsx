@@ -1,13 +1,16 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Waves, 
-  Mountain, 
-  TreePine, 
-  MapPin, 
-  Star, 
+import {
+  Waves,
+  Mountain,
+  TreePine,
+  MapPin,
+  Star,
   Camera,
   Clock,
   Users,
@@ -16,10 +19,12 @@ import {
 } from 'lucide-react'
 
 export default function WisataAlamPage() {
+  const router = useRouter()
   const naturalDestinations = [
     {
       id: 1,
       name: 'Pantai Namosain',
+      slug: 'pantai-namosain',
       location: 'Sabu Barat',
       category: 'Pantai',
       description: 'Pantai dengan pasir putih yang halus dan air laut jernih berwarna biru kehijauan. Cocok untuk berenang, snorkeling, dan menikmati sunset.',
@@ -36,6 +41,7 @@ export default function WisataAlamPage() {
     {
       id: 2,
       name: 'Pantai Pasir Putih Raijua',
+      slug: 'pantai-pasir-putih-raijua',
       location: 'Raijua',
       category: 'Pantai',
       description: 'Pantai eksotis dengan pasir putih yang sangat halus dan air laut yang tenang. Dikelilingi oleh tebing karang yang indah.',
@@ -52,6 +58,7 @@ export default function WisataAlamPage() {
     {
       id: 3,
       name: 'Bukit Tardamu',
+      slug: 'bukit-tardamu',
       location: 'Sabu Tengah',
       category: 'Bukit',
       description: 'Bukit dengan pemandangan 360 derajat ke seluruh Pulau Sabu. Tempat terbaik untuk melihat sunrise dan sunset.',
@@ -161,7 +168,7 @@ export default function WisataAlamPage() {
             Wisata Alam Sabu Raijua
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Jelajahi keindahan alam Sabu Raijua yang memukau, dari pantai berpasir putih 
+            Jelajahi keindahan alam Sabu Raijua yang memukau, dari pantai berpasir putih
             hingga bukit dengan pemandangan spektakuler.
           </p>
         </div>
@@ -208,10 +215,10 @@ export default function WisataAlamPage() {
                   </div>
                 </div>
               </div>
-              
+
               <CardContent className="p-6">
                 <p className="text-gray-600 text-sm mb-4">{destination.description}</p>
-                
+
                 <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-400" />
@@ -261,7 +268,10 @@ export default function WisataAlamPage() {
                   <p className="text-blue-800 text-sm">{destination.access}</p>
                 </div>
 
-                <Button className="w-full">
+                <Button
+                  className="w-full"
+                  onClick={() => router.push(`/wisata/${destination.slug || destination.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                >
                   Lihat Detail & Rute
                 </Button>
               </CardContent>
