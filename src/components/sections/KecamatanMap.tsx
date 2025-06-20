@@ -61,7 +61,7 @@ export function KecamatanMap() {
               Jelajahi potensi dan data setiap kecamatan di Kabupaten Sabu Raijua
             </p>
           </div>
-          
+
           <div className="mt-12 flex items-center justify-center">
             <div className="flex items-center gap-2 text-gray-600">
               <Loader2 className="h-6 w-6 animate-spin" />
@@ -85,7 +85,7 @@ export function KecamatanMap() {
               Jelajahi potensi dan data setiap kecamatan di Kabupaten Sabu Raijua
             </p>
           </div>
-          
+
           <div className="mt-12 text-center">
             <div className="text-red-600 mb-4">
               Gagal memuat data kecamatan. Silakan coba lagi nanti.
@@ -198,12 +198,20 @@ export function KecamatanMap() {
                 </p>
               </CardHeader>
               <CardContent className="p-0">
-                {kecamatanData && (
+                {kecamatanData && kecamatanData.length > 0 ? (
                   <InteractiveMap
                     kecamatanData={kecamatanData}
                     selectedKecamatan={selectedKecamatan?.slug}
                     onKecamatanSelect={setSelectedKecamatan}
                   />
+                ) : (
+                  <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <div className="mb-2">🗺️</div>
+                      <p>Data kecamatan tidak tersedia</p>
+                      <p className="text-sm mt-1">Silakan coba lagi nanti</p>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>

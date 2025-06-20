@@ -106,12 +106,21 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       attributionControl: true,
     })
 
-    // Add OpenFreeMap tile layer
-    L.tileLayer(OPENFREE_MAP_URL, {
+    // Add OpenFreeMap tile layer with fallback
+    const tileLayer = L.tileLayer(OPENFREE_MAP_URL, {
       attribution: '© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors',
       maxZoom: 19,
       tileSize: 256,
-    }).addTo(map)
+      errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjcyODAiPk1hcCBUaWxlPC90ZXh0Pjwvc3ZnPg=='
+    })
+
+    // Handle tile loading errors
+    tileLayer.on('tileerror', (e) => {
+      console.warn('Tile loading error:', e)
+      // Could implement fallback to different tile server here
+    })
+
+    tileLayer.addTo(map)
 
     mapInstanceRef.current = map
     setIsLoading(false)
