@@ -43,8 +43,17 @@ export default function AdminDashboard() {
     // Check authentication
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/admin/auth/check')
+        const response = await fetch('/api/auth/profile', {
+          credentials: 'include'
+        })
         if (!response.ok) {
+          router.push('/admin/login')
+          return
+        }
+
+        const userData = await response.json()
+        // Check if user has admin role
+        if (!userData.data || !['admin', 'super_admin'].includes(userData.data.role)) {
           router.push('/admin/login')
           return
         }
@@ -70,7 +79,10 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/admin/auth/logout', { method: 'POST' })
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
       router.push('/admin/login')
     } catch (error) {
       console.error('Logout failed:', error)

@@ -1,15 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
-  Calendar, 
-  User, 
-  Search, 
+import {
+  Calendar,
+  User,
+  Search,
   Clock,
   TrendingUp,
   Newspaper,
@@ -108,12 +109,13 @@ const BERITA_DATA = [
 const CATEGORIES = ['Semua', 'Pembangunan', 'Budaya', 'Sosial', 'Pendidikan', 'Kesehatan', 'Pariwisata']
 
 export default function BeritaPage() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
 
   const filteredNews = BERITA_DATA.filter(news => {
     const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         news.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+      news.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = selectedCategory === 'Semua' || news.category === selectedCategory
     return matchesSearch && matchesCategory
   })
@@ -140,7 +142,7 @@ export default function BeritaPage() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Berita Terkini</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Informasi terbaru seputar pemerintahan, pembangunan, dan kegiatan masyarakat 
+            Informasi terbaru seputar pemerintahan, pembangunan, dan kegiatan masyarakat
             di Kabupaten Sabu Raijua
           </p>
         </div>
@@ -202,7 +204,7 @@ export default function BeritaPage() {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="secondary">{news.category}</Badge>
@@ -215,10 +217,10 @@ export default function BeritaPage() {
                       {news.title}
                     </CardTitle>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <p className="text-gray-600 mb-4">{news.excerpt}</p>
-                    
+
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center">
                         <User className="h-4 w-4 mr-1" />
@@ -270,7 +272,7 @@ export default function BeritaPage() {
                       }}
                     />
                   </div>
-                  
+
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="secondary" className="text-xs">{news.category}</Badge>
@@ -283,10 +285,10 @@ export default function BeritaPage() {
                       {news.title}
                     </CardTitle>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{news.excerpt}</p>
-                    
+
                     <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                       <div className="flex items-center">
                         <User className="h-3 w-3 mr-1" />

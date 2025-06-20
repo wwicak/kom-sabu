@@ -1,17 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    
-    // Clear the admin token cookie
-    cookieStore.delete('admin-token')
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Logged out successfully'
     })
+
+    // Clear the auth token cookies
+    response.cookies.set('auth-token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 0
+    })
+
+    response.cookies.set('refresh-token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 0
+    })
+
+    return response
 
   } catch (error) {
     console.error('Logout error:', error)
