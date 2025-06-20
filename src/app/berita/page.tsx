@@ -103,6 +103,32 @@ export default function BeritaPage() {
     return new Intl.NumberFormat('id-ID').format(views)
   }
 
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Berita Terkini</h1>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchNews}>Coba Lagi</Button>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -139,7 +165,7 @@ export default function BeritaPage() {
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
                 >
-                  {category}
+                  {category === 'Semua' ? 'Semua' : category.charAt(0).toUpperCase() + category.slice(1)}
                 </Button>
               ))}
             </div>
