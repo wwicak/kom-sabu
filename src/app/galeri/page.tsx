@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -54,6 +55,7 @@ async function fetchGalleryItems(params: {
 }
 
 export default function GalleryPage() {
+  const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState('Semua')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchTerm, setSearchTerm] = useState('')
@@ -172,7 +174,11 @@ export default function GalleryPage() {
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button size="sm" className="bg-white text-black hover:bg-gray-100">
+                          <Button
+                            size="sm"
+                            className="bg-white text-black hover:bg-gray-100"
+                            onClick={() => router.push(`/galeri/${item._id}`)}
+                          >
                             Lihat Detail
                           </Button>
                         </div>
@@ -232,7 +238,11 @@ export default function GalleryPage() {
                         </div>
                       </div>
                       <div className="flex-shrink-0">
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => router.push(`/galeri/${item._id}`)}
+                        >
                           Lihat Detail
                         </Button>
                       </div>

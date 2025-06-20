@@ -295,12 +295,15 @@ export default function WisataAlamPage() {
                       <Info className="h-4 w-4" />
                       Akses
                     </h4>
-                    <p className="text-blue-800 text-sm">{destination.access}</p>
+                    <p className="text-blue-800 text-sm">{destination.accessibility.transportation}</p>
+                    {destination.location.address && (
+                      <p className="text-blue-800 text-sm mt-1">{destination.location.address}</p>
+                    )}
                   </div>
 
                   <Button
                     className="w-full"
-                    onClick={() => router.push(`/wisata/${destination.slug || destination.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                    onClick={() => router.push(`/wisata/${destination.slug}`)}
                   >
                     Lihat Detail & Rute
                   </Button>
@@ -308,6 +311,12 @@ export default function WisataAlamPage() {
               </Card>
             ))}
           </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 mb-4">Belum ada destinasi wisata alam yang tersedia.</p>
+            <Button onClick={fetchDestinations}>Muat Ulang</Button>
+          </div>
+        )}
 
         {/* Tips */}
         <div className="mb-8">

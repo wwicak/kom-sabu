@@ -1,12 +1,16 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Camera, 
-  Users, 
-  Clock, 
-  MapPin, 
+import {
+  Camera,
+  Users,
+  Clock,
+  MapPin,
   Star,
   Calendar,
   Music,
@@ -15,64 +19,165 @@ import {
   Shirt
 } from 'lucide-react'
 
+interface Destination {
+  _id: string
+  name: string
+  slug: string
+  description: string
+  category: string
+  subcategory: string
+  location: {
+    district: string
+    village: string
+    address: string
+  }
+  images: Array<{
+    url: string
+    caption?: string
+    alt?: string
+  }>
+  facilities: string[]
+  activities: string[]
+  bestTimeToVisit: string
+  entryFee: {
+    local: number
+    foreign: number
+    currency: string
+  }
+  statistics: {
+    views: number
+    rating: number
+    reviewCount: number
+  }
+  accessibility: {
+    transportation: string
+    difficulty: string
+    duration: string
+  }
+}
+
 export default function WisataBudayaPage() {
-  const culturalSites = [
-    {
-      id: 1,
-      name: 'Desa Adat Raijua',
-      location: 'Raijua',
-      category: 'Desa Adat',
-      description: 'Desa tradisional dengan rumah adat yang masih terjaga. Masyarakat masih menjalankan adat istiadat leluhur.',
-      image: '/images/culture/desa-adat-raijua.jpg',
-      rating: 4.8,
-      duration: '3-4 jam',
-      bestTime: 'Sepanjang tahun',
-      highlights: ['Rumah Adat', 'Upacara Tradisional', 'Kerajinan Lokal', 'Cerita Rakyat'],
-      activities: ['Homestay', 'Workshop', 'Cultural tour', 'Fotografi'],
-      entrance: 'Rp 25.000'
-    },
-    {
-      id: 2,
-      name: 'Pusat Tenun Ikat Sabu',
-      location: 'Sabu Tengah',
-      category: 'Kerajinan',
-      description: 'Pusat kerajinan tenun ikat tradisional dengan motif khas Sabu yang telah diwariskan turun-temurun.',
-      image: '/images/culture/tenun-ikat.jpg',
-      rating: 4.6,
-      duration: '2-3 jam',
-      bestTime: 'Sepanjang tahun',
-      highlights: ['Proses Tenun', 'Motif Tradisional', 'Workshop', 'Galeri'],
-      activities: ['Belajar menenun', 'Belanja souvenir', 'Fotografi', 'Workshop'],
-      entrance: 'Rp 15.000'
-    },
-    {
-      id: 3,
-      name: 'Rumah Adat Sabu',
-      location: 'Sabu Barat',
-      category: 'Arsitektur',
-      description: 'Rumah tradisional dengan arsitektur khas Sabu yang menggunakan bahan alami dan teknik tradisional.',
-      image: '/images/culture/rumah-adat.jpg',
-      rating: 4.5,
-      duration: '1-2 jam',
-      bestTime: 'Sepanjang tahun',
-      highlights: ['Arsitektur Tradisional', 'Filosofi Bangunan', 'Ornamen Khas', 'Fungsi Ruang'],
-      activities: ['Tur arsitektur', 'Fotografi', 'Edukasi budaya'],
-      entrance: 'Rp 10.000'
-    },
-    {
-      id: 4,
-      name: 'Sanggar Tari Sabu',
-      location: 'Sabu Tengah',
-      category: 'Seni Pertunjukan',
-      description: 'Sanggar yang melestarikan tarian tradisional Sabu dengan berbagai jenis tarian untuk upacara adat.',
-      image: '/images/culture/tari-sabu.jpg',
-      rating: 4.7,
-      duration: '2 jam',
-      bestTime: 'Sepanjang tahun',
-      highlights: ['Tari Tradisional', 'Kostum Adat', 'Musik Tradisional', 'Cerita Tari'],
-      activities: ['Pertunjukan tari', 'Belajar tari', 'Fotografi', 'Workshop'],
-      entrance: 'Rp 20.000'
+  const router = useRouter()
+  const [destinations, setDestinations] = useState<Destination[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchDestinations()
+  }, [])
+
+  const fetchDestinations = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/destinations?category=wisata-budaya&limit=20')
+      if (!response.ok) {
+        throw new Error('Failed to fetch destinations')
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        setDestinations(data.data.destinations || data.data)
+      } else {
+        throw new Error(data.error || 'Failed to fetch destinations')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch destinations')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  const formatPrice = (price: number, currency: string) => {
+    if (price === 0) return 'Gratis'
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: currency || 'IDR'
+    }).format(price)
+  }
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Wisata Budaya Sabu Raijua</h1>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchDestinations}>Coba Lagi</Button>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  const culturalSites = destinations // Use CMS data instead of mock data
+  {
+    id: 1,
+      name: 'Desa Adat Raijua',
+        location: 'Raijua',
+          category: 'Desa Adat',
+            description: 'Desa tradisional dengan rumah adat yang masih terjaga. Masyarakat masih menjalankan adat istiadat leluhur.',
+              image: '/images/culture/desa-adat-raijua.jpg',
+                rating: 4.8,
+                  duration: '3-4 jam',
+                    bestTime: 'Sepanjang tahun',
+                      highlights: ['Rumah Adat', 'Upacara Tradisional', 'Kerajinan Lokal', 'Cerita Rakyat'],
+                        activities: ['Homestay', 'Workshop', 'Cultural tour', 'Fotografi'],
+                          entrance: 'Rp 25.000'
+  },
+  {
+    id: 2,
+      name: 'Pusat Tenun Ikat Sabu',
+        location: 'Sabu Tengah',
+          category: 'Kerajinan',
+            description: 'Pusat kerajinan tenun ikat tradisional dengan motif khas Sabu yang telah diwariskan turun-temurun.',
+              image: '/images/culture/tenun-ikat.jpg',
+                rating: 4.6,
+                  duration: '2-3 jam',
+                    bestTime: 'Sepanjang tahun',
+                      highlights: ['Proses Tenun', 'Motif Tradisional', 'Workshop', 'Galeri'],
+                        activities: ['Belajar menenun', 'Belanja souvenir', 'Fotografi', 'Workshop'],
+                          entrance: 'Rp 15.000'
+  },
+  {
+    id: 3,
+      name: 'Rumah Adat Sabu',
+        location: 'Sabu Barat',
+          category: 'Arsitektur',
+            description: 'Rumah tradisional dengan arsitektur khas Sabu yang menggunakan bahan alami dan teknik tradisional.',
+              image: '/images/culture/rumah-adat.jpg',
+                rating: 4.5,
+                  duration: '1-2 jam',
+                    bestTime: 'Sepanjang tahun',
+                      highlights: ['Arsitektur Tradisional', 'Filosofi Bangunan', 'Ornamen Khas', 'Fungsi Ruang'],
+                        activities: ['Tur arsitektur', 'Fotografi', 'Edukasi budaya'],
+                          entrance: 'Rp 10.000'
+  },
+  {
+    id: 4,
+      name: 'Sanggar Tari Sabu',
+        location: 'Sabu Tengah',
+          category: 'Seni Pertunjukan',
+            description: 'Sanggar yang melestarikan tarian tradisional Sabu dengan berbagai jenis tarian untuk upacara adat.',
+              image: '/images/culture/tari-sabu.jpg',
+                rating: 4.7,
+                  duration: '2 jam',
+                    bestTime: 'Sepanjang tahun',
+                      highlights: ['Tari Tradisional', 'Kostum Adat', 'Musik Tradisional', 'Cerita Tari'],
+                        activities: ['Pertunjukan tari', 'Belajar tari', 'Fotografi', 'Workshop'],
+                          entrance: 'Rp 20.000'
+  }
   ]
 
   const culturalEvents = [
@@ -115,7 +220,7 @@ export default function WisataBudayaPage() {
             Wisata Budaya Sabu Raijua
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Jelajahi kekayaan budaya dan tradisi masyarakat Sabu Raijua yang telah 
+            Jelajahi kekayaan budaya dan tradisi masyarakat Sabu Raijua yang telah
             diwariskan turun-temurun selama berabad-abad.
           </p>
         </div>
@@ -162,10 +267,10 @@ export default function WisataBudayaPage() {
                   </div>
                 </div>
               </div>
-              
+
               <CardContent className="p-6">
                 <p className="text-gray-600 text-sm mb-4">{site.description}</p>
-                
+
                 <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-400" />
