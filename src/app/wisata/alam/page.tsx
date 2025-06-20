@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,108 +19,172 @@ import {
   Info
 } from 'lucide-react'
 
+interface Destination {
+  _id: string
+  name: string
+  slug: string
+  description: string
+  category: string
+  subcategory: string
+  location: {
+    district: string
+    village: string
+    address: string
+  }
+  images: Array<{
+    url: string
+    caption?: string
+    alt?: string
+  }>
+  facilities: string[]
+  activities: string[]
+  bestTimeToVisit: string
+  entryFee: {
+    local: number
+    foreign: number
+    currency: string
+  }
+  statistics: {
+    views: number
+    rating: number
+    reviewCount: number
+  }
+  accessibility: {
+    transportation: string
+    difficulty: string
+    duration: string
+  }
+}
+
 export default function WisataAlamPage() {
   const router = useRouter()
-  const naturalDestinations = [
-    {
-      id: 1,
-      name: 'Pantai Namosain',
-      slug: 'pantai-namosain',
-      location: 'Sabu Barat',
-      category: 'Pantai',
-      description: 'Pantai dengan pasir putih yang halus dan air laut jernih berwarna biru kehijauan. Cocok untuk berenang, snorkeling, dan menikmati sunset.',
-      image: '/images/destinations/pantai-namosain.jpg',
-      rating: 4.5,
-      difficulty: 'Mudah',
-      duration: '2-3 jam',
-      bestTime: 'April - Oktober',
-      facilities: ['Parkir', 'Toilet', 'Warung', 'Gazebo'],
-      activities: ['Berenang', 'Snorkeling', 'Fotografi', 'Sunset viewing'],
-      access: 'Jalan aspal 15 km dari pusat kota Seba',
-      entrance: 'Gratis'
-    },
-    {
-      id: 2,
-      name: 'Pantai Pasir Putih Raijua',
-      slug: 'pantai-pasir-putih-raijua',
-      location: 'Raijua',
-      category: 'Pantai',
-      description: 'Pantai eksotis dengan pasir putih yang sangat halus dan air laut yang tenang. Dikelilingi oleh tebing karang yang indah.',
-      image: '/images/destinations/pantai-raijua.jpg',
-      rating: 4.8,
-      difficulty: 'Mudah',
-      duration: '3-4 jam',
-      bestTime: 'Mei - September',
-      facilities: ['Parkir', 'Homestay', 'Warung'],
-      activities: ['Berenang', 'Diving', 'Memancing', 'Camping'],
-      access: 'Perahu dari Pelabuhan Seba (1 jam), lalu jalan kaki 20 menit',
-      entrance: 'Rp 10.000'
-    },
-    {
-      id: 3,
-      name: 'Bukit Tardamu',
-      slug: 'bukit-tardamu',
-      location: 'Sabu Tengah',
-      category: 'Bukit',
-      description: 'Bukit dengan pemandangan 360 derajat ke seluruh Pulau Sabu. Tempat terbaik untuk melihat sunrise dan sunset.',
-      image: '/images/destinations/bukit-tardamu.jpg',
-      rating: 4.6,
-      difficulty: 'Sedang',
-      duration: '1-2 jam',
-      bestTime: 'Sepanjang tahun',
-      facilities: ['Parkir', 'Gazebo', 'Toilet'],
-      activities: ['Hiking', 'Fotografi', 'Sunrise/sunset viewing'],
-      access: 'Jalan aspal 8 km dari Sabu Tengah, trekking 30 menit',
-      entrance: 'Rp 5.000'
-    },
-    {
-      id: 4,
-      name: 'Mata Air Raijua',
-      location: 'Raijua',
-      category: 'Mata Air',
-      description: 'Mata air alami dengan air yang jernih dan segar. Dikelilingi oleh vegetasi tropis yang rimbun.',
-      image: '/images/destinations/mata-air-raijua.jpg',
-      rating: 4.3,
-      difficulty: 'Mudah',
-      duration: '1-2 jam',
-      bestTime: 'Sepanjang tahun',
-      facilities: ['Parkir', 'Gazebo'],
-      activities: ['Berendam', 'Fotografi', 'Piknik'],
-      access: 'Jalan setapak 1 km dari Desa Raijua',
-      entrance: 'Gratis'
-    },
-    {
-      id: 5,
-      name: 'Hutan Mangrove Liae',
-      location: 'Sabu Liae',
-      category: 'Hutan',
-      description: 'Kawasan hutan mangrove yang masih alami dengan keanekaragaman hayati yang tinggi. Habitat berbagai jenis burung.',
-      image: '/images/destinations/mangrove-liae.jpg',
-      rating: 4.4,
-      difficulty: 'Mudah',
-      duration: '2-3 jam',
-      bestTime: 'April - Oktober',
-      facilities: ['Jembatan kayu', 'Gazebo', 'Toilet'],
-      activities: ['Bird watching', 'Fotografi', 'Edukasi lingkungan'],
-      access: 'Jalan aspal 12 km dari Liae',
-      entrance: 'Rp 15.000'
-    },
-    {
-      id: 6,
-      name: 'Pantai Batu Karang Mehara',
-      location: 'Hawu Mehara',
-      category: 'Pantai',
-      description: 'Pantai dengan formasi batu karang yang unik dan air laut yang jernih. Cocok untuk snorkeling dan diving.',
-      image: '/images/destinations/pantai-mehara.jpg',
-      rating: 4.7,
-      difficulty: 'Sedang',
-      duration: '3-4 jam',
-      bestTime: 'Mei - September',
-      facilities: ['Parkir', 'Warung'],
-      activities: ['Snorkeling', 'Diving', 'Rock climbing', 'Fotografi'],
-      access: 'Jalan berbatu 20 km dari Mehara',
-      entrance: 'Rp 8.000'
+  const [destinations, setDestinations] = useState<Destination[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchDestinations()
+  }, [])
+
+  const fetchDestinations = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/destinations?category=wisata-alam&limit=20')
+      if (!response.ok) {
+        throw new Error('Failed to fetch destinations')
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        setDestinations(data.data.destinations || data.data)
+      } else {
+        throw new Error(data.error || 'Failed to fetch destinations')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch destinations')
+    } finally {
+      setLoading(false)
     }
+  }
+  {
+    id: 1,
+      name: 'Pantai Namosain',
+        slug: 'pantai-namosain',
+          location: 'Sabu Barat',
+            category: 'Pantai',
+              description: 'Pantai dengan pasir putih yang halus dan air laut jernih berwarna biru kehijauan. Cocok untuk berenang, snorkeling, dan menikmati sunset.',
+                image: '/images/destinations/pantai-namosain.jpg',
+                  rating: 4.5,
+                    difficulty: 'Mudah',
+                      duration: '2-3 jam',
+                        bestTime: 'April - Oktober',
+                          facilities: ['Parkir', 'Toilet', 'Warung', 'Gazebo'],
+                            activities: ['Berenang', 'Snorkeling', 'Fotografi', 'Sunset viewing'],
+                              access: 'Jalan aspal 15 km dari pusat kota Seba',
+                                entrance: 'Gratis'
+  },
+  {
+    id: 2,
+      name: 'Pantai Pasir Putih Raijua',
+        slug: 'pantai-pasir-putih-raijua',
+          location: 'Raijua',
+            category: 'Pantai',
+              description: 'Pantai eksotis dengan pasir putih yang sangat halus dan air laut yang tenang. Dikelilingi oleh tebing karang yang indah.',
+                image: '/images/destinations/pantai-raijua.jpg',
+                  rating: 4.8,
+                    difficulty: 'Mudah',
+                      duration: '3-4 jam',
+                        bestTime: 'Mei - September',
+                          facilities: ['Parkir', 'Homestay', 'Warung'],
+                            activities: ['Berenang', 'Diving', 'Memancing', 'Camping'],
+                              access: 'Perahu dari Pelabuhan Seba (1 jam), lalu jalan kaki 20 menit',
+                                entrance: 'Rp 10.000'
+  },
+  {
+    id: 3,
+      name: 'Bukit Tardamu',
+        slug: 'bukit-tardamu',
+          location: 'Sabu Tengah',
+            category: 'Bukit',
+              description: 'Bukit dengan pemandangan 360 derajat ke seluruh Pulau Sabu. Tempat terbaik untuk melihat sunrise dan sunset.',
+                image: '/images/destinations/bukit-tardamu.jpg',
+                  rating: 4.6,
+                    difficulty: 'Sedang',
+                      duration: '1-2 jam',
+                        bestTime: 'Sepanjang tahun',
+                          facilities: ['Parkir', 'Gazebo', 'Toilet'],
+                            activities: ['Hiking', 'Fotografi', 'Sunrise/sunset viewing'],
+                              access: 'Jalan aspal 8 km dari Sabu Tengah, trekking 30 menit',
+                                entrance: 'Rp 5.000'
+  },
+  {
+    id: 4,
+      name: 'Mata Air Raijua',
+        location: 'Raijua',
+          category: 'Mata Air',
+            description: 'Mata air alami dengan air yang jernih dan segar. Dikelilingi oleh vegetasi tropis yang rimbun.',
+              image: '/images/destinations/mata-air-raijua.jpg',
+                rating: 4.3,
+                  difficulty: 'Mudah',
+                    duration: '1-2 jam',
+                      bestTime: 'Sepanjang tahun',
+                        facilities: ['Parkir', 'Gazebo'],
+                          activities: ['Berendam', 'Fotografi', 'Piknik'],
+                            access: 'Jalan setapak 1 km dari Desa Raijua',
+                              entrance: 'Gratis'
+  },
+  {
+    id: 5,
+      name: 'Hutan Mangrove Liae',
+        location: 'Sabu Liae',
+          category: 'Hutan',
+            description: 'Kawasan hutan mangrove yang masih alami dengan keanekaragaman hayati yang tinggi. Habitat berbagai jenis burung.',
+              image: '/images/destinations/mangrove-liae.jpg',
+                rating: 4.4,
+                  difficulty: 'Mudah',
+                    duration: '2-3 jam',
+                      bestTime: 'April - Oktober',
+                        facilities: ['Jembatan kayu', 'Gazebo', 'Toilet'],
+                          activities: ['Bird watching', 'Fotografi', 'Edukasi lingkungan'],
+                            access: 'Jalan aspal 12 km dari Liae',
+                              entrance: 'Rp 15.000'
+  },
+  {
+    id: 6,
+      name: 'Pantai Batu Karang Mehara',
+        location: 'Hawu Mehara',
+          category: 'Pantai',
+            description: 'Pantai dengan formasi batu karang yang unik dan air laut yang jernih. Cocok untuk snorkeling dan diving.',
+              image: '/images/destinations/pantai-mehara.jpg',
+                rating: 4.7,
+                  difficulty: 'Sedang',
+                    duration: '3-4 jam',
+                      bestTime: 'Mei - September',
+                        facilities: ['Parkir', 'Warung'],
+                          activities: ['Snorkeling', 'Diving', 'Rock climbing', 'Fotografi'],
+                            access: 'Jalan berbatu 20 km dari Mehara',
+                              entrance: 'Rp 8.000'
+  }
   ]
 
   const categories = [

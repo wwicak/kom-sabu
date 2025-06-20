@@ -182,11 +182,11 @@ export default function BeritaPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {featuredNews.map((news) => (
-                <Card key={news.id} className="hover:shadow-lg transition-shadow">
+                <Card key={news._id} className="hover:shadow-lg transition-shadow">
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
                     <img
-                      src={news.image}
-                      alt={news.title}
+                      src={news.featuredImage?.url || '/images/placeholder-news.jpg'}
+                      alt={news.featuredImage?.alt || news.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(news.title)}%3C/text%3E%3C/svg%3E`
@@ -201,10 +201,10 @@ export default function BeritaPage() {
 
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary">{news.category}</Badge>
+                      <Badge variant="secondary">{news.category.charAt(0).toUpperCase() + news.category.slice(1)}</Badge>
                       <div className="flex items-center text-sm text-gray-500">
                         <Eye className="h-4 w-4 mr-1" />
-                        {formatViews(news.views)}
+                        {formatViews(news.statistics.views)}
                       </div>
                     </div>
                     <CardTitle className="text-xl hover:text-blue-600 cursor-pointer">
@@ -218,7 +218,7 @@ export default function BeritaPage() {
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center">
                         <User className="h-4 w-4 mr-1" />
-                        {news.author}
+                        {news.author.fullName}
                       </div>
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
@@ -259,11 +259,11 @@ export default function BeritaPage() {
           {regularNews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {regularNews.map((news) => (
-                <Card key={news.id} className="hover:shadow-lg transition-shadow">
+                <Card key={news._id} className="hover:shadow-lg transition-shadow">
                   <div className="relative h-40 overflow-hidden rounded-t-lg">
                     <img
-                      src={news.image}
-                      alt={news.title}
+                      src={news.featuredImage?.url || '/images/placeholder-news.jpg'}
+                      alt={news.featuredImage?.alt || news.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='160' viewBox='0 0 400 160'%3E%3Crect width='400' height='160' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='12' fill='%236b7280'%3E${encodeURIComponent(news.title)}%3C/text%3E%3C/svg%3E`
@@ -273,10 +273,10 @@ export default function BeritaPage() {
 
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary" className="text-xs">{news.category}</Badge>
+                      <Badge variant="secondary" className="text-xs">{news.category.charAt(0).toUpperCase() + news.category.slice(1)}</Badge>
                       <div className="flex items-center text-xs text-gray-500">
                         <Eye className="h-3 w-3 mr-1" />
-                        {formatViews(news.views)}
+                        {formatViews(news.statistics.views)}
                       </div>
                     </div>
                     <CardTitle className="text-lg hover:text-blue-600 cursor-pointer line-clamp-2">
@@ -290,7 +290,7 @@ export default function BeritaPage() {
                     <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                       <div className="flex items-center">
                         <User className="h-3 w-3 mr-1" />
-                        {news.author}
+                        {news.author.fullName}
                       </div>
                       <div className="flex items-center">
                         <Clock className="h-3 w-3 mr-1" />
