@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Users, Building2, TrendingUp, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { IKecamatan } from '@/lib/models/kecamatan'
 
 interface KecamatanData {
   _id: string
@@ -49,10 +50,138 @@ interface KecamatanData {
   }
 }
 
+// Helper function to convert KecamatanData to IKecamatan format
+function convertToIKecamatan(data: KecamatanData): IKecamatan {
+  return {
+    _id: data._id as any,
+    name: data.name,
+    nameEnglish: data.name,
+    code: data.slug,
+    regencyCode: '5320',
+    regencyName: 'Sabu Raijua',
+    provinceCode: '53',
+    provinceName: 'Nusa Tenggara Timur',
+    geometry: data.geometry || data.polygon,
+    centroid: {
+      type: 'Point',
+      coordinates: [data.coordinates.center.lng, data.coordinates.center.lat]
+    },
+    area: data.area,
+    capital: data.name,
+    villages: Array.from({ length: data.villages }, (_, i) => ({
+      name: `Desa ${i + 1}`,
+      type: 'desa' as const,
+      population: Math.floor(data.population / data.villages)
+    })),
+    demographics: {
+      totalPopulation: data.population,
+      malePopulation: Math.floor(data.population * 0.51),
+      femalePopulation: Math.floor(data.population * 0.49),
+      households: Math.floor(data.population / 4),
+      populationDensity: data.population / data.area,
+      ageGroups: {
+        under15: Math.floor(data.population * 0.25),
+        age15to64: Math.floor(data.population * 0.65),
+        over64: Math.floor(data.population * 0.1)
+      },
+      education: {
+        noEducation: Math.floor(data.population * 0.1),
+        elementary: Math.floor(data.population * 0.3),
+        juniorHigh: Math.floor(data.population * 0.25),
+        seniorHigh: Math.floor(data.population * 0.25),
+        university: Math.floor(data.population * 0.1)
+      },
+      religion: {
+        christian: Math.floor(data.population * 0.8),
+        catholic: Math.floor(data.population * 0.1),
+        islam: Math.floor(data.population * 0.05),
+        hindu: Math.floor(data.population * 0.03),
+        buddhist: Math.floor(data.population * 0.01),
+        other: Math.floor(data.population * 0.01)
+      },
+      lastUpdated: new Date()
+    },
+    agriculture: {
+      mainCrops: data.potency?.agriculture?.mainCrops?.map((crop: string) => ({ name: crop, area: 100, productivity: 'Tinggi' })) || [],
+      totalFarmingArea: data.potency?.agriculture?.farmingArea || 0,
+      productivity: data.potency?.agriculture?.productivity || 'Sedang',
+      lastUpdated: new Date()
+    },
+    fishery: {
+      mainSpecies: data.potency?.fishery?.mainSpecies?.map((species: string) => ({ name: species, annualCatch: 100, marketValue: 'Tinggi' })) || [],
+      totalFishingArea: data.potency?.fishery?.fishingArea || 0,
+      productivity: data.potency?.fishery?.productivity || 'Sedang',
+      lastUpdated: new Date()
+    },
+    tourism: {
+      attractions: data.potency?.tourism?.attractions?.map((attraction: string) => ({ name: attraction, type: 'Alam', description: attraction })) || [],
+      facilities: data.potency?.tourism?.facilities?.map((facility: string) => ({ name: facility, type: 'Akomodasi', capacity: 50 })) || [],
+      annualVisitors: data.potency?.tourism?.annualVisitors || 0,
+      lastUpdated: new Date()
+    },
+    infrastructure: {
+      roads: {
+        totalLength: 50,
+        pavedRoads: 30,
+        unpavedRoads: 20
+      },
+      healthFacilities: {
+        hospitals: 1,
+        healthCenters: 2,
+        clinics: 3,
+        doctors: 5,
+        nurses: 10
+      },
+      education: {
+        kindergartens: 2,
+        elementarySchools: 5,
+        juniorHighSchools: 2,
+        seniorHighSchools: 1,
+        universities: 0,
+        teachers: 20
+      },
+      utilities: {
+        electricityAccess: 85,
+        cleanWaterAccess: 70,
+        internetAccess: 60,
+        wasteManagement: true
+      },
+      lastUpdated: new Date()
+    },
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  } as IKecamatan
+}
+
 export function KecamatanMap() {
   const { data: kecamatanData, isLoading, error } = useKecamatanList()
   const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanData | null>(null)
   const [hoveredKecamatan, setHoveredKecamatan] = useState<KecamatanData | null>(null)
+
+  // Convert KecamatanData to IKecamatan format for the map
+  const convertedKecamatanData = kecamatanData?.map(convertToIKecamatan) || []
+
+  // Handler functions to convert between types
+  const handleKecamatanSelect = (kecamatan: IKecamatan | null) => {
+    if (kecamatan) {
+      // Find the original KecamatanData by matching the code/slug
+      const originalData = kecamatanData?.find(k => k.slug === kecamatan.code)
+      setSelectedKecamatan(originalData || null)
+    } else {
+      setSelectedKecamatan(null)
+    }
+  }
+
+  const handleKecamatanHover = (kecamatan: IKecamatan | null) => {
+    if (kecamatan) {
+      // Find the original KecamatanData by matching the code/slug
+      const originalData = kecamatanData?.find(k => k.slug === kecamatan.code)
+      setHoveredKecamatan(originalData || null)
+    } else {
+      setHoveredKecamatan(null)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -203,13 +332,13 @@ export function KecamatanMap() {
                 </p>
               </CardHeader>
               <CardContent className="p-0">
-                {kecamatanData && kecamatanData.length > 0 ? (
+                {convertedKecamatanData && convertedKecamatanData.length > 0 ? (
                   <div className="relative">
                     <InteractiveMap
-                      kecamatanData={kecamatanData}
+                      kecamatanData={convertedKecamatanData}
                       selectedKecamatan={selectedKecamatan?.slug}
-                      onKecamatanSelect={setSelectedKecamatan}
-                      onKecamatanHover={setHoveredKecamatan}
+                      onKecamatanSelect={handleKecamatanSelect}
+                      onKecamatanHover={handleKecamatanHover}
                       showHoverInfo={true}
                     />
 
@@ -256,7 +385,7 @@ export function KecamatanMap() {
           <div className="space-y-6">
             {selectedKecamatan ? (
               <KecamatanDetailCard
-                kecamatan={selectedKecamatan}
+                kecamatan={convertToIKecamatan(selectedKecamatan)}
                 onClose={() => setSelectedKecamatan(null)}
               />
             ) : (

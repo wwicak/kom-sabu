@@ -118,7 +118,7 @@ async function handlePOST(request: NextRequest) {
       success: true,
       message: 'File uploaded successfully and pending approval',
       data: {
-        id: (savedGalleryItem as { _id: string }[])?.[0]?._id,
+        id: (savedGalleryItem as any)?._id,
         title,
         imageUrl: uploadResult.original.url,
         thumbnailUrl: uploadResult.thumbnail?.url,

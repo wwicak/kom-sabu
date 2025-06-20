@@ -9,24 +9,24 @@ interface BoundaryVisualizationProps {
 
 export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ className = '' }) => {
   const geoJson = getSabuRaijuaBoundariesGeoJSON()
-  
+
   // Calculate SVG viewBox from all coordinates
-  const allCoords = REAL_SABU_RAIJUA_BOUNDARIES.flatMap(boundary => 
-    boundary.geometry?.coordinates[0] || []
+  const allCoords = REAL_SABU_RAIJUA_BOUNDARIES.flatMap(boundary =>
+    boundary.geometry?.coordinates?.[0] || []
   )
-  
+
   const lons = allCoords.map(coord => coord[0])
   const lats = allCoords.map(coord => coord[1])
-  
+
   const minLon = Math.min(...lons)
   const maxLon = Math.max(...lons)
   const minLat = Math.min(...lats)
   const maxLat = Math.max(...lats)
-  
+
   // Add padding
   const padding = 0.02
   const viewBox = `${minLon - padding} ${minLat - padding} ${maxLon - minLon + 2 * padding} ${maxLat - minLat + 2 * padding}`
-  
+
   // Colors for each kecamatan
   const colors = [
     '#3B82F6', // Blue
@@ -36,39 +36,39 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
     '#8B5CF6', // Purple
     '#06B6D4'  // Cyan
   ]
-  
+
   return (
     <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
       <h3 className="text-lg font-semibold mb-4 text-gray-900">
         Visualisasi Batas Kecamatan Sabu Raijua
       </h3>
-      
+
       <div className="space-y-4">
         {/* SVG Map */}
         <div className="bg-blue-50 rounded-lg p-4">
-          <svg 
-            viewBox={viewBox} 
+          <svg
+            viewBox={viewBox}
             className="w-full h-64 border border-blue-200 rounded"
             style={{ transform: 'scaleY(-1)' }} // Flip Y axis for proper geographic display
           >
             {/* Background */}
-            <rect 
-              x={minLon - padding} 
-              y={minLat - padding} 
-              width={maxLon - minLon + 2 * padding} 
+            <rect
+              x={minLon - padding}
+              y={minLat - padding}
+              width={maxLon - minLon + 2 * padding}
               height={maxLat - minLat + 2 * padding}
               fill="#E0F2FE"
             />
-            
+
             {/* Kecamatan polygons */}
             {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => {
-              if (!boundary.geometry?.coordinates) return null
-              
+              if (!boundary.geometry?.coordinates?.[0]) return null
+
               const coords = boundary.geometry.coordinates[0]
-              const pathData = coords.map((coord, i) => 
+              const pathData = coords.map((coord, i) =>
                 `${i === 0 ? 'M' : 'L'} ${coord[0]} ${coord[1]}`
               ).join(' ') + ' Z'
-              
+
               return (
                 <g key={boundary.code}>
                   {/* Polygon fill */}
@@ -80,9 +80,9 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
                     strokeWidth={0.002}
                     strokeOpacity={0.8}
                   />
-                  
+
                   {/* Centroid point */}
-                  {boundary.centroid && (
+                  {boundary.centroid?.coordinates && (
                     <circle
                       cx={boundary.centroid.coordinates[0]}
                       cy={boundary.centroid.coordinates[1]}
@@ -92,9 +92,9 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
                       strokeWidth={0.003}
                     />
                   )}
-                  
+
                   {/* Label */}
-                  {boundary.centroid && (
+                  {boundary.centroid?.coordinates && (
                     <text
                       x={boundary.centroid.coordinates[0]}
                       y={boundary.centroid.coordinates[1] + 0.02}
@@ -112,12 +112,12 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
             })}
           </svg>
         </div>
-        
+
         {/* Legend */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => (
             <div key={boundary.code} className="flex items-center gap-2">
-              <div 
+              <div
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: colors[index % colors.length] }}
               />
@@ -132,7 +132,7 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
             </div>
           ))}
         </div>
-        
+
         {/* Statistics */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="font-medium text-gray-900 mb-2">Statistik Batas Wilayah</h4>
@@ -159,16 +159,16 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
             </div>
           </div>
         </div>
-        
+
         {/* Quality Indicators */}
         <div className="bg-green-50 rounded-lg p-4">
           <h4 className="font-medium text-green-900 mb-2">Kualitas Batas Wilayah</h4>
           <div className="space-y-2">
             {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => {
-              const coordCount = boundary.geometry?.coordinates[0]?.length || 0
+              const coordCount = boundary.geometry?.coordinates?.[0]?.length || 0
               const quality = coordCount > 10 ? 'Tinggi' : coordCount > 6 ? 'Sedang' : 'Rendah'
               const qualityColor = coordCount > 10 ? 'text-green-600' : coordCount > 6 ? 'text-yellow-600' : 'text-red-600'
-              
+
               return (
                 <div key={boundary.code} className="flex justify-between items-center text-sm">
                   <span className="text-gray-700">{boundary.name}</span>
@@ -181,7 +181,7 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
             })}
           </div>
         </div>
-        
+
         {/* Technical Info */}
         <div className="text-xs text-gray-500 space-y-1">
           <div>📍 Sistem Koordinat: WGS84 (EPSG:4326)</div>

@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     // Create official
     const official = new Official({
       ...validatedData,
-      createdBy: authResult.user.id
+      createdBy: authResult.user?.id
     })
 
     await official.save()
@@ -183,9 +183,9 @@ export async function PUT(request: NextRequest) {
     // Update multiple officials
     const result = await Official.updateMany(
       { _id: { $in: ids } },
-      { 
+      {
         ...updates,
-        updatedBy: authResult.user.id,
+        updatedBy: authResult.user?.id,
         updatedAt: new Date()
       }
     )

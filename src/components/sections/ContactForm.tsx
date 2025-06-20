@@ -79,13 +79,15 @@ export function ContactForm() {
 
       setErrors({})
       return true
-    } catch (error: { errors?: Array<{ path?: string[]; message: string }> }) {
+    } catch (error: any) {
       const fieldErrors: Record<string, string> = {}
-      error.errors?.forEach((err: { path?: string[]; message: string }) => {
-        if (err.path) {
-          fieldErrors[err.path[0]] = err.message
-        }
-      })
+      if (error?.errors) {
+        error.errors.forEach((err: { path?: string[]; message: string }) => {
+          if (err.path && err.path[0]) {
+            fieldErrors[err.path[0]] = err.message
+          }
+        })
+      }
 
       // Add Turnstile validation
       if (!turnstileToken) {

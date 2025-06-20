@@ -78,17 +78,17 @@ export function useRealBoundaries(originalKecamatanData: IKecamatan[]): UseRealB
 function enhanceKecamatanWithLocalBoundaries(kecamatanData: IKecamatan[]): IKecamatan[] {
   return kecamatanData.map(kecamatan => {
     // Find matching boundary data by name or code
-    const boundaryData = REAL_SABU_RAIJUA_BOUNDARIES.find(boundary => 
-      boundary.name === kecamatan.name || 
+    const boundaryData = REAL_SABU_RAIJUA_BOUNDARIES.find(boundary =>
+      boundary.name === kecamatan.name ||
       boundary.code === kecamatan.code ||
       boundary.nameEnglish === kecamatan.nameEnglish
     )
 
-    if (boundaryData && boundaryData.geometry) {
+    if (boundaryData && boundaryData.geometry && boundaryData.centroid) {
       return {
         ...kecamatan,
         geometry: boundaryData.geometry,
-        centroid: boundaryData.centroid || kecamatan.centroid,
+        centroid: boundaryData.centroid,
         area: boundaryData.area || kecamatan.area
       }
     }

@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     // Create village
     const village = new Village({
       ...validatedData,
-      createdBy: authResult.user.id
+      createdBy: authResult.user?.id
     })
 
     await village.save()
@@ -237,9 +237,9 @@ export async function PUT(request: NextRequest) {
     // Update multiple villages
     const result = await Village.updateMany(
       { _id: { $in: ids } },
-      { 
+      {
         ...updates,
-        updatedBy: authResult.user.id,
+        updatedBy: authResult.user?.id,
         updatedAt: new Date()
       }
     )

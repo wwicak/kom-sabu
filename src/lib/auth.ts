@@ -55,7 +55,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AuthResult>
 
 export async function verifyUserAuth(request: NextRequest): Promise<AuthResult> {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const token = cookieStore.get('user-token') || cookieStore.get('admin-token')
 
     if (!token) {

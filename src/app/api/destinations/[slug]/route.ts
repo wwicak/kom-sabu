@@ -26,17 +26,17 @@ export async function GET(
 
     // Increment view count (async, don't wait)
     Destination.findByIdAndUpdate(
-      destination._id,
+      (destination as any)._id,
       { $inc: { 'statistics.views': 1 } }
     ).catch(err => console.error('Failed to update view count:', err))
 
     // Get related destinations (same category or district)
     const relatedDestinations = await Destination.find({
-      _id: { $ne: destination._id },
+      _id: { $ne: (destination as any)._id },
       status: 'published',
       $or: [
-        { category: destination.category },
-        { 'location.district': destination.location.district }
+        { category: (destination as any).category },
+        { 'location.district': (destination as any).location?.district }
       ]
     })
     .select('name slug shortDescription category location.district images rating')

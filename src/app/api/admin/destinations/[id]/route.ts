@@ -156,7 +156,7 @@ export async function PUT(
       params.id,
       {
         ...updateData,
-        updatedBy: authResult.user.id,
+        updatedBy: authResult.user?.id,
         updatedAt: new Date()
       },
       { new: true, runValidators: true }

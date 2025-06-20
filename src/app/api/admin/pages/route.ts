@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     const page = new Page({
       ...validatedData,
       slug,
-      createdBy: authResult.user.id,
+      createdBy: authResult.user?.id,
       publishedAt: validatedData.status === 'published' ? new Date() : undefined
     })
 

@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
     const destination = new Destination({
       ...validatedData,
       slug,
-      createdBy: authResult.user.id,
+      createdBy: authResult.user?.id,
       publishedAt: validatedData.status === 'published' ? new Date() : undefined
     })
 
@@ -215,9 +215,9 @@ export async function PUT(request: NextRequest) {
     // Update multiple destinations
     const result = await Destination.updateMany(
       { _id: { $in: ids } },
-      { 
+      {
         ...updates,
-        updatedBy: authResult.user.id,
+        updatedBy: authResult.user?.id,
         updatedAt: new Date()
       }
     )
