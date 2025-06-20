@@ -58,12 +58,13 @@ const updateDestinationSchema = z.object({
 // GET - Get single destination
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase()
-    
-    const destination = await Destination.findById(params.id)
+
+    const { id } = await params
+    const destination = await Destination.findById(id)
       .populate('createdBy', 'fullName email')
       .populate('updatedBy', 'fullName email')
       .lean()
@@ -92,7 +93,7 @@ export async function GET(
 // PUT - Update destination
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify admin authentication
@@ -105,14 +106,15 @@ export async function PUT(
     }
 
     await connectToDatabase()
-    
+
+    const { id } = await params
     const body = await request.json()
-    
+
     // Validate input
     const validatedData = updateDestinationSchema.parse(body)
-    
+
     // Check if destination exists
-    const existingDestination = await Destination.findById(params.id)
+    const existingDestination = await Destination.findById(id)
     if (!existingDestination) {
       return NextResponse.json(
         { error: 'Destination not found' },
@@ -133,7 +135,7 @@ export async function PUT(
       // Check if new slug conflicts with existing destinations (excluding current one)
       const slugConflict = await Destination.findOne({
         slug: newSlug,
-        _id: { $ne: params.id }
+        _id: { $ne: id }
       })
 
       if (slugConflict) {
@@ -153,7 +155,7 @@ export async function PUT(
 
     // Update destination
     const destination = await Destination.findByIdAndUpdate(
-      params.id,
+      id,
       {
         ...updateData,
         updatedBy: authResult.user?.id,
@@ -189,7 +191,7 @@ export async function PUT(
 // DELETE - Delete destination
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify admin authentication
@@ -202,9 +204,11 @@ export async function DELETE(
     }
 
     await connectToDatabase()
-    
+
+    const { id } = await params
+
     // Check if destination exists
-    const destination = await Destination.findById(params.id)
+    const destination = await Destination.findById(id)
     if (!destination) {
       return NextResponse.json(
         { error: 'Destination not found' },
@@ -213,7 +217,7 @@ export async function DELETE(
     }
 
     // Delete destination
-    await Destination.findByIdAndDelete(params.id)
+    await Destination.findByIdAndDelete(id)
 
     return NextResponse.json({
       success: true,

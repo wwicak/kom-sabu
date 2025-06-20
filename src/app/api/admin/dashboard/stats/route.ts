@@ -1,43 +1,80 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { connectToDatabase } from '@/lib/mongodb'
+import { Destination } from '@/lib/models/tourism'
+import { Official, Page, Gallery } from '@/lib/models/content'
+import { Village } from '@/lib/models/village'
+import { verifyAdminAuth } from '@/lib/auth'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    // Mock dashboard statistics
-    // In a real application, this would fetch from your database
-    const stats = {
-      totalUsers: 15,
-      totalContent: 45,
-      totalKecamatan: 6,
-      totalImages: 128,
-      recentActivity: [
-        {
-          id: '1',
-          action: 'Menambahkan berita baru: "Pembangunan Jalan Sabu Tengah"',
-          timestamp: '2 jam yang lalu',
-          user: 'Admin Sabu'
-        },
-        {
-          id: '2',
-          action: 'Memperbarui data kecamatan Raijua',
-          timestamp: '5 jam yang lalu',
-          user: 'Admin Raijua'
-        },
-        {
-          id: '3',
-          action: 'Mengunggah foto galeri wisata',
-          timestamp: '1 hari yang lalu',
-          user: 'Admin Pariwisata'
-        },
-        {
-          id: '4',
-          action: 'Memperbarui informasi layanan publik',
-          timestamp: '2 hari yang lalu',
-          user: 'Admin Layanan'
-        }
-      ]
+    // Verify admin authentication
+    const authResult = await verifyAdminAuth(_request)
+    if (!authResult.success) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
-    return NextResponse.json(stats)
+    await connectToDatabase()
+
+    // Fetch real statistics from database
+    const [
+      destinationsCount,
+      officialsCount,
+      villagesCount,
+      pagesCount,
+      galleryCount,
+      recentDestinations,
+      recentOfficials
+    ] = await Promise.all([
+      Destination.countDocuments(),
+      Official.countDocuments(),
+      Village.countDocuments(),
+      Page.countDocuments(),
+      Gallery.countDocuments(),
+      Destination.find()
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select('title status createdAt')
+        .lean(),
+      Official.find()
+        .sort({ createdAt: -1 })
+        .limit(2)
+        .select('name position createdAt')
+        .lean()
+    ])
+
+    // Calculate total views (mock for now, you can implement view tracking)
+    const totalViews = destinationsCount * 150 + villagesCount * 75
+
+    // Format recent activity
+    const recentActivity = [
+      ...recentDestinations.map((dest: any) => ({
+        type: 'destination',
+        title: dest.title,
+        date: new Date(dest.createdAt).toLocaleDateString('id-ID'),
+        status: dest.status || 'draft'
+      })),
+      ...recentOfficials.map((official: any) => ({
+        type: 'official',
+        title: `${official.name} - ${official.position}`,
+        date: new Date(official.createdAt).toLocaleDateString('id-ID'),
+        status: 'published'
+      }))
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    const stats = {
+      destinations: destinationsCount,
+      officials: officialsCount,
+      villages: villagesCount,
+      pages: pagesCount,
+      gallery: galleryCount,
+      totalViews,
+      recentActivity
+    }
+
+    return NextResponse.json({ success: true, stats })
 
   } catch (error) {
     console.error('Dashboard stats error:', error)

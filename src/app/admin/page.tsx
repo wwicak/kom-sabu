@@ -6,12 +6,12 @@ import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Users, 
-  FileText, 
-  MapPin, 
-  Image, 
-  Settings, 
+import {
+  Users,
+  FileText,
+  MapPin,
+  Image,
+  Settings,
   BarChart3,
   Calendar,
   MessageSquare,
@@ -20,15 +20,17 @@ import {
 } from 'lucide-react'
 
 interface DashboardStats {
-  totalUsers: number
-  totalContent: number
-  totalKecamatan: number
-  totalImages: number
+  destinations: number
+  officials: number
+  villages: number
+  pages: number
+  gallery: number
+  totalViews: number
   recentActivity: Array<{
-    id: string
-    action: string
-    timestamp: string
-    user: string
+    type: string
+    title: string
+    date: string
+    status: string
   }>
 }
 
@@ -46,12 +48,14 @@ export default function AdminDashboard() {
           router.push('/admin/login')
           return
         }
-        
+
         // Fetch dashboard stats
-        const statsResponse = await fetch('/api/admin/dashboard/stats')
+        const statsResponse = await fetch('/api/admin/dashboard/stats', {
+          credentials: 'include'
+        })
         if (statsResponse.ok) {
           const data = await statsResponse.json()
-          setStats(data)
+          setStats(data.stats)
         }
       } catch (error) {
         console.error('Auth check failed:', error)
@@ -86,12 +90,12 @@ export default function AdminDashboard() {
   }
 
   const quickActions = [
-    { name: 'Kelola Kecamatan', href: '/admin/kecamatan', icon: MapPin, color: 'bg-blue-500' },
-    { name: 'Kelola Berita', href: '/admin/berita', icon: FileText, color: 'bg-green-500' },
-    { name: 'Kelola Galeri', href: '/admin/galeri', icon: Image, color: 'bg-purple-500' },
-    { name: 'Kelola Pengguna', href: '/admin/users', icon: Users, color: 'bg-orange-500' },
-    { name: 'Pengaturan', href: '/admin/settings', icon: Settings, color: 'bg-gray-500' },
-    { name: 'Laporan', href: '/admin/reports', icon: BarChart3, color: 'bg-red-500' },
+    { name: 'Kelola Destinasi', href: '/admin/destinations', icon: MapPin, color: 'bg-blue-500' },
+    { name: 'Kelola Pejabat', href: '/admin/officials', icon: Users, color: 'bg-green-500' },
+    { name: 'Tambah Pejabat', href: '/admin/officials/new', icon: Users, color: 'bg-purple-500' },
+    { name: 'Lihat Website', href: '/', icon: FileText, color: 'bg-orange-500' },
+    { name: 'Peta Kecamatan', href: '/peta-kecamatan', icon: MapPin, color: 'bg-gray-500' },
+    { name: 'Data Desa', href: '/desa', icon: BarChart3, color: 'bg-red-500' },
   ]
 
   return (
@@ -118,45 +122,45 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pengguna</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-              <p className="text-xs text-muted-foreground">Pengguna terdaftar</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Konten</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalContent || 0}</div>
-              <p className="text-xs text-muted-foreground">Artikel & halaman</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Data Kecamatan</CardTitle>
+              <CardTitle className="text-sm font-medium">Destinasi Wisata</CardTitle>
               <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalKecamatan || 0}</div>
-              <p className="text-xs text-muted-foreground">Kecamatan terdaftar</p>
+              <div className="text-2xl font-bold">{stats?.destinations || 0}</div>
+              <p className="text-xs text-muted-foreground">Destinasi terdaftar</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Media</CardTitle>
-              <Image className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Pejabat</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalImages || 0}</div>
-              <p className="text-xs text-muted-foreground">File media</p>
+              <div className="text-2xl font-bold">{stats?.officials || 0}</div>
+              <p className="text-xs text-muted-foreground">Pejabat terdaftar</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Desa</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.villages || 0}</div>
+              <p className="text-xs text-muted-foreground">Desa terdaftar</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.totalViews || 0}</div>
+              <p className="text-xs text-muted-foreground">Total kunjungan</p>
             </CardContent>
           </Card>
         </div>
@@ -200,13 +204,13 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {stats?.recentActivity?.length ? (
-                    stats.recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-3">
+                    stats.recentActivity.map((activity, index) => (
+                      <div key={index} className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{activity.action}</p>
+                          <p className="text-sm font-medium">{activity.title}</p>
                           <p className="text-xs text-gray-500">
-                            oleh {activity.user} • {activity.timestamp}
+                            {activity.type} • {activity.date} • {activity.status}
                           </p>
                         </div>
                       </div>

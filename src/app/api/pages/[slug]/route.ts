@@ -4,15 +4,16 @@ import { Page } from '@/lib/models/content'
 
 // GET - Get page content by slug
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectToDatabase()
-    
-    const page = await Page.findOne({ 
-      slug: params.slug, 
-      status: 'published' 
+
+    const { slug } = await params
+    const page = await Page.findOne({
+      slug,
+      status: 'published'
     })
     .select('-createdBy -updatedBy -__v') // Exclude sensitive fields
     .lean()

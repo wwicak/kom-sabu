@@ -5,14 +5,15 @@ import { Destination } from '@/lib/models/tourism'
 // GET - Get single destination by slug
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectToDatabase()
-    
-    const destination = await Destination.findOne({ 
-      slug: params.slug, 
-      status: 'published' 
+
+    const { slug } = await params
+    const destination = await Destination.findOne({
+      slug,
+      status: 'published'
     })
     .select('-createdBy -updatedBy -__v') // Exclude sensitive fields
     .lean()

@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
         })
 
         if (response.ok) {
-          router.push('/admin/dashboard')
+          router.push('/admin')
         }
       } catch {
         // User not logged in, continue with login page
@@ -139,8 +139,8 @@ export default function AdminLoginPage() {
         throw new Error(data.error || 'Login failed')
       }
 
-      // Success - redirect to dashboard
-      router.push('/admin/dashboard')
+      // Success - redirect to admin dashboard
+      router.push('/admin')
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed'
