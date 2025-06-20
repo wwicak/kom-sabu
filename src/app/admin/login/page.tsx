@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -69,19 +69,19 @@ export default function AdminLoginPage() {
     }
   }
 
-  const handleTurnstileVerify = (token: string) => {
+  const handleTurnstileVerify = useCallback((token: string) => {
     handleInputChange('turnstileToken', token)
-  }
+  }, [])
 
-  const handleTurnstileError = (error: string) => {
+  const handleTurnstileError = useCallback((error: string) => {
     setError(`Security verification failed: ${error}`)
     setFormData(prev => ({ ...prev, turnstileToken: '' }))
-  }
+  }, [])
 
-  const handleTurnstileExpire = () => {
+  const handleTurnstileExpire = useCallback(() => {
     setError('Security verification expired. Please verify again.')
     setFormData(prev => ({ ...prev, turnstileToken: '' }))
-  }
+  }, [])
 
   const resetTurnstile = () => {
     if (typeof window !== 'undefined' && (window as any).resetTurnstile) {
@@ -234,6 +234,7 @@ export default function AdminLoginPage() {
               <div className="space-y-2">
                 <Label>Security Verification</Label>
                 <TurnstileWidget
+                  key="admin-login-turnstile"
                   ref={turnstileRef}
                   onVerify={handleTurnstileVerify}
                   onError={handleTurnstileError}

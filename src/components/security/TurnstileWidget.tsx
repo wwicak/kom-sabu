@@ -35,6 +35,7 @@ export function TurnstileWidget({
   const [widgetId, setWidgetId] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const isInitializedRef = useRef(false)
+  const isRenderingRef = useRef(false)
   const callbacksRef = useRef({ onVerify, onError, onExpire })
 
   const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY
@@ -112,10 +113,12 @@ export function TurnstileWidget({
         return
       }
 
-      // Check if widget already exists
-      if (widgetId) {
+      // Check if widget already exists or is being rendered
+      if (widgetId || isRenderingRef.current) {
         return
       }
+
+      isRenderingRef.current = true
 
       try {
         const id = window.turnstile.render(containerRef.current, {
@@ -133,8 +136,10 @@ export function TurnstileWidget({
       } catch (err) {
         console.error('Error rendering Turnstile widget:', err)
         setError('Failed to render security verification')
-        onError?.('Failed to render security verification')
+        callbacksRef.current.onError?.('Failed to render security verification')
         isInitializedRef.current = false
+      } finally {
+        isRenderingRef.current = false
       }
     }
 
@@ -152,23 +157,28 @@ export function TurnstileWidget({
         }
       }
       isInitializedRef.current = false
+      isRenderingRef.current = false
     }
-  }, [siteKey, handleVerify, handleError, handleExpire]) // Include memoized callbacks
+  }, [siteKey, theme, size, handleVerify, handleError, handleExpire]) // Only stable dependencies
 
   // Reset the widget
-  const reset = () => {
+  const reset = useCallback(() => {
     if (window.turnstile && widgetId) {
-      window.turnstile.reset(widgetId)
-      setError(null)
+      try {
+        window.turnstile.reset(widgetId)
+        setError(null)
+      } catch (err) {
+        console.warn('Error resetting Turnstile widget:', err)
+      }
     }
-  }
+  }, [widgetId])
 
   // Expose reset method
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).resetTurnstile = reset
     }
-  }, [widgetId])
+  }, [reset])
 
   if (!siteKey) {
     return (
