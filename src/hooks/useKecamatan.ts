@@ -102,6 +102,21 @@ export function useKecamatanList(includeInactive = false) {
   return useQuery<KecamatanData[]>({
     queryKey: ['kecamatan', 'list', includeInactive],
     queryFn: async () => {
+      // First try the GeoJSON API for accurate polygon data
+      try {
+        const geoJsonResponse = await fetch('/api/geojson/kecamatan')
+        if (geoJsonResponse.ok) {
+          const geoJsonResult: ApiResponse<any[]> = await geoJsonResponse.json()
+          if (geoJsonResult.success && geoJsonResult.data) {
+            console.log('Using GeoJSON data for accurate polygons')
+            return geoJsonResult.data
+          }
+        }
+      } catch (geoJsonError) {
+        console.warn('GeoJSON API failed, falling back to regular API:', geoJsonError)
+      }
+
+      // Fallback to regular kecamatan API
       const params = new URLSearchParams()
       if (includeInactive) {
         params.append('includeInactive', 'true')
@@ -109,6 +124,7 @@ export function useKecamatanList(includeInactive = false) {
 
       // Add includeGeometry parameter to get polygon data
       params.append('includeGeometry', 'true')
+      params.append('regencyCode', '5320') // Sabu Raijua code
       const response = await fetch(`/api/kecamatan?${params}`)
       if (!response.ok) {
         throw new Error('Failed to fetch kecamatan data')

@@ -30,6 +30,17 @@ const SabuRaijuaMap = dynamic(
 // Fetch kecamatan data with fallback to mock data
 async function fetchKecamatanData(): Promise<IKecamatan[]> {
   try {
+    // First try the GeoJSON API for accurate polygon data
+    const geoJsonResponse = await fetch('/api/geojson/kecamatan')
+    if (geoJsonResponse.ok) {
+      const geoJsonResult = await geoJsonResponse.json()
+      if (geoJsonResult.success && geoJsonResult.data) {
+        console.log('Using GeoJSON data for accurate polygons')
+        return geoJsonResult.data
+      }
+    }
+
+    // Fallback to regular kecamatan API
     const response = await fetch('/api/kecamatan?includeGeometry=true&regencyCode=5320')
     if (!response.ok) {
       console.warn('API failed, using mock data')

@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 // Tile proxy to handle CORS and authentication issues
 export async function GET(
   request: NextRequest,
-  { params }: { params: { params: string[] } }
+  { params }: { params: Promise<{ params: string[] }> }
 ) {
   try {
-    const { params: tileParams } = params
+    const { params: tileParams } = await params
     
     if (!tileParams || tileParams.length < 3) {
       return new NextResponse('Invalid tile parameters', { status: 400 })
@@ -30,14 +30,14 @@ export async function GET(
       return new NextResponse('Invalid zoom level', { status: 400 })
     }
 
-    // Multiple tile sources for fallback
+    // Multiple tile sources for fallback - OpenFreeMap first for better performance
     const tileSources = [
-      // OpenStreetMap (most reliable)
-      `https://tile.openstreetmap.org/${z}/${x}/${yClean}.png`,
+      // OpenFreeMap (fast and reliable)
+      `https://tiles.openfreemap.org/osm/${z}/${x}/${yClean}.png`,
       // CartoDB Positron (clean style)
       `https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/${z}/${x}/${yClean}.png`,
-      // OpenFreeMap (if working)
-      `https://tiles.openfreemap.org/osm/${z}/${x}/${yClean}.png`,
+      // OpenStreetMap (fallback)
+      `https://tile.openstreetmap.org/${z}/${x}/${yClean}.png`,
     ]
 
     let lastError: Error | null = null
@@ -61,7 +61,7 @@ export async function GET(
             status: 200,
             headers: {
               'Content-Type': `image/${extension}`,
-              'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+              'Cache-Control': 'public, max-age=3600', // Cache for 1 hour for better performance
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Methods': 'GET',
               'Access-Control-Allow-Headers': 'Content-Type',

@@ -20,38 +20,82 @@ async function connectToMongoDB() {
 // GET /api/kecamatan - Get all kecamatan data
 export const GET = withRateLimit(rateLimiters.api, async function(request: NextRequest) {
   try {
-    await connectToMongoDB()
-
     const { searchParams } = new URL(request.url)
     const includeGeometry = searchParams.get('includeGeometry') === 'true'
     const activeOnly = searchParams.get('activeOnly') !== 'false'
     const regencyCode = searchParams.get('regencyCode')
 
-    // Build query
-    const query: { isActive?: boolean; regencyCode?: string } = {}
-    if (activeOnly) {
-      query.isActive = true
-    }
-    if (regencyCode) {
-      query.regencyCode = regencyCode
+    // If requesting geometry data for Sabu Raijua (5320), use GeoJSON file
+    if (includeGeometry && regencyCode === '5320') {
+      try {
+        // Use the GeoJSON API endpoint internally
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        const geoJsonResponse = await fetch(`${baseUrl}/api/geojson/kecamatan`)
+
+        if (geoJsonResponse.ok) {
+          const geoJsonData = await geoJsonResponse.json()
+          return NextResponse.json(geoJsonData)
+        }
+      } catch (geoJsonError) {
+        console.warn('Failed to load GeoJSON data, falling back to MongoDB:', geoJsonError)
+      }
     }
 
-    // Build projection
-    const projection: { geometry?: number } = {}
-    if (!includeGeometry) {
-      projection.geometry = 0 // Exclude geometry for lighter response
+    // Fallback to MongoDB
+    try {
+      await connectToMongoDB()
+
+      // Build query
+      const query: { isActive?: boolean; regencyCode?: string } = {}
+      if (activeOnly) {
+        query.isActive = true
+      }
+      if (regencyCode) {
+        query.regencyCode = regencyCode
+      }
+
+      // Build projection
+      const projection: { geometry?: number } = {}
+      if (!includeGeometry) {
+        projection.geometry = 0 // Exclude geometry for lighter response
+      }
+
+      const kecamatanList = await Kecamatan
+        .find(query, projection)
+        .sort({ displayOrder: 1, name: 1 })
+        .lean()
+
+      return NextResponse.json({
+        success: true,
+        data: kecamatanList,
+        count: kecamatanList.length,
+        source: 'mongodb'
+      })
+
+    } catch (dbError) {
+      console.error('MongoDB error:', dbError)
+
+      // If MongoDB fails and we need geometry data, try GeoJSON as final fallback
+      if (includeGeometry) {
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+          const geoJsonResponse = await fetch(`${baseUrl}/api/geojson/kecamatan`)
+
+          if (geoJsonResponse.ok) {
+            const geoJsonData = await geoJsonResponse.json()
+            return NextResponse.json({
+              ...geoJsonData,
+              fallback: true,
+              message: 'Using GeoJSON fallback due to database unavailability'
+            })
+          }
+        } catch (geoJsonError) {
+          console.error('GeoJSON fallback also failed:', geoJsonError)
+        }
+      }
+
+      throw dbError
     }
-
-    const kecamatanList = await Kecamatan
-      .find(query, projection)
-      .sort({ displayOrder: 1, name: 1 })
-      .lean()
-
-    return NextResponse.json({
-      success: true,
-      data: kecamatanList,
-      count: kecamatanList.length
-    })
 
   } catch (error) {
     console.error('Error fetching kecamatan:', error)

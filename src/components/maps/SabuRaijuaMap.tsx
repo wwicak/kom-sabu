@@ -52,8 +52,8 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
     boundarySource
   } = useRealBoundaries(kecamatanData)
 
-  // OpenFreeMap tile layer URL
-  const OPENFREE_MAP_URL = 'https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png'
+  // Tile proxy URL to avoid CORS issues
+  const TILE_PROXY_URL = '/api/tiles/{z}/{x}/{y}.png'
 
   // Use real Sabu Raijua center coordinates
   const DEFAULT_ZOOM = 11
@@ -106,18 +106,28 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       attributionControl: true,
     })
 
-    // Add OpenFreeMap tile layer with fallback
-    const tileLayer = L.tileLayer(OPENFREE_MAP_URL, {
-      attribution: '© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors',
+    // Add tile layer using proxy to avoid CORS issues
+    const tileLayer = L.tileLayer(TILE_PROXY_URL, {
+      attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
       tileSize: 256,
-      errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjcyODAiPk1hcCBUaWxlPC90ZXh0Pjwvc3ZnPg=='
+      errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjZTJlOGYwIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSIxMjgiIHk9IjEyOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjQ3NDhiIj5NYXAgVGlsZTwvdGV4dD48L3N2Zz4='
     })
 
-    // Handle tile loading errors
+    // Handle tile loading errors with retry mechanism
     tileLayer.on('tileerror', (e) => {
       console.warn('Tile loading error:', e)
-      // Could implement fallback to different tile server here
+      // The proxy API will handle fallbacks automatically
+    })
+
+    // Handle tile loading success
+    tileLayer.on('tileload', () => {
+      console.log('Tiles loaded successfully via proxy')
+    })
+
+    // Handle tile loading start
+    tileLayer.on('loading', () => {
+      console.log('Starting to load tiles via proxy...')
     })
 
     tileLayer.addTo(map)
@@ -388,7 +398,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             {/* Agriculture & Natural Resources */}
             <div className="border-t border-gray-200 pt-3">
               <div className="grid grid-cols-2 gap-3">
-                {tooltip.kecamatan.agriculture.mainCrops.length > 0 && (
+                {tooltip.kecamatan.agriculture?.mainCrops?.length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-900 mb-1 text-sm">Komoditas Utama</h4>
                     <div className="text-xs text-gray-600">
@@ -397,7 +407,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   </div>
                 )}
 
-                {tooltip.kecamatan.naturalResources.minerals.length > 0 && (
+                {tooltip.kecamatan.naturalResources?.minerals?.length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-900 mb-1 text-sm">Sumber Daya</h4>
                     <div className="text-xs text-gray-600">

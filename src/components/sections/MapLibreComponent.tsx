@@ -45,12 +45,14 @@ interface KecamatanData {
 }
 
 interface MapLibreComponentProps {
-  kecamatanData: KecamatanData[]
+  kecamatanData?: KecamatanData[]
   selectedKecamatan?: string | null
   onKecamatanSelect?: (kecamatan: KecamatanData | null) => void
+  onKecamatanHover?: (kecamatan: KecamatanData | null) => void
+  showHoverInfo?: boolean
 }
 
-export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamatanSelect }: MapLibreComponentProps) {
+export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamatanSelect, onKecamatanHover, showHoverInfo }: MapLibreComponentProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
 
@@ -68,22 +70,22 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         style: {
           version: 8,
           sources: {
-            'openfreemap': {
+            'osm-tiles': {
               type: 'raster',
               tiles: [
-                'https://tiles.openfreemap.org/osm/{z}/{x}/{y}.png'
+                '/api/tiles/{z}/{x}/{y}.png'
               ],
               tileSize: 256,
-              attribution: '© OpenFreeMap contributors'
+              attribution: '© OpenStreetMap contributors'
             }
           },
           layers: [
             {
-              id: 'openfreemap',
+              id: 'osm-tiles',
               type: 'raster',
-              source: 'openfreemap',
+              source: 'osm-tiles',
               minzoom: 0,
-              maxzoom: 22
+              maxzoom: 19
             }
           ]
         },
@@ -202,15 +204,26 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         })
 
         // Add hover effects
-        map.current.on('mouseenter', 'kecamatan-fill', () => {
+        map.current.on('mouseenter', 'kecamatan-fill', (e) => {
           if (map.current) {
             map.current.getCanvas().style.cursor = 'pointer'
+          }
+
+          // Call hover callback if provided
+          if (onKecamatanHover && e.features && e.features[0]) {
+            const kecamatan = e.features[0].properties as KecamatanData
+            onKecamatanHover(kecamatan)
           }
         })
 
         map.current.on('mouseleave', 'kecamatan-fill', () => {
           if (map.current) {
             map.current.getCanvas().style.cursor = ''
+          }
+
+          // Clear hover callback if provided
+          if (onKecamatanHover) {
+            onKecamatanHover(null)
           }
         })
 
@@ -225,6 +238,21 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
       // Handle map errors
       map.current.on('error', (e) => {
         console.warn('Map error:', e)
+        // Could show user-friendly error message here
+      })
+
+      // Handle source errors
+      map.current.on('sourcedata', (e) => {
+        if (e.sourceId === 'osm-tiles' && e.isSourceLoaded === false) {
+          console.warn('Tile source loading issues detected')
+        }
+      })
+
+      // Handle tile loading errors
+      map.current.on('sourcedataloading', (e) => {
+        if (e.sourceId === 'osm-tiles') {
+          console.log('Loading tiles from proxy...')
+        }
       })
 
     } catch (error) {

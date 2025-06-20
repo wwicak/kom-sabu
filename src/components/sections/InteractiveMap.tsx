@@ -103,6 +103,8 @@ interface InteractiveMapProps {
   kecamatanData: KecamatanData[]
   selectedKecamatan?: string | null
   onKecamatanSelect?: (kecamatan: KecamatanData | null) => void
+  onKecamatanHover?: (kecamatan: KecamatanData | null) => void
+  showHoverInfo?: boolean
 }
 
 export function InteractiveMap({ kecamatanData, selectedKecamatan, onKecamatanSelect }: InteractiveMapProps) {
