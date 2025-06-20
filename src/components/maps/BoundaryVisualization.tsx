@@ -11,12 +11,13 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
   const geoJson = getSabuRaijuaBoundariesGeoJSON()
 
   // Calculate SVG viewBox from all coordinates
-  const allCoords = REAL_SABU_RAIJUA_BOUNDARIES.flatMap(boundary =>
-    boundary.geometry?.coordinates?.[0] || []
-  )
+  const allCoords = REAL_SABU_RAIJUA_BOUNDARIES.flatMap(boundary => {
+    const coords = boundary.geometry?.coordinates?.[0]
+    return Array.isArray(coords) ? coords as number[][] : []
+  })
 
-  const lons = allCoords.map(coord => coord[0])
-  const lats = allCoords.map(coord => coord[1])
+  const lons = allCoords.map((coord: number[]) => coord[0])
+  const lats = allCoords.map((coord: number[]) => coord[1])
 
   const minLon = Math.min(...lons)
   const maxLon = Math.max(...lons)
@@ -64,8 +65,8 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
             {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => {
               if (!boundary.geometry?.coordinates?.[0]) return null
 
-              const coords = boundary.geometry.coordinates[0]
-              const pathData = coords.map((coord, i) =>
+              const coords = boundary.geometry.coordinates[0] as number[][]
+              const pathData = coords.map((coord: number[], i: number) =>
                 `${i === 0 ? 'M' : 'L'} ${coord[0]} ${coord[1]}`
               ).join(' ') + ' Z'
 
@@ -165,7 +166,8 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
           <h4 className="font-medium text-green-900 mb-2">Kualitas Batas Wilayah</h4>
           <div className="space-y-2">
             {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => {
-              const coordCount = boundary.geometry?.coordinates?.[0]?.length || 0
+              const coords = boundary.geometry?.coordinates?.[0] as number[][] | undefined
+              const coordCount = coords?.length || 0
               const quality = coordCount > 10 ? 'Tinggi' : coordCount > 6 ? 'Sedang' : 'Rendah'
               const qualityColor = coordCount > 10 ? 'text-green-600' : coordCount > 6 ? 'text-yellow-600' : 'text-red-600'
 

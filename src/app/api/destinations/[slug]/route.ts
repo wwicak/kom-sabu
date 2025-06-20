@@ -4,7 +4,7 @@ import { Destination } from '@/lib/models/tourism'
 
 // GET - Get single destination by slug
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {

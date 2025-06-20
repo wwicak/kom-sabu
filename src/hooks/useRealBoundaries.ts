@@ -90,7 +90,7 @@ function enhanceKecamatanWithLocalBoundaries(kecamatanData: IKecamatan[]): IKeca
         geometry: boundaryData.geometry,
         centroid: boundaryData.centroid,
         area: boundaryData.area || kecamatan.area
-      }
+      } as IKecamatan
     }
 
     return kecamatan
@@ -116,12 +116,12 @@ function enhanceKecamatanWithExternalBoundaries(
     if (matchingFeature && matchingFeature.geometry) {
       // Calculate centroid from geometry
       const centroid = calculateCentroid(matchingFeature.geometry)
-      
+
       return {
         ...kecamatan,
         geometry: matchingFeature.geometry,
         centroid: centroid || kecamatan.centroid
-      }
+      } as IKecamatan
     }
 
     return kecamatan

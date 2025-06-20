@@ -267,20 +267,22 @@ eventSchema.index({ featured: 1, status: 1 })
 eventSchema.index({ title: 'text', description: 'text' })
 
 // Virtual for event status based on dates
-eventSchema.virtual('eventStatus').get(function() {
+eventSchema.virtual('eventStatus').get(function(this: any) {
   const now = new Date()
-  const start = this.dates.start
-  const end = this.dates.end || start
-  
+  const start = this.dates?.start
+  const end = this.dates?.end || start
+
+  if (!start) return 'unknown'
   if (now < start) return 'upcoming'
   if (now >= start && now <= end) return 'ongoing'
   return 'past'
 })
 
 // Virtual for days until event
-eventSchema.virtual('daysUntil').get(function() {
+eventSchema.virtual('daysUntil').get(function(this: any) {
   const now = new Date()
-  const start = this.dates.start
+  const start = this.dates?.start
+  if (!start) return 0
   const diffTime = start.getTime() - now.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return diffDays > 0 ? diffDays : 0

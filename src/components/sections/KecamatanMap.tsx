@@ -151,7 +151,7 @@ function convertToIKecamatan(data: KecamatanData): IKecamatan {
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
-  } as IKecamatan
+  } as unknown as IKecamatan
 }
 
 export function KecamatanMap() {

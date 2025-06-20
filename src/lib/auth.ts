@@ -12,7 +12,7 @@ interface AuthResult {
   error?: string
 }
 
-export async function verifyAdminAuth(request: NextRequest): Promise<AuthResult> {
+export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('admin-token')
@@ -53,7 +53,7 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AuthResult>
   }
 }
 
-export async function verifyUserAuth(request: NextRequest): Promise<AuthResult> {
+export async function verifyUserAuth(_request: NextRequest): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('user-token') || cookieStore.get('admin-token')
