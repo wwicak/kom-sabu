@@ -21,7 +21,11 @@ interface KecamatanData {
       west: number
     }
   }
-  polygon: {
+  polygon?: {
+    type: 'Polygon' | 'MultiPolygon'
+    coordinates: number[][][]
+  }
+  geometry?: {
     type: 'Polygon' | 'MultiPolygon'
     coordinates: number[][][]
   }
@@ -68,19 +72,39 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
       })
 
       // Convert kecamatan data to GeoJSON format
+      console.log('MapLibre: Processing kecamatan data:', kecamatanData)
+
       const geoJsonData = {
         type: 'FeatureCollection' as const,
         features: kecamatanData
-          .filter(kecamatan => kecamatan.polygon && kecamatan.polygon.coordinates && kecamatan.polygon.coordinates.length > 0)
-          .map((kecamatan: KecamatanData) => ({
-            type: 'Feature' as const,
-            properties: kecamatan,
-            geometry: {
-              type: kecamatan.polygon.type,
-              coordinates: kecamatan.polygon.coordinates
+          .filter(kecamatan => {
+            // Check for both polygon and geometry properties
+            const hasPolygon = kecamatan.polygon && kecamatan.polygon.coordinates && kecamatan.polygon.coordinates.length > 0
+            const hasGeometry = kecamatan.geometry && kecamatan.geometry.coordinates && kecamatan.geometry.coordinates.length > 0
+            const result = hasPolygon || hasGeometry
+            console.log(`MapLibre: Kecamatan ${kecamatan.name} has geometry:`, result, { hasPolygon, hasGeometry })
+            return result
+          })
+          .map((kecamatan: KecamatanData) => {
+            // Use geometry if available, otherwise fall back to polygon
+            const geometry = kecamatan.geometry || kecamatan.polygon
+            if (!geometry) {
+              console.error(`MapLibre: No geometry data found for kecamatan: ${kecamatan.name}`)
+              throw new Error(`No geometry data found for kecamatan: ${kecamatan.name}`)
             }
-          }))
+            console.log(`MapLibre: Using geometry for ${kecamatan.name}:`, geometry)
+            return {
+              type: 'Feature' as const,
+              properties: kecamatan,
+              geometry: {
+                type: geometry.type,
+                coordinates: geometry.coordinates
+              }
+            }
+          })
       }
+
+      console.log('MapLibre: Final GeoJSON data:', geoJsonData)
 
       map.current.on('load', () => {
         if (!map.current) return
@@ -92,6 +116,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         })
 
         // Add fill layer
+        console.log('MapLibre: Adding fill layer')
         map.current.addLayer({
           id: 'kecamatan-fill',
           type: 'fill',
@@ -100,7 +125,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
             'fill-color': [
               'case',
               ['==', ['get', 'slug'], selectedKecamatan || ''],
-              '#ffffff',
+              '#ff0000', // Red for selected
               [
                 'case',
                 ['==', ['get', 'name'], 'Sabu Barat'], '#3B82F6',
@@ -110,14 +135,10 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
                 '#8B5CF6'
               ]
             ],
-            'fill-opacity': [
-              'case',
-              ['==', ['get', 'slug'], selectedKecamatan || ''],
-              0.8,
-              0.6
-            ]
+            'fill-opacity': 0.7 // Make it more visible
           }
         })
+        console.log('MapLibre: Fill layer added')
 
         // Add stroke layer
         map.current.addLayer({

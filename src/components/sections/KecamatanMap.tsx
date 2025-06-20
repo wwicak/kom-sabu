@@ -30,6 +30,10 @@ interface KecamatanData {
     type: 'Polygon' | 'MultiPolygon'
     coordinates: number[][][]
   }
+  geometry?: {
+    type: 'Polygon' | 'MultiPolygon'
+    coordinates: number[][][]
+  }
   potency: any
   demographics: any
   images?: Array<{

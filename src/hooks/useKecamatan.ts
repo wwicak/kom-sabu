@@ -21,6 +21,10 @@ interface KecamatanData {
     type: 'Polygon' | 'MultiPolygon'
     coordinates: number[][][]
   }
+  geometry?: {
+    type: 'Polygon' | 'MultiPolygon'
+    coordinates: number[][][]
+  }
   potency: {
     agriculture?: {
       mainCrops: string[]
@@ -103,6 +107,8 @@ export function useKecamatanList(includeInactive = false) {
         params.append('includeInactive', 'true')
       }
 
+      // Add includeGeometry parameter to get polygon data
+      params.append('includeGeometry', 'true')
       const response = await fetch(`/api/kecamatan?${params}`)
       if (!response.ok) {
         throw new Error('Failed to fetch kecamatan data')
@@ -129,6 +135,10 @@ export function useKecamatanList(includeInactive = false) {
           }
         },
         polygon: {
+          type: item.geometry?.type || 'Polygon',
+          coordinates: item.geometry?.coordinates || []
+        },
+        geometry: {
           type: item.geometry?.type || 'Polygon',
           coordinates: item.geometry?.coordinates || []
         },

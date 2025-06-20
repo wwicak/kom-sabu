@@ -135,7 +135,15 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
   // Add kecamatan layers
   useEffect(() => {
-    if (!mapInstanceRef.current || !enhancedKecamatanData.length) return
+    if (!mapInstanceRef.current || !enhancedKecamatanData.length) {
+      console.log('SabuRaijuaMap: Map or data not ready', {
+        hasMap: !!mapInstanceRef.current,
+        dataLength: enhancedKecamatanData.length
+      })
+      return
+    }
+
+    console.log('SabuRaijuaMap: Adding kecamatan layers', enhancedKecamatanData)
 
     // Clear existing layers
     Object.values(layersRef.current).forEach(layer => {
@@ -145,6 +153,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
     // Add each kecamatan as a GeoJSON layer with real boundaries
     enhancedKecamatanData.forEach(kecamatan => {
+      console.log(`SabuRaijuaMap: Processing kecamatan ${kecamatan.name}`, kecamatan.geometry)
       const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
         style: () => getKecamatanStyle(kecamatan),
         onEachFeature: (_, layer) => {
