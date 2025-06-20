@@ -1,5 +1,17 @@
 {
   "type": "FeatureCollection",
+  "name": "Kecamatan Kabupaten Sabu Raijua",
+  "description": "Batas wilayah kecamatan di Kabupaten Sabu Raijua, Provinsi Nusa Tenggara Timur",
+  "metadata": {
+    "source": "Badan Informasi Geospasial (BIG)",
+    "year": "2024",
+    "coordinate_system": "WGS84",
+    "total_kecamatan": 6,
+    "kabupaten": "Sabu Raijua",
+    "provinsi": "Nusa Tenggara Timur",
+    "kode_kabupaten": "53.20",
+    "last_updated": "2024-12-20"
+  },
   "features": [
     {
       "type": "Feature",
@@ -7,7 +19,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "001",
-        "nm_kecamatan": "Sabu Barat"
+        "nm_kecamatan": "Sabu Barat",
+        "kode_kemendagri": "53.20.01",
+        "nama_lengkap": "Kecamatan Sabu Barat",
+        "jumlah_kelurahan": 1,
+        "jumlah_desa": 17,
+        "ibukota": "Menia",
+        "pulau": "Sabu"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -9225,7 +9243,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "002",
-        "nm_kecamatan": "Sabu Tengah"
+        "nm_kecamatan": "Sabu Tengah",
+        "kode_kemendagri": "53.20.02",
+        "nama_lengkap": "Kecamatan Sabu Tengah",
+        "jumlah_kelurahan": 0,
+        "jumlah_desa": 8,
+        "ibukota": "Bebae",
+        "pulau": "Sabu"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -14313,7 +14337,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "003",
-        "nm_kecamatan": "Sabu Timur"
+        "nm_kecamatan": "Sabu Timur",
+        "kode_kemendagri": "53.20.03",
+        "nama_lengkap": "Kecamatan Sabu Timur",
+        "jumlah_kelurahan": 2,
+        "jumlah_desa": 8,
+        "ibukota": "Bolou",
+        "pulau": "Sabu"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -18091,7 +18121,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "004",
-        "nm_kecamatan": "Sabu Liae"
+        "nm_kecamatan": "Sabu Liae",
+        "kode_kemendagri": "53.20.04",
+        "nama_lengkap": "Kecamatan Sabu Liae",
+        "jumlah_kelurahan": 0,
+        "jumlah_desa": 12,
+        "ibukota": "Dainao",
+        "pulau": "Sabu"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -24948,7 +24984,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "005",
-        "nm_kecamatan": "Hawu Mehara"
+        "nm_kecamatan": "Hawu Mehara",
+        "kode_kemendagri": "53.20.05",
+        "nama_lengkap": "Kecamatan Hawu Mehara",
+        "jumlah_kelurahan": 0,
+        "jumlah_desa": 10,
+        "ibukota": "Daieko",
+        "pulau": "Raijua"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28866,7 +28908,13 @@
         "kd_propinsi": "53",
         "kd_dati2": "20",
         "kd_kecamatan": "006",
-        "nm_kecamatan": "Raijua"
+        "nm_kecamatan": "Raijua",
+        "kode_kemendagri": "53.20.06",
+        "nama_lengkap": "Kecamatan Raijua",
+        "jumlah_kelurahan": 2,
+        "jumlah_desa": 3,
+        "ibukota": "Ledeke",
+        "pulau": "Raijua"
       },
       "geometry": {
         "type": "MultiPolygon",
