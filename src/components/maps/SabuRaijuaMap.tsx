@@ -282,10 +282,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       {/* Enhanced Tooltip */}
       {tooltip && (
         <div
-          className="absolute z-[1000] bg-white rounded-lg shadow-xl border-2 border-blue-200 pointer-events-none transform -translate-x-1/2 -translate-y-full"
+          className={`absolute z-[1000] bg-white rounded-lg shadow-xl border-2 border-blue-200 pointer-events-none transform -translate-x-1/2 ${tooltip.y > 400 ? '-translate-y-full' : 'translate-y-4'
+            }`}
           style={{
             left: tooltip.x,
-            top: tooltip.y - 10,
+            top: tooltip.y > 400 ? tooltip.y - 10 : tooltip.y + 10,
             maxWidth: '380px',
             minWidth: '320px'
           }}
@@ -463,9 +464,15 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
           </div>
 
           {/* Tooltip arrow */}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-            <div className="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-200"></div>
-          </div>
+          {tooltip.y > 400 ? (
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2">
+              <div className="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-200"></div>
+            </div>
+          ) : (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
+              <div className="border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-blue-200"></div>
+            </div>
+          )}
         </div>
       )}
 

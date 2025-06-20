@@ -35,31 +35,37 @@ export function TurnstileWidget({
   const [widgetId, setWidgetId] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const isInitializedRef = useRef(false)
+  const callbacksRef = useRef({ onVerify, onError, onExpire })
 
   const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY
 
-  // Memoize callback functions to prevent unnecessary re-renders
+  // Update callbacks ref without triggering re-renders
+  useEffect(() => {
+    callbacksRef.current = { onVerify, onError, onExpire }
+  }, [onVerify, onError, onExpire])
+
+  // Stable callback functions that don't change
   const handleVerify = useCallback((token: string) => {
     setError(null)
-    onVerify(token)
-  }, [onVerify])
+    callbacksRef.current.onVerify(token)
+  }, [])
 
   const handleError = useCallback((error: string) => {
     console.error('Turnstile verification error:', error)
     setError(error)
-    onError?.(error)
-  }, [onError])
+    callbacksRef.current.onError?.(error)
+  }, [])
 
   const handleExpire = useCallback(() => {
     setError('Verification expired. Please try again.')
-    onExpire?.()
-  }, [onExpire])
+    callbacksRef.current.onExpire?.()
+  }, [])
 
   useEffect(() => {
     if (!siteKey) {
       const errorMsg = 'Cloudflare Turnstile site key not configured'
       setError(errorMsg)
-      onError?.(errorMsg)
+      callbacksRef.current.onError?.(errorMsg)
       console.error(errorMsg)
       return
     }

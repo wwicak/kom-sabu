@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { Layout } from '@/components/layout/Layout'
 import { IKecamatan } from '@/lib/models/kecamatan'
-import { MOCK_KECAMATAN_DATA } from '@/lib/data/mock-kecamatan'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -27,7 +26,7 @@ const SabuRaijuaMap = dynamic(
   }
 )
 
-// Fetch kecamatan data with fallback to mock data
+// Fetch kecamatan data from API
 async function fetchKecamatanData(): Promise<IKecamatan[]> {
   try {
     // First try the GeoJSON API for accurate polygon data
@@ -44,14 +43,16 @@ async function fetchKecamatanData(): Promise<IKecamatan[]> {
     // Fallback to regular kecamatan API
     const response = await fetch('/api/kecamatan?includeGeometry=true&regencyCode=5320')
     if (!response.ok) {
-      console.warn('API failed, using mock data')
-      return MOCK_KECAMATAN_DATA as IKecamatan[]
+      throw new Error(`API failed with status: ${response.status}`)
     }
     const result = await response.json()
+    if (!result.success || !result.data) {
+      throw new Error('Invalid API response format')
+    }
     return result.data
   } catch (error) {
-    console.warn('API error, using mock data:', error)
-    return MOCK_KECAMATAN_DATA as IKecamatan[]
+    console.error('Error fetching kecamatan data:', error)
+    throw error
   }
 }
 
