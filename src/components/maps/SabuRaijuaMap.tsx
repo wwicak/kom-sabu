@@ -5,7 +5,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
 import { SABU_RAIJUA_CENTER } from '@/lib/data/real-sabu-raijua-boundaries'
-import { useRealBoundaries } from '@/hooks/useRealBoundaries'
+
 
 // Fix for default markers in Leaflet with Next.js
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
@@ -44,13 +44,12 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   const [tooltip, setTooltip] = useState<TooltipData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Use real boundaries hook
-  const {
-    enhancedKecamatanData,
-    isLoading: boundariesLoading,
-    error: boundariesError,
-    boundarySource
-  } = useRealBoundaries(kecamatanData)
+  // Use the kecamatan data directly (it already contains real GeoJSON from the API)
+  console.log('SabuRaijuaMap received kecamatanData:', kecamatanData)
+  const enhancedKecamatanData = kecamatanData
+  const boundariesLoading = false
+  const boundariesError = null
+  const boundarySource = 'geojson_file'
 
   // Tile proxy URL to avoid CORS issues
   const TILE_PROXY_URL = '/api/tiles/{z}/{x}/{y}.png'
@@ -108,7 +107,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
     // Add tile layer using proxy to avoid CORS issues
     const tileLayer = L.tileLayer(TILE_PROXY_URL, {
-      attribution: '© OpenStreetMap contributors',
+      attribution: '© OpenFreeMap contributors',
       maxZoom: 19,
       tileSize: 256,
       errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjZTJlOGYwIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSIxMjgiIHk9IjEyOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjQ3NDhiIj5NYXAgVGlsZTwvdGV4dD48L3N2Zz4='
@@ -163,7 +162,15 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
 
     // Add each kecamatan as a GeoJSON layer with real boundaries
     enhancedKecamatanData.forEach(kecamatan => {
-      console.log(`SabuRaijuaMap: Processing kecamatan ${kecamatan.name}`, kecamatan.geometry)
+      console.log(`SabuRaijuaMap: Processing kecamatan ${kecamatan.name}`)
+      console.log('Geometry type:', kecamatan.geometry?.type)
+      console.log('Geometry coordinates length:', kecamatan.geometry?.coordinates?.length)
+
+      if (!kecamatan.geometry) {
+        console.error(`No geometry found for kecamatan ${kecamatan.name}`)
+        return
+      }
+
       const geoJsonLayer = L.geoJSON(kecamatan.geometry, {
         style: () => getKecamatanStyle(kecamatan),
         onEachFeature: (_, layer) => {
@@ -295,10 +302,10 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                 <div className="bg-green-50 p-2 rounded">
                   <div className="text-xs text-green-600 font-medium">LUAS WILAYAH</div>
                   <div className="text-lg font-bold text-green-900">
-                    {tooltip.kecamatan.area.toFixed(1)} km²
+                    {tooltip.kecamatan.area ? tooltip.kecamatan.area.toFixed(1) : 'N/A'} km²
                   </div>
                   <div className="text-xs text-green-700">
-                    {tooltip.kecamatan.villages.length} desa/kelurahan
+                    {tooltip.kecamatan.villages?.length || 0} desa/kelurahan
                   </div>
                 </div>
               </div>
@@ -308,10 +315,10 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   <div className="bg-orange-50 p-2 rounded">
                     <div className="text-xs text-orange-600 font-medium">EKONOMI</div>
                     <div className="text-sm font-bold text-orange-900">
-                      Kemiskinan: {tooltip.kecamatan.economy.povertyRate.toFixed(1)}%
+                      Kemiskinan: {tooltip.kecamatan.economy.povertyRate ? tooltip.kecamatan.economy.povertyRate.toFixed(1) : 'N/A'}%
                     </div>
                     <div className="text-xs text-orange-700">
-                      Pengangguran: {tooltip.kecamatan.economy.unemploymentRate.toFixed(1)}%
+                      Pengangguran: {tooltip.kecamatan.economy.unemploymentRate ? tooltip.kecamatan.economy.unemploymentRate.toFixed(1) : 'N/A'}%
                     </div>
                   </div>
                 )}
@@ -320,10 +327,10 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   <div className="bg-purple-50 p-2 rounded">
                     <div className="text-xs text-purple-600 font-medium">INFRASTRUKTUR</div>
                     <div className="text-sm font-bold text-purple-900">
-                      Listrik: {tooltip.kecamatan.infrastructure.utilities.electricityAccess}%
+                      Listrik: {tooltip.kecamatan.infrastructure.utilities?.electricityAccess || 'N/A'}%
                     </div>
                     <div className="text-xs text-purple-700">
-                      Air Bersih: {tooltip.kecamatan.infrastructure.utilities.cleanWaterAccess}%
+                      Air Bersih: {tooltip.kecamatan.infrastructure.utilities?.cleanWaterAccess || 'N/A'}%
                     </div>
                   </div>
                 )}
@@ -341,11 +348,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-green-500 h-2 rounded-full"
-                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.agriculture}%` }}
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors?.agriculture || 0}%` }}
                         ></div>
                       </div>
                       <span className="text-xs font-medium w-8 text-right">
-                        {tooltip.kecamatan.economy.economicSectors.agriculture}%
+                        {tooltip.kecamatan.economy.economicSectors?.agriculture || 0}%
                       </span>
                     </div>
                   </div>
@@ -355,11 +362,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.industry}%` }}
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors?.industry || 0}%` }}
                         ></div>
                       </div>
                       <span className="text-xs font-medium w-8 text-right">
-                        {tooltip.kecamatan.economy.economicSectors.industry}%
+                        {tooltip.kecamatan.economy.economicSectors?.industry || 0}%
                       </span>
                     </div>
                   </div>
@@ -369,11 +376,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-purple-500 h-2 rounded-full"
-                          style={{ width: `${tooltip.kecamatan.economy.economicSectors.services}%` }}
+                          style={{ width: `${tooltip.kecamatan.economy.economicSectors?.services || 0}%` }}
                         ></div>
                       </div>
                       <span className="text-xs font-medium w-8 text-right">
-                        {tooltip.kecamatan.economy.economicSectors.services}%
+                        {tooltip.kecamatan.economy.economicSectors?.services || 0}%
                       </span>
                     </div>
                   </div>
@@ -382,7 +389,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             )}
 
             {/* Main Industries Tags */}
-            {tooltip.kecamatan.economy && tooltip.kecamatan.economy.mainIndustries.length > 0 && (
+            {tooltip.kecamatan.economy && tooltip.kecamatan.economy.mainIndustries?.length > 0 && (
               <div className="border-t border-gray-200 pt-3">
                 <h4 className="font-medium text-gray-900 mb-2 text-sm">Industri Utama</h4>
                 <div className="flex flex-wrap gap-1">
@@ -402,7 +409,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   <div>
                     <h4 className="font-medium text-gray-900 mb-1 text-sm">Komoditas Utama</h4>
                     <div className="text-xs text-gray-600">
-                      {tooltip.kecamatan.agriculture.mainCrops.slice(0, 3).map(crop => crop.name).join(', ')}
+                      {tooltip.kecamatan.agriculture.mainCrops?.slice(0, 3).map(crop => crop.name).join(', ') || 'N/A'}
                     </div>
                   </div>
                 )}
@@ -411,7 +418,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   <div>
                     <h4 className="font-medium text-gray-900 mb-1 text-sm">Sumber Daya</h4>
                     <div className="text-xs text-gray-600">
-                      {tooltip.kecamatan.naturalResources.minerals.slice(0, 2).map(mineral => mineral.type).join(', ')}
+                      {tooltip.kecamatan.naturalResources.minerals?.slice(0, 2).map(mineral => mineral.type).join(', ') || 'N/A'}
                     </div>
                   </div>
                 )}
@@ -455,10 +462,11 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
             <div className="border-t pt-2 mt-2">
               <div className="text-xs text-gray-500">
                 Batas wilayah: {
-                  boundarySource === 'local' ? '🗺️ Data lokal' :
-                    boundarySource === 'osm' ? '🌍 OpenStreetMap' :
-                      boundarySource === 'gadm' ? '📊 GADM' :
-                        '⚠️ Perkiraan'
+                  boundarySource === 'geojson_file' ? '🗺️ Data GeoJSON Resmi' :
+                    boundarySource === 'local' ? '🗺️ Data lokal' :
+                      boundarySource === 'osm' ? '🌍 OpenStreetMap' :
+                        boundarySource === 'gadm' ? '📊 GADM' :
+                          '⚠️ Perkiraan'
                 }
               </div>
               {boundariesError && (

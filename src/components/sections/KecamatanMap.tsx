@@ -52,6 +52,7 @@ interface KecamatanData {
 export function KecamatanMap() {
   const { data: kecamatanData, isLoading, error } = useKecamatanList()
   const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanData | null>(null)
+  const [hoveredKecamatan, setHoveredKecamatan] = useState<KecamatanData | null>(null)
 
   if (isLoading) {
     return (
@@ -203,11 +204,41 @@ export function KecamatanMap() {
               </CardHeader>
               <CardContent className="p-0">
                 {kecamatanData && kecamatanData.length > 0 ? (
-                  <InteractiveMap
-                    kecamatanData={kecamatanData}
-                    selectedKecamatan={selectedKecamatan?.slug}
-                    onKecamatanSelect={setSelectedKecamatan}
-                  />
+                  <div className="relative">
+                    <InteractiveMap
+                      kecamatanData={kecamatanData}
+                      selectedKecamatan={selectedKecamatan?.slug}
+                      onKecamatanSelect={setSelectedKecamatan}
+                      onKecamatanHover={setHoveredKecamatan}
+                      showHoverInfo={true}
+                    />
+
+                    {/* Hover Info Overlay */}
+                    {hoveredKecamatan && !selectedKecamatan && (
+                      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 max-w-sm z-10 border">
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          Kecamatan {hoveredKecamatan.name}
+                        </h3>
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{hoveredKecamatan.population?.toLocaleString('id-ID') || 'N/A'} jiwa</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>{hoveredKecamatan.area?.toFixed(1) || 'N/A'} km²</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            <span>{hoveredKecamatan.villages || 'N/A'} desa/kelurahan</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Klik untuk melihat detail lengkap
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
                     <div className="text-center text-gray-500">

@@ -107,12 +107,14 @@ interface InteractiveMapProps {
   showHoverInfo?: boolean
 }
 
-export function InteractiveMap({ kecamatanData, selectedKecamatan, onKecamatanSelect }: InteractiveMapProps) {
+export function InteractiveMap({ kecamatanData, selectedKecamatan, onKecamatanSelect, onKecamatanHover, showHoverInfo }: InteractiveMapProps) {
   return (
     <MapLibreComponent
       kecamatanData={kecamatanData}
       selectedKecamatan={selectedKecamatan}
       onKecamatanSelect={onKecamatanSelect}
+      onKecamatanHover={onKecamatanHover}
+      showHoverInfo={showHoverInfo}
     />
   )
 }

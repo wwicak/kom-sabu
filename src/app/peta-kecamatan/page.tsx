@@ -35,7 +35,8 @@ async function fetchKecamatanData(): Promise<IKecamatan[]> {
     if (geoJsonResponse.ok) {
       const geoJsonResult = await geoJsonResponse.json()
       if (geoJsonResult.success && geoJsonResult.data) {
-        console.log('Using GeoJSON data for accurate polygons')
+        console.log('Using GeoJSON data for accurate polygons:', geoJsonResult.data.length, 'kecamatan')
+        console.log('First kecamatan geometry:', geoJsonResult.data[0]?.geometry)
         return geoJsonResult.data
       }
     }
