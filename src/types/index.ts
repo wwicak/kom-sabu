@@ -11,6 +11,7 @@ export interface NavigationItem {
   href: string
   icon?: React.ComponentType<{ className?: string }>
   external?: boolean
+  children?: NavigationItem[]
 }
 
 // Company information types

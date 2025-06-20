@@ -5,7 +5,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
 import { SABU_RAIJUA_CENTER } from '@/lib/data/real-sabu-raijua-boundaries'
-import { useRealBoundaries, getBoundaryQuality } from '@/hooks/useRealBoundaries'
+import { useRealBoundaries } from '@/hooks/useRealBoundaries'
 
 // Fix for default markers in Leaflet with Next.js
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl

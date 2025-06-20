@@ -21,17 +21,40 @@ export const COMPANY_INFO: CompanyInfo = {
   },
 }
 
-// Navigation items
+// Navigation items with grouped structure
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   { name: 'Beranda', href: '/' },
-  { name: 'Profil', href: '/profil' },
-  { name: 'Kecamatan', href: '/kecamatan' },
-  { name: 'Peta Kecamatan', href: '/peta-kecamatan' },
-  { name: 'Budaya', href: '/budaya' },
-  { name: 'Wisata', href: '/wisata' },
+  {
+    name: 'Profil',
+    href: '/profil',
+    children: [
+      { name: 'Sejarah', href: '/profil/sejarah' },
+      { name: 'Visi & Misi', href: '/profil/visi-misi' },
+      { name: 'Struktur Organisasi', href: '/profil/struktur' },
+      { name: 'Pejabat', href: '/profil/pejabat' },
+    ]
+  },
+  {
+    name: 'Pemerintahan',
+    href: '/pemerintahan',
+    children: [
+      { name: 'Kecamatan', href: '/kecamatan' },
+      { name: 'Peta Kecamatan', href: '/peta-kecamatan' },
+      { name: 'Desa/Kelurahan', href: '/desa' },
+    ]
+  },
+  {
+    name: 'Pariwisata',
+    href: '/pariwisata',
+    children: [
+      { name: 'Wisata Alam', href: '/wisata/alam' },
+      { name: 'Wisata Budaya', href: '/wisata/budaya' },
+      { name: 'Kuliner', href: '/wisata/kuliner' },
+      { name: 'Akomodasi', href: '/wisata/akomodasi' },
+    ]
+  },
   { name: 'Layanan', href: '/layanan' },
   { name: 'Berita', href: '/berita' },
-  { name: 'Galeri', href: '/galeri' },
   { name: 'Kontak', href: '/kontak' },
 ]
 

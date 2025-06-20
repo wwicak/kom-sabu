@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { NAVIGATION_ITEMS, COMPANY_INFO } from '@/constants'
-import { Menu, X, Phone, Mail, MapPin, Search } from 'lucide-react'
+import { Menu, X, Phone, Mail, MapPin, Search, ChevronDown } from 'lucide-react'
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
@@ -93,14 +93,48 @@ export function Header() {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
               {NAVIGATION_ITEMS.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg relative group"
-                >
-                  {item.name}
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                </Link>
+                <div key={item.name} className="relative group">
+                  {item.children ? (
+                    // Dropdown menu item
+                    <>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-1 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg group"
+                      >
+                        {item.name}
+                        <ChevronDown className="h-3 w-3 transition-transform group-hover:rotate-180" />
+                      </Link>
+                      <div className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 group-hover:delay-75">
+                        <div className="py-2">
+                          <Link
+                            href={item.href}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium border-b border-gray-100"
+                          >
+                            Semua {item.name}
+                          </Link>
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.name}
+                              href={child.href}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                            >
+                              {child.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    // Regular menu item
+                    <Link
+                      href={item.href}
+                      className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg relative group whitespace-nowrap"
+                    >
+                      {item.name}
+                      <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                    </Link>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -208,14 +242,29 @@ export function Header() {
             <div className="lg:hidden">
               <div className="px-4 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
                 {NAVIGATION_ITEMS.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
+                  <div key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                    {item.children && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.name}
+                            href={child.href}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
 
                 {/* Mobile Actions */}
