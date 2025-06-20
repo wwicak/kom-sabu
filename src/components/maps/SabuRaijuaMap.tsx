@@ -245,7 +245,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       const group = new L.FeatureGroup(Object.values(layersRef.current))
       mapInstanceRef.current.fitBounds(group.getBounds(), { padding: [20, 20] })
     }
-  }, [enhancedKecamatanData, onKecamatanClick, onKecamatanHover])
+  }, [enhancedKecamatanData]) // Remove callback dependencies to prevent re-rendering
 
   // Update selected kecamatan styling
   useEffect(() => {

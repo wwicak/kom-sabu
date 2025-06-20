@@ -67,14 +67,27 @@ export default function PejabatPage() {
   const fetchOfficials = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/officials')
+      const response = await fetch('/api/officials', {
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (data.success) {
         setOfficials(data.data)
+      } else {
+        console.warn('API returned success: false, using fallback data')
+        // Use static data as fallback
+        setOfficials([])
       }
     } catch (error) {
       console.error('Failed to fetch officials:', error)
+      // Use static data as fallback when API fails
+      setOfficials([])
     } finally {
       setLoading(false)
     }
@@ -101,59 +114,12 @@ export default function PejabatPage() {
     return acc
   }, {})
 
-  // Get main officials (pimpinan level)
-  const mainOfficials = officials.filter(official =>
-    official.level === 'kabupaten' && official.category === 'pimpinan'
-  ).sort((a, b) => a.order - b.order)
-
-  const staticMainOfficials = [
-    {
-      id: 2,
-      name: 'Drs. Yohanis Uly Kale',
-      position: 'Wakil Bupati Sabu Raijua',
-      period: '2021-2026',
-      photo: '/images/officials/wakil-bupati.jpg',
-      education: 'S1 Administrasi Negara',
-      experience: [
-        'Camat Sabu Tengah (2010-2015)',
-        'Kepala Bagian Pemerintahan (2015-2020)',
-        'ASN Kabupaten Sabu Raijua (1995-2021)'
-      ],
-      achievements: [
-        'Reformasi birokrasi daerah',
-        'Peningkatan pelayanan publik',
-        'Program pemberdayaan masyarakat'
-      ],
-      vision: 'Mendukung pembangunan yang berkelanjutan dan inklusif',
-      phone: '(0380) 21002',
-      email: 'wabup@saburajua.go.id',
-      icon: Shield,
-      color: 'bg-green-600'
-    },
-    {
-      id: 3,
-      name: 'Drs. Marthen Dira Tome, M.Si',
-      position: 'Sekretaris Daerah',
-      period: '2020-sekarang',
-      photo: '/images/officials/sekda.jpg',
-      education: 'S2 Administrasi Publik',
-      experience: [
-        'Asisten Sekda Bidang Pemerintahan (2018-2020)',
-        'Kepala Bappeda Sabu Raijua (2015-2018)',
-        'Kepala Dinas PMD (2012-2015)'
-      ],
-      achievements: [
-        'Digitalisasi administrasi pemerintahan',
-        'Peningkatan koordinasi antar SKPD',
-        'Implementasi e-government'
-      ],
-      vision: 'Terwujudnya pemerintahan yang efektif dan efisien',
-      phone: '(0380) 21003',
-      email: 'sekda@saburajua.go.id',
-      icon: Briefcase,
-      color: 'bg-purple-600'
-    }
-  ]
+  // Get main officials (pimpinan level) - use CMS data or fallback to static
+  const mainOfficials = officials.length > 0
+    ? officials.filter(official =>
+      official.level === 'kabupaten' && official.category === 'pimpinan'
+    ).sort((a, b) => a.order - b.order)
+    : [] // Will show static data in the component when CMS data is not available
 
   const departmentHeads = [
     {
@@ -276,8 +242,19 @@ export default function PejabatPage() {
               ))}
             </div>
           ) : mainOfficials.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Belum ada data pimpinan daerah tersedia.</p>
+            <div className="text-center py-12 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+                  Data Pejabat Harus Dikelola via CMS
+                </h3>
+                <p className="text-yellow-700 mb-4">
+                  Data pejabat dan pimpinan daerah harus dikelola melalui sistem Content Management System (CMS)
+                  untuk memastikan informasi yang akurat dan terkini.
+                </p>
+                <p className="text-sm text-yellow-600">
+                  Silakan hubungi administrator untuk menambahkan data pejabat melalui panel admin CMS.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="space-y-8">
@@ -404,6 +381,24 @@ export default function PejabatPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Kepala Dinas dan Badan
           </h2>
+
+          {/* CMS Notice */}
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="p-1 bg-blue-100 rounded">
+                <Users className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-1">
+                  Kelola Data via CMS
+                </h3>
+                <p className="text-sm text-blue-700">
+                  Data kepala dinas dan badan harus dikelola melalui Content Management System untuk informasi yang akurat dan terkini.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {departmentHeads.map((head, index) => (
               <Card key={index}>

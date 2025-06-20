@@ -122,63 +122,6 @@ export default function WisataBudayaPage() {
   }
 
   const culturalSites = destinations // Use CMS data instead of mock data
-  {
-    id: 1,
-      name: 'Desa Adat Raijua',
-        location: 'Raijua',
-          category: 'Desa Adat',
-            description: 'Desa tradisional dengan rumah adat yang masih terjaga. Masyarakat masih menjalankan adat istiadat leluhur.',
-              image: '/images/culture/desa-adat-raijua.jpg',
-                rating: 4.8,
-                  duration: '3-4 jam',
-                    bestTime: 'Sepanjang tahun',
-                      highlights: ['Rumah Adat', 'Upacara Tradisional', 'Kerajinan Lokal', 'Cerita Rakyat'],
-                        activities: ['Homestay', 'Workshop', 'Cultural tour', 'Fotografi'],
-                          entrance: 'Rp 25.000'
-  },
-  {
-    id: 2,
-      name: 'Pusat Tenun Ikat Sabu',
-        location: 'Sabu Tengah',
-          category: 'Kerajinan',
-            description: 'Pusat kerajinan tenun ikat tradisional dengan motif khas Sabu yang telah diwariskan turun-temurun.',
-              image: '/images/culture/tenun-ikat.jpg',
-                rating: 4.6,
-                  duration: '2-3 jam',
-                    bestTime: 'Sepanjang tahun',
-                      highlights: ['Proses Tenun', 'Motif Tradisional', 'Workshop', 'Galeri'],
-                        activities: ['Belajar menenun', 'Belanja souvenir', 'Fotografi', 'Workshop'],
-                          entrance: 'Rp 15.000'
-  },
-  {
-    id: 3,
-      name: 'Rumah Adat Sabu',
-        location: 'Sabu Barat',
-          category: 'Arsitektur',
-            description: 'Rumah tradisional dengan arsitektur khas Sabu yang menggunakan bahan alami dan teknik tradisional.',
-              image: '/images/culture/rumah-adat.jpg',
-                rating: 4.5,
-                  duration: '1-2 jam',
-                    bestTime: 'Sepanjang tahun',
-                      highlights: ['Arsitektur Tradisional', 'Filosofi Bangunan', 'Ornamen Khas', 'Fungsi Ruang'],
-                        activities: ['Tur arsitektur', 'Fotografi', 'Edukasi budaya'],
-                          entrance: 'Rp 10.000'
-  },
-  {
-    id: 4,
-      name: 'Sanggar Tari Sabu',
-        location: 'Sabu Tengah',
-          category: 'Seni Pertunjukan',
-            description: 'Sanggar yang melestarikan tarian tradisional Sabu dengan berbagai jenis tarian untuk upacara adat.',
-              image: '/images/culture/tari-sabu.jpg',
-                rating: 4.7,
-                  duration: '2 jam',
-                    bestTime: 'Sepanjang tahun',
-                      highlights: ['Tari Tradisional', 'Kostum Adat', 'Musik Tradisional', 'Cerita Tari'],
-                        activities: ['Pertunjukan tari', 'Belajar tari', 'Fotografi', 'Workshop'],
-                          entrance: 'Rp 20.000'
-  }
-  ]
 
   const culturalEvents = [
     {
@@ -204,12 +147,29 @@ export default function WisataBudayaPage() {
     }
   ]
 
-  const culturalCategories = [
-    { name: 'Desa Adat', count: 3, icon: Home, color: 'bg-blue-500' },
-    { name: 'Kerajinan', count: 5, icon: Palette, color: 'bg-purple-500' },
-    { name: 'Seni Pertunjukan', count: 4, icon: Music, color: 'bg-red-500' },
-    { name: 'Arsitektur', count: 2, icon: Home, color: 'bg-green-500' }
-  ]
+  // Dynamic categories based on fetched destinations
+  const getCategories = () => {
+    const categoryCount: { [key: string]: number } = {}
+    destinations.forEach(dest => {
+      const category = dest.subcategory || dest.category
+      categoryCount[category] = (categoryCount[category] || 0) + 1
+    })
+
+    return Object.entries(categoryCount).map(([name, count]) => ({
+      name,
+      count,
+      icon: name.toLowerCase().includes('desa') || name.toLowerCase().includes('rumah') ? Home :
+        name.toLowerCase().includes('kerajinan') || name.toLowerCase().includes('tenun') ? Palette :
+          name.toLowerCase().includes('seni') || name.toLowerCase().includes('tari') || name.toLowerCase().includes('musik') ? Music :
+            Home,
+      color: name.toLowerCase().includes('desa') ? 'bg-blue-500' :
+        name.toLowerCase().includes('kerajinan') ? 'bg-purple-500' :
+          name.toLowerCase().includes('seni') ? 'bg-red-500' :
+            'bg-green-500'
+    }))
+  }
+
+  const culturalCategories = getCategories()
 
   return (
     <Layout>
@@ -243,82 +203,105 @@ export default function WisataBudayaPage() {
         </div>
 
         {/* Cultural Sites */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {culturalSites.map((site) => (
-            <Card key={site.id} className="overflow-hidden">
-              <div className="relative h-48 bg-gray-200">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-                <div className="absolute top-4 left-4 z-20">
-                  <Badge className="bg-white text-gray-900">
-                    {site.category}
-                  </Badge>
-                </div>
-                <div className="absolute top-4 right-4 z-20">
-                  <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">{site.rating}</span>
+        {culturalSites.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {culturalSites.map((site) => (
+              <Card key={site._id} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-200">
+                  {site.images && site.images.length > 0 && (
+                    <img
+                      src={site.images[0].url}
+                      alt={site.images[0].alt || site.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+                  <div className="absolute top-4 left-4 z-20">
+                    <Badge className="bg-white text-gray-900">
+                      {site.subcategory || site.category}
+                    </Badge>
                   </div>
-                </div>
-                <div className="absolute bottom-4 left-4 z-20 text-white">
-                  <h3 className="text-xl font-bold mb-1">{site.name}</h3>
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    <span className="text-sm">{site.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <CardContent className="p-6">
-                <p className="text-gray-600 text-sm mb-4">{site.description}</p>
-
-                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span>{site.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{site.bestTime}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span>{site.entrance}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Camera className="h-4 w-4 text-gray-400" />
-                    <span>Foto diizinkan</span>
+                  {site.statistics.rating > 0 && (
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">{site.statistics.rating.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute bottom-4 left-4 z-20 text-white">
+                    <h3 className="text-xl font-bold mb-1">{site.name}</h3>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">{site.location.village}, {site.location.district}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Highlights:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {site.highlights.map((highlight, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
-                        {highlight}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                <CardContent className="p-6">
+                  <p className="text-gray-600 text-sm mb-4">{site.description}</p>
 
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Aktivitas:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {site.activities.map((activity, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {activity}
-                      </Badge>
-                    ))}
+                  <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-gray-400" />
+                      <span>{site.accessibility.duration}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>{site.bestTimeToVisit}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-gray-400" />
+                      <span>{formatPrice(site.entryFee.local, site.entryFee.currency)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Camera className="h-4 w-4 text-gray-400" />
+                      <span>Foto diizinkan</span>
+                    </div>
                   </div>
-                </div>
 
-                <Button className="w-full">
-                  Lihat Detail & Booking
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  {site.activities && site.activities.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Aktivitas:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {site.activities.map((activity, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {activity}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {site.facilities && site.facilities.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Fasilitas:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {site.facilities.map((facility, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {facility}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    className="w-full"
+                    onClick={() => router.push(`/wisata/${site.slug}`)}
+                  >
+                    Lihat Detail & Booking
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 mb-4">Belum ada destinasi wisata budaya yang tersedia.</p>
+            <Button onClick={fetchDestinations}>Muat Ulang</Button>
+          </div>
+        )}
 
         {/* Cultural Events */}
         <div className="mb-12">

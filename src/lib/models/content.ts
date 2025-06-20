@@ -412,16 +412,16 @@ officialSchema.index({ level: 1, category: 1, status: 1 })
 officialSchema.index({ department: 1 })
 officialSchema.index({ order: 1 })
 
-newsSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 newsSchema.index({ category: 1, status: 1 })
 newsSchema.index({ publishedAt: -1 })
 newsSchema.index({ featured: 1, status: 1 })
 newsSchema.index({ title: 'text', content: 'text' })
 
-pageSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 pageSchema.index({ type: 1, status: 1 })
 
-serviceSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 serviceSchema.index({ category: 1, status: 1 })
 serviceSchema.index({ department: 1 })
 

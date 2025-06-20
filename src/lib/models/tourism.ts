@@ -426,17 +426,17 @@ const culinarySchema = new mongoose.Schema({
 })
 
 // Add indexes for better performance
-destinationSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 destinationSchema.index({ category: 1, status: 1 })
 destinationSchema.index({ 'location.district': 1 })
 destinationSchema.index({ featured: 1, status: 1 })
 
-accommodationSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 accommodationSchema.index({ type: 1, status: 1 })
 accommodationSchema.index({ 'location.district': 1 })
 accommodationSchema.index({ featured: 1, status: 1 })
 
-culinarySchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 culinarySchema.index({ category: 1, status: 1 })
 culinarySchema.index({ 'location.district': 1 })
 

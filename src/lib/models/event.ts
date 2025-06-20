@@ -259,7 +259,7 @@ const eventSchema = new mongoose.Schema({
 })
 
 // Add indexes for better performance
-eventSchema.index({ slug: 1 })
+// Note: slug fields already have unique: true, no need for manual index
 eventSchema.index({ category: 1, status: 1 })
 eventSchema.index({ 'dates.start': 1, 'dates.end': 1 })
 eventSchema.index({ 'location.district': 1 })
