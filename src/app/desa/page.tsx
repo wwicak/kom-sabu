@@ -13,13 +13,101 @@ import {
   Search,
   Home
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+interface Village {
+  _id: string
+  name: string
+  code: string
+  type: 'desa' | 'kelurahan'
+  district: string
+  head: {
+    name: string
+    title: string
+    contact?: {
+      phone?: string
+      email?: string
+    }
+  }
+  demographics: {
+    population: {
+      total: number
+      male?: number
+      female?: number
+      families?: number
+    }
+  }
+  geography: {
+    area: number
+  }
+  contact: {
+    office: {
+      address: string
+      phone?: string
+      email?: string
+    }
+  }
+  description?: string
+  featured: boolean
+  status: string
+}
+
+interface VillageStats {
+  totalVillages: number
+  totalDesa: number
+  totalKelurahan: number
+  totalPopulation: number
+}
 
 export default function DesaPage() {
+  const [villages, setVillages] = useState<Village[]>([])
+  const [villageStats, setVillageStats] = useState<VillageStats>({
+    totalVillages: 0,
+    totalDesa: 0,
+    totalKelurahan: 0,
+    totalPopulation: 0
+  })
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('all')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
-  const villages = [
+  useEffect(() => {
+    fetchVillages()
+  }, [page, searchTerm, selectedDistrict])
+
+  const fetchVillages = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        ...(searchTerm && { search: searchTerm }),
+        ...(selectedDistrict !== 'all' && { district: selectedDistrict })
+      })
+
+      const response = await fetch(`/api/villages?${params}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setVillages(data.data)
+        setTotalPages(data.pagination.pages)
+        setVillageStats({
+          totalVillages: data.statistics.totalVillages,
+          totalDesa: data.statistics.totalDesa,
+          totalKelurahan: data.statistics.totalKelurahan,
+          totalPopulation: data.statistics.totalPopulation
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch villages:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const staticVillages = [
     // Sabu Barat
     { name: 'Menia', type: 'kelurahan', district: 'Sabu Barat', population: 2500, head: 'Yohanes Rihi', phone: '(0380) 21101' },
     { name: 'Dimu', type: 'desa', district: 'Sabu Barat', population: 1200, head: 'Maria Seran', phone: '(0380) 21102' },
@@ -76,7 +164,7 @@ export default function DesaPage() {
 
   const filteredVillages = villages.filter(village => {
     const matchesSearch = village.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      village.head.toLowerCase().includes(searchTerm.toLowerCase())
+      village.head.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesDistrict = selectedDistrict === 'all' || village.district === selectedDistrict
     return matchesSearch && matchesDistrict
   })
@@ -89,10 +177,11 @@ export default function DesaPage() {
     return type === 'kelurahan' ? 'bg-blue-600' : 'bg-green-600'
   }
 
-  const totalVillages = villages.length
-  const totalKelurahan = villages.filter(v => v.type === 'kelurahan').length
-  const totalDesa = villages.filter(v => v.type === 'desa').length
-  const totalPopulation = villages.reduce((sum, v) => sum + v.population, 0)
+  // Use the stats from API instead of calculating from current page
+  const totalVillages = villageStats.totalVillages
+  const totalKelurahan = villageStats.totalKelurahan
+  const totalDesa = villageStats.totalDesa
+  const totalPopulation = villageStats.totalPopulation
 
   return (
     <Layout>
@@ -194,71 +283,101 @@ export default function DesaPage() {
 
         {/* Villages List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVillages.map((village, index) => {
-            const VillageIcon = getVillageIcon(village.type)
-            return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="animate-pulse">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <VillageIcon className="h-5 w-5" />
-                        {village.name}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600">Kecamatan {village.district}</p>
-                    </div>
-                    <Badge className={getVillageTypeColor(village.type)}>
-                      {village.type === 'kelurahan' ? 'Kelurahan' : 'Desa'}
-                    </Badge>
+                    <div className="w-3/4 h-6 bg-gray-200 rounded"></div>
+                    <div className="w-16 h-6 bg-gray-200 rounded"></div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Kepala {village.type === 'kelurahan' ? 'Lurah' : 'Desa'}:</span>
-                      <span className="font-medium">{village.head}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Penduduk:</span>
-                      <span className="font-medium">{village.population.toLocaleString()} jiwa</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Kontak:</span>
-                      <span className="font-medium">{village.phone}</span>
-                    </div>
-                    <div className="pt-3 border-t border-gray-200">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Hubungi
-                      </Button>
-                    </div>
+                    <div className="w-full h-4 bg-gray-200 rounded"></div>
+                    <div className="w-2/3 h-4 bg-gray-200 rounded"></div>
+                    <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
                   </div>
                 </CardContent>
               </Card>
-            )
-          })}
+            ))
+          ) : filteredVillages.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500">Tidak ada desa/kelurahan yang ditemukan.</p>
+            </div>
+          ) : (
+            filteredVillages.map((village) => {
+              const VillageIcon = getVillageIcon(village.type)
+              return (
+                <Card key={village._id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <VillageIcon className="h-5 w-5" />
+                          {village.name}
+                        </CardTitle>
+                        <p className="text-sm text-gray-600">Kecamatan {village.district}</p>
+                      </div>
+                      <Badge className={getVillageTypeColor(village.type)}>
+                        {village.type === 'kelurahan' ? 'Kelurahan' : 'Desa'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Kepala {village.type === 'kelurahan' ? 'Lurah' : 'Desa'}:</span>
+                        <span className="font-medium">{village.head.name}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Penduduk:</span>
+                        <span className="font-medium">{village.demographics.population.total.toLocaleString()} jiwa</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Luas:</span>
+                        <span className="font-medium">{village.geography.area} km²</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Kontak:</span>
+                        <span className="font-medium">{village.contact.office.phone || 'Tidak tersedia'}</span>
+                      </div>
+                      <div className="pt-3 border-t border-gray-200">
+                        <Button variant="outline" size="sm" className="w-full">
+                          <Phone className="h-4 w-4 mr-2" />
+                          Hubungi
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })
+          )}
         </div>
 
-        {/* No Results */}
-        {filteredVillages.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <div className="text-gray-500 mb-4">
-                <Search className="h-12 w-12 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Tidak ada hasil ditemukan</h3>
-                <p>Coba ubah kata kunci pencarian atau filter kecamatan</p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchTerm('')
-                  setSelectedDistrict('all')
-                }}
-              >
-                Reset Pencarian
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1 || loading}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages || loading}
+            >
+              Next
+            </Button>
+          </div>
         )}
 
         {/* Information */}
