@@ -106,7 +106,14 @@ export function KecamatanDetailCard({ kecamatan, onClose }: { kecamatan: IKecama
           </div>
         </div>
 
-        <Button className="w-full" size="sm">
+        <Button
+          className="w-full"
+          size="sm"
+          onClick={() => {
+            // Navigate to kecamatan detail page
+            window.location.href = `/kecamatan/${kecamatan.code}`
+          }}
+        >
           Lihat Detail Lengkap
         </Button>
       </CardContent>

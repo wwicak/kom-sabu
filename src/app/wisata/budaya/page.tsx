@@ -15,8 +15,7 @@ import {
   Calendar,
   Music,
   Palette,
-  Home,
-  Shirt
+  Home
 } from 'lucide-react'
 
 interface Destination {

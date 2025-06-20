@@ -44,6 +44,16 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   const [tooltip, setTooltip] = useState<TooltipData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Store stable references to callbacks to prevent re-rendering
+  const onKecamatanClickRef = useRef(onKecamatanClick)
+  const onKecamatanHoverRef = useRef(onKecamatanHover)
+
+  // Update refs when callbacks change
+  useEffect(() => {
+    onKecamatanClickRef.current = onKecamatanClick
+    onKecamatanHoverRef.current = onKecamatanHover
+  }, [onKecamatanClick, onKecamatanHover])
+
   // Use the kecamatan data directly (it already contains real GeoJSON from the API)
   console.log('SabuRaijuaMap received kecamatanData:', kecamatanData)
   const enhancedKecamatanData = kecamatanData
@@ -213,16 +223,16 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
                   y: adjustedY
                 })
 
-                onKecamatanHover?.(kecamatan)
+                onKecamatanHoverRef.current?.(kecamatan)
               },
               mouseout: (e) => {
                 const layer = e.target
                 layer.setStyle(getKecamatanStyle(kecamatan))
                 setTooltip(null)
-                onKecamatanHover?.(null)
+                onKecamatanHoverRef.current?.(null)
               },
               click: () => {
-                onKecamatanClick?.(kecamatan)
+                onKecamatanClickRef.current?.(kecamatan)
 
                 // Zoom to kecamatan bounds
                 const bounds = geoJsonLayer.getBounds()
