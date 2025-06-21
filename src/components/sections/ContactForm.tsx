@@ -212,12 +212,12 @@ export function ContactForm() {
               <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mr-3" />
                 <div>
-                  <p className="text-yellow-800">Security token error: {csrfError}</p>
+                  <p className="text-yellow-800">{t('security.token_error')} {csrfError}</p>
                   <button
                     onClick={refreshToken}
                     className="text-yellow-600 hover:text-yellow-800 text-sm underline mt-1"
                   >
-                    Refresh security token
+                    {t('security.refresh_token')}
                   </button>
                 </div>
               </div>
@@ -227,56 +227,56 @@ export function ContactForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
                 <div>
-                  <Label htmlFor="name">Nama Lengkap *</Label>
+                  <Label htmlFor="name">{t('form.name')} {t('form.required')}</Label>
                   <Input
                     id="name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     className={errors.name ? 'border-red-500' : ''}
-                    placeholder="Masukkan nama lengkap Anda"
+                    placeholder={t('form.name_placeholder')}
                   />
                   {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">{t('form.email')} {t('form.required')}</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className={errors.email ? 'border-red-500' : ''}
-                    placeholder="nama@email.com"
+                    placeholder={t('form.email_placeholder')}
                   />
                   {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <Label htmlFor="phone">Nomor Telepon</Label>
+                  <Label htmlFor="phone">{t('form.phone')}</Label>
                   <Input
                     id="phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     className={errors.phone ? 'border-red-500' : ''}
-                    placeholder="+62 812 3456 7890"
+                    placeholder={t('form.phone_placeholder')}
                   />
                   {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                 </div>
 
                 {/* Company */}
                 <div>
-                  <Label htmlFor="company">Instansi/Perusahaan</Label>
+                  <Label htmlFor="company">{t('form.company')}</Label>
                   <Input
                     id="company"
                     type="text"
                     value={formData.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
                     className={errors.company ? 'border-red-500' : ''}
-                    placeholder="Nama instansi atau perusahaan"
+                    placeholder={t('form.company_placeholder')}
                   />
                   {errors.company && <p className="text-sm text-red-600 mt-1">{errors.company}</p>}
                 </div>
@@ -284,10 +284,10 @@ export function ContactForm() {
 
               {/* Subject */}
               <div>
-                <Label htmlFor="subject">Subjek *</Label>
+                <Label htmlFor="subject">{t('form.subject')} {t('form.required')}</Label>
                 <Select value={formData.subject} onValueChange={(value) => handleInputChange('subject', value)}>
                   <SelectTrigger className={errors.subject ? 'border-red-500' : ''}>
-                    <SelectValue placeholder="Pilih subjek pesan" />
+                    <SelectValue placeholder={t('form.subject_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {CONTACT_FORM_CONFIG.subjects.map((subject) => (
@@ -302,13 +302,13 @@ export function ContactForm() {
 
               {/* Message */}
               <div>
-                <Label htmlFor="message">Pesan *</Label>
+                <Label htmlFor="message">{t('form.message')} {t('form.required')}</Label>
                 <Textarea
                   id="message"
                   value={formData.message}
                   onChange={(e) => handleInputChange('message', e.target.value)}
                   className={errors.message ? 'border-red-500' : ''}
-                  placeholder="Tuliskan pesan Anda di sini..."
+                  placeholder={t('form.message_placeholder')}
                   rows={5}
                 />
                 {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
@@ -326,11 +326,11 @@ export function ContactForm() {
                     htmlFor="consent"
                     className="text-sm font-normal leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Saya setuju dengan{' '}
+                    {t('form.consent')}{' '}
                     <a href="/privacy" className="text-blue-600 hover:underline">
-                      kebijakan privasi
+                      {t('form.privacy_policy')}
                     </a>{' '}
-                    dan memberikan persetujuan untuk memproses data pribadi saya *
+                    {t('form.consent_text')} {t('form.required')}
                   </Label>
                   {errors.consent && <p className="text-sm text-red-600">{errors.consent}</p>}
                 </div>
@@ -340,7 +340,7 @@ export function ContactForm() {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-blue-600" />
-                  Verifikasi Keamanan *
+                  {t('form.security_verification')} {t('form.required')}
                 </Label>
                 <TurnstileWidget
                   key={turnstileKey}
@@ -358,7 +358,7 @@ export function ContactForm() {
                   <p className="text-sm text-red-600">{errors.csrf}</p>
                 )}
                 <p className="text-xs text-gray-500">
-                  Verifikasi keamanan diperlukan untuk mencegah spam dan penyalahgunaan
+                  {t('form.security_note')}
                 </p>
               </div>
 
@@ -372,15 +372,15 @@ export function ContactForm() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Mengirim...
+                      {t('form.submitting')}
                     </>
                   ) : csrfLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Loading...
+                      {t('form.loading')}
                     </>
                   ) : (
-                    'Kirim Pesan'
+                    t('form.submit')
                   )}
                 </Button>
               </div>

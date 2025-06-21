@@ -10,10 +10,12 @@ import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 
 export function Header() {
+  const { t: tHeader } = useTranslation('header')
+  const { t: tNav } = useTranslation('navigation')
+  const { t: tCommon } = useTranslation('common')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const { t } = useTranslation('navigation')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +47,7 @@ export function Header() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-xs">Jam Kerja: Senin - Jumat 08:00 - 16:00 WITA</span>
+              <span className="text-xs">{tHeader('working_hours')}</span>
               <LanguageSwitcher />
             </div>
           </div>
@@ -78,13 +80,13 @@ export function Header() {
                 </div>
                 <div className="hidden sm:block">
                   <div className="text-lg font-bold text-gray-900 leading-tight">
-                    PEMERINTAH KABUPATEN
+                    {tHeader('government_name')}
                   </div>
                   <div className="text-xl font-bold text-blue-600 leading-tight">
-                    SABU RAIJUA
+                    {tHeader('regency_name')}
                   </div>
                   <div className="text-xs text-gray-600 font-medium">
-                    NUSA TENGGARA TIMUR
+                    {tHeader('province')}
                   </div>
                 </div>
               </Link>
@@ -101,7 +103,7 @@ export function Header() {
                         href={item.href}
                         className="flex items-center gap-1 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg group"
                       >
-                        {item.name}
+                        {tNav(item.name)}
                         <ChevronDown className="h-3 w-3 transition-transform group-hover:rotate-180" />
                       </Link>
                       <div className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 group-hover:delay-75">
@@ -110,7 +112,7 @@ export function Header() {
                             href={item.href}
                             className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium border-b border-gray-100"
                           >
-                            Semua {item.name}
+                            {tHeader('all')} {tNav(item.name)}
                           </Link>
                           {item.children.map((child) => (
                             <Link
@@ -130,7 +132,7 @@ export function Header() {
                       href={item.href}
                       className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg relative group whitespace-nowrap"
                     >
-                      {item.name}
+                      {tNav(item.name)}
                       <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                     </Link>
                   )}
@@ -146,7 +148,7 @@ export function Header() {
                   <div className="flex items-center">
                     <Input
                       type="text"
-                      placeholder="Cari..."
+                      placeholder={tHeader('search_placeholder')}
                       className="w-64 pr-10"
                       autoFocus
                     />
@@ -155,7 +157,7 @@ export function Header() {
                       size="sm"
                       className="absolute right-1"
                       onClick={() => setSearchOpen(false)}
-                      aria-label="Close search"
+                      aria-label={tHeader('close_search')}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -166,7 +168,7 @@ export function Header() {
                     size="sm"
                     onClick={() => setSearchOpen(true)}
                     className="text-gray-600 hover:text-blue-600"
-                    aria-label="Open search"
+                    aria-label={tHeader('open_search')}
                   >
                     <Search className="h-5 w-5" />
                   </Button>
@@ -176,14 +178,14 @@ export function Header() {
               {/* Emergency Contact */}
               <Button variant="outline" size="sm" asChild>
                 <Link href="/kontak" className="text-red-600 border-red-200 hover:bg-red-50">
-                  Darurat: 112
+                  {tHeader('emergency')}
                 </Link>
               </Button>
 
               {/* Main CTA */}
               <Button asChild className="bg-blue-600 hover:bg-blue-700">
                 <Link href="/layanan">
-                  Layanan Publik
+                  {tHeader('public_services')}
                 </Link>
               </Button>
             </div>
@@ -225,7 +227,7 @@ export function Header() {
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Cari informasi..."
+                  placeholder={tHeader('search_placeholder_mobile')}
                   className="w-full pr-10"
                   autoFocus
                 />
@@ -234,7 +236,7 @@ export function Header() {
                   size="sm"
                   className="absolute right-1 top-1/2 transform -translate-y-1/2"
                   onClick={() => setSearchOpen(false)}
-                  aria-label="Close search"
+                  aria-label={tHeader('close_search')}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -253,7 +255,7 @@ export function Header() {
                       className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      {item.name}
+                      {tNav(item.name)}
                     </Link>
                     {item.children && (
                       <div className="ml-4 mt-1 space-y-1">
@@ -276,12 +278,12 @@ export function Header() {
                 <div className="pt-4 space-y-3 border-t border-gray-200 mt-4">
                   <Button variant="outline" asChild className="w-full text-red-600 border-red-200">
                     <Link href="/kontak" onClick={() => setMobileMenuOpen(false)}>
-                      Darurat: 112
+                      {tHeader('emergency')}
                     </Link>
                   </Button>
                   <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
                     <Link href="/layanan" onClick={() => setMobileMenuOpen(false)}>
-                      Layanan Publik
+                      {tHeader('public_services')}
                     </Link>
                   </Button>
 

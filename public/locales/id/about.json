@@ -26,5 +26,15 @@
       "title": "Komitmen",
       "description": "Mengutamakan kepentingan masyarakat dan pembangunan yang berkelanjutan untuk generasi mendatang."
     }
+  },
+  "achievements": {
+    "title": "Pencapaian Kami",
+    "subtitle": "Komitmen kami dalam memberikan pelayanan terbaik tercermin dalam berbagai pencapaian yang telah diraih.",
+    "items": {
+      "satisfaction": "Tingkat Kepuasan Masyarakat",
+      "transparency": "Transparansi Anggaran",
+      "online_service": "Layanan Online",
+      "villages_served": "Desa/Kelurahan Terlayani"
+    }
   }
 }

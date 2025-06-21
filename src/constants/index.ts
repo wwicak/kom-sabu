@@ -23,9 +23,9 @@ export const COMPANY_INFO: CompanyInfo = {
 
 // Navigation items with grouped structure
 export const NAVIGATION_ITEMS: NavigationItem[] = [
-  { name: 'Beranda', href: '/' },
+  { name: 'home', href: '/' },
   {
-    name: 'Profil',
+    name: 'profile',
     href: '/profil',
     children: [
       { name: 'Sejarah', href: '/profil/sejarah' },
@@ -35,7 +35,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     ]
   },
   {
-    name: 'Pemerintahan',
+    name: 'kecamatan',
     href: '/pemerintahan',
     children: [
       { name: 'Kecamatan', href: '/kecamatan' },
@@ -44,7 +44,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     ]
   },
   {
-    name: 'Pariwisata',
+    name: 'tourism',
     href: '/pariwisata',
     children: [
       { name: 'Wisata Alam', href: '/wisata/alam' },
@@ -53,9 +53,9 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
       { name: 'Akomodasi', href: '/wisata/akomodasi' },
     ]
   },
-  { name: 'Layanan', href: '/layanan' },
-  { name: 'Berita', href: '/berita' },
-  { name: 'Kontak', href: '/kontak' },
+  { name: 'services', href: '/layanan' },
+  { name: 'news', href: '/berita' },
+  { name: 'contact', href: '/kontak' },
 ]
 
 // Services data

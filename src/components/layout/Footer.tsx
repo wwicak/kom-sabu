@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import { COMPANY_INFO, NAVIGATION_ITEMS } from '@/constants'
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const socialIcons = {
   facebook: Facebook,
@@ -9,6 +12,10 @@ const socialIcons = {
 }
 
 export function Footer() {
+  const { t } = useTranslation('footer')
+  const { t: tNav } = useTranslation('navigation')
+  const { t: tCommon } = useTranslation('common')
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
@@ -19,10 +26,10 @@ export function Footer() {
               <div className="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">SR</span>
               </div>
-              <h3 className="text-xl font-bold">{COMPANY_INFO.name}</h3>
+              <h3 className="text-xl font-bold">{t('company_name')}</h3>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              {COMPANY_INFO.description}
+              {t('description')}
             </p>
 
             {/* Contact Info */}
@@ -46,7 +53,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Menu Utama</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('navigation')}</h4>
             <nav className="space-y-2">
               {NAVIGATION_ITEMS.map((item) => (
                 <Link
@@ -54,7 +61,7 @@ export function Footer() {
                   href={item.href}
                   className="block text-gray-300 hover:text-white transition-colors"
                 >
-                  {item.name}
+                  {tNav(item.name)}
                 </Link>
               ))}
             </nav>
@@ -62,19 +69,19 @@ export function Footer() {
 
           {/* Additional Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Informasi</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('information')}</h4>
             <nav className="space-y-2">
               <Link href="/privacy" className="block text-gray-300 hover:text-white transition-colors">
-                Kebijakan Privasi
+                {t('links.privacy_policy')}
               </Link>
               <Link href="/terms" className="block text-gray-300 hover:text-white transition-colors">
-                Syarat & Ketentuan
+                {t('links.terms_conditions')}
               </Link>
               <Link href="/sitemap" className="block text-gray-300 hover:text-white transition-colors">
-                Peta Situs
+                {t('links.sitemap')}
               </Link>
               <Link href="/accessibility" className="block text-gray-300 hover:text-white transition-colors">
-                Aksesibilitas
+                {t('links.accessibility')}
               </Link>
             </nav>
           </div>
@@ -104,7 +111,7 @@ export function Footer() {
               })}
             </div>
             <p className="text-gray-400 text-sm">
-              &copy; {new Date().getFullYear()} {COMPANY_INFO.name}. Hak Cipta Dilindungi.
+              &copy; {new Date().getFullYear()} {t('company_name')}. {t('copyright')}
             </p>
           </div>
         </div>
