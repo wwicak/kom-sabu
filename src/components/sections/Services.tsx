@@ -1,8 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { SERVICES } from '@/constants'
 import { Users, FileText, Heart, Activity, ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const iconMap = {
   users: Users,
@@ -12,16 +15,19 @@ const iconMap = {
 }
 
 export function Services() {
+  const { t } = useTranslation('services')
+  const { t: tCommon } = useTranslation('common')
+
   return (
     <section className="py-24 bg-gray-50">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Layanan Publik
+            {t('title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Kami menyediakan berbagai layanan publik yang mudah diakses, cepat, dan transparan untuk memenuhi kebutuhan masyarakat Sabu Raijua.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -29,7 +35,7 @@ export function Services() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
           {SERVICES.map((service) => {
             const IconComponent = iconMap[service.icon as keyof typeof iconMap] || Users
-            
+
             return (
               <Card key={service.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
                 <CardHeader className="pb-4">
@@ -46,12 +52,12 @@ export function Services() {
                     </div>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="pt-0">
                   <CardDescription className="text-gray-600 mb-6 leading-relaxed">
                     {service.description}
                   </CardDescription>
-                  
+
                   {/* Features List */}
                   <ul className="space-y-2 mb-6">
                     {service.features.slice(0, 3).map((feature, index) => (
@@ -62,13 +68,13 @@ export function Services() {
                     ))}
                     {service.features.length > 3 && (
                       <li className="text-sm text-gray-500 italic">
-                        +{service.features.length - 3} layanan lainnya
+                        +{service.features.length - 3} {t('more_services')}
                       </li>
                     )}
                   </ul>
-                  
+
                   <Button variant="outline" className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    Pelajari Lebih Lanjut
+                    {t('learn_more')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
@@ -80,21 +86,20 @@ export function Services() {
         {/* CTA Section */}
         <div className="text-center bg-white rounded-2xl p-8 shadow-md">
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Butuh Bantuan Layanan Lainnya?
+            {t('cta.title')}
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Tim customer service kami siap membantu Anda 24/7 untuk semua kebutuhan layanan publik. 
-            Hubungi kami melalui berbagai saluran komunikasi yang tersedia.
+            {t('cta.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">
               <Link href="/kontak">
-                Hubungi Kami
+                {t('cta.contact_us')}
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <Link href="/layanan">
-                Lihat Semua Layanan
+                {t('cta.view_all_services')}
               </Link>
             </Button>
           </div>
@@ -103,26 +108,26 @@ export function Services() {
         {/* Quick Access */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-blue-600 text-white rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">Online</div>
-            <div className="text-blue-100 mb-4">Layanan 24/7</div>
+            <div className="text-3xl font-bold mb-2">{t('quick_access.online.title')}</div>
+            <div className="text-blue-100 mb-4">{t('quick_access.online.subtitle')}</div>
             <Button variant="secondary" size="sm">
-              Akses Portal
+              {t('quick_access.online.button')}
             </Button>
           </div>
-          
+
           <div className="bg-green-600 text-white rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">Cepat</div>
-            <div className="text-green-100 mb-4">Proses Maksimal 3 Hari</div>
+            <div className="text-3xl font-bold mb-2">{t('quick_access.fast.title')}</div>
+            <div className="text-green-100 mb-4">{t('quick_access.fast.subtitle')}</div>
             <Button variant="secondary" size="sm">
-              Cek Status
+              {t('quick_access.fast.button')}
             </Button>
           </div>
-          
+
           <div className="bg-yellow-500 text-white rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">Gratis</div>
-            <div className="text-yellow-100 mb-4">Konsultasi & Informasi</div>
+            <div className="text-3xl font-bold mb-2">{t('quick_access.free.title')}</div>
+            <div className="text-yellow-100 mb-4">{t('quick_access.free.subtitle')}</div>
             <Button variant="secondary" size="sm">
-              Chat Sekarang
+              {t('quick_access.free.button')}
             </Button>
           </div>
         </div>

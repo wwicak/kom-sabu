@@ -6,28 +6,31 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Target, Eye, Award, Users } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslation } from 'react-i18next'
 
 export function About() {
+  const { t } = useTranslation('about')
+  const { t: tCommon } = useTranslation('common')
   const values = [
     {
       icon: Target,
-      title: 'Visi',
-      description: 'Mewujudkan Kabupaten Sabu Raijua yang maju, sejahtera, dan berkelanjutan berbasis kearifan lokal dan inovasi.',
+      title: t('values.vision.title'),
+      description: t('values.vision.description'),
     },
     {
       icon: Eye,
-      title: 'Misi',
-      description: 'Meningkatkan kualitas pelayanan publik, pembangunan infrastruktur, dan pemberdayaan masyarakat.',
+      title: t('values.mission.title'),
+      description: t('values.mission.description'),
     },
     {
       icon: Award,
-      title: 'Nilai',
-      description: 'Integritas, transparansi, akuntabilitas, dan profesionalisme dalam setiap aspek pemerintahan.',
+      title: t('values.values.title'),
+      description: t('values.values.description'),
     },
     {
       icon: Users,
-      title: 'Komitmen',
-      description: 'Mengutamakan kepentingan masyarakat dan pembangunan yang berkelanjutan untuk generasi mendatang.',
+      title: t('values.commitment.title'),
+      description: t('values.commitment.description'),
     },
   ]
 
@@ -46,33 +49,27 @@ export function About() {
           {/* Text Content */}
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">
-              Tentang Kabupaten Sabu Raijua
+              {t('title')}
             </h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Kabupaten Sabu Raijua adalah kabupaten kepulauan yang terdiri dari Pulau Sabu dan Pulau Raijua,
-              terletak di Laut Sawu, Provinsi Nusa Tenggara Timur. Dibentuk pada 26 November 2008 berdasarkan
-              UU No. 52 Tahun 2008, dengan ibu kota di Menia, Kecamatan Sabu Barat.
+              {t('description_1')}
             </p>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Dengan luas wilayah 459,58 km² dan populasi 94.860 jiwa (2024), kabupaten ini memiliki kekayaan
-              budaya Hawu yang unik, termasuk tradisi tenun ikat yang terkenal hingga mancanegara, tarian Ledo Hawu
-              yang sakral, dan bahasa Hawu sebagai bahasa daerah yang masih lestari.
+              {t('description_2')}
             </p>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              Melalui motto &ldquo;Mira Kaddi&rdquo; (Membangun Bersama), kami berkomitmen membangun daerah yang maju,
-              sejahtera, dan berkelanjutan dengan mengedepankan kearifan lokal, transparansi, dan akuntabilitas
-              dalam setiap aspek pemerintahan.
+              {t('description_3')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg">
                 <Link href="/profil">
-                  Pelajari Lebih Lanjut
+                  {tCommon('read_more')}
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link href="/galeri">
-                  Lihat Galeri
+                  {tCommon('gallery')}
                 </Link>
               </Button>
             </div>
@@ -83,7 +80,7 @@ export function About() {
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/images/sabu-raijua-landscape.jpg"
-                alt="Pemandangan Kabupaten Sabu Raijua"
+                alt={t('image_alt')}
                 width={500}
                 height={384}
                 className="w-full h-96 object-cover"
@@ -96,11 +93,11 @@ export function About() {
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-blue-600">6</div>
-                      <div className="text-sm text-gray-600">Kecamatan</div>
+                      <div className="text-sm text-gray-600">{t('stats.districts')}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-blue-600">63</div>
-                      <div className="text-sm text-gray-600">Desa/Kelurahan</div>
+                      <div className="text-sm text-gray-600">{t('stats.villages')}</div>
                     </div>
                   </div>
                 </div>
@@ -113,7 +110,7 @@ export function About() {
         <div className="mb-20">
           <div className="text-center mb-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Visi, Misi, dan Nilai-Nilai Kami
+              {t('values.title')}
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Landasan yang mengarahkan setiap langkah pembangunan dan pelayanan kami kepada masyarakat.

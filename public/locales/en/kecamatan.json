@@ -1,0 +1,15 @@
+{
+  "title": "Sabu Raijua District Map",
+  "subtitle": "Explore 6 districts in Sabu Raijua Regency with complete information about territory, demographics, and regional potential",
+  "districts": "Districts",
+  "villages": "Villages/Subdistricts",
+  "population": "Population",
+  "area": "Area",
+  "density": "Density",
+  "click_to_explore": "Click to explore",
+  "district_info": "District Information",
+  "close": "Close",
+  "loading": "Loading map...",
+  "error": "Failed to load map",
+  "retry": "Try Again"
+}

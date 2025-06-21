@@ -13,8 +13,11 @@ import { contactFormSchema, type ContactFormData } from '@/lib/validations'
 import { CONTACT_FORM_CONFIG } from '@/constants'
 import { useCSRF, createCSRFHeaders } from '@/hooks/useCSRF'
 import { Loader2, CheckCircle, AlertCircle, Shield } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function ContactForm() {
+  const { t } = useTranslation('contact')
+  const { t: tCommon } = useTranslation('common')
   const { csrfToken, isLoading: csrfLoading, error: csrfError, refreshToken } = useCSRF()
 
   const [formData, setFormData] = useState<ContactFormData>({
@@ -179,16 +182,16 @@ export function ContactForm() {
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Hubungi Kami
+            {t('title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Sampaikan pertanyaan, saran, atau keluhan Anda kepada kami
+            {t('subtitle')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Form Kontak</CardTitle>
+            <CardTitle>{t('form_title')}</CardTitle>
           </CardHeader>
           <CardContent>
             {submitStatus === 'success' && (

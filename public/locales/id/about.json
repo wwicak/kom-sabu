@@ -1,0 +1,30 @@
+{
+  "title": "Tentang Kabupaten Sabu Raijua",
+  "description_1": "Kabupaten Sabu Raijua adalah kabupaten kepulauan yang terdiri dari Pulau Sabu dan Pulau Raijua, terletak di Laut Sawu, Provinsi Nusa Tenggara Timur. Dibentuk pada 26 November 2008 berdasarkan UU No. 52 Tahun 2008, dengan ibu kota di Menia, Kecamatan Sabu Barat.",
+  "description_2": "Dengan luas wilayah sekitar 460,32 km² dan populasi lebih dari 72.000 jiwa, Sabu Raijua memiliki kekayaan budaya Hawu yang unik, tradisi tenun ikat yang mendunia, dan potensi wisata bahari yang luar biasa.",
+  "description_3": "Kabupaten ini terdiri dari 6 kecamatan dan 63 desa/kelurahan, dengan masyarakat yang mayoritas bermata pencaharian sebagai petani, peternak, dan nelayan. Sabu Raijua juga dikenal dengan kuda Sandelwood yang eksotis dan tradisi budaya yang masih terjaga dengan baik.",
+  "image_alt": "Pemandangan Kabupaten Sabu Raijua",
+  "stats": {
+    "districts": "Kecamatan",
+    "villages": "Desa/Kelurahan"
+  },
+  "values": {
+    "title": "Visi, Misi, Nilai & Komitmen",
+    "vision": {
+      "title": "Visi",
+      "description": "Mewujudkan Kabupaten Sabu Raijua yang maju, sejahtera, dan berkelanjutan berbasis kearifan lokal dan inovasi."
+    },
+    "mission": {
+      "title": "Misi",
+      "description": "Meningkatkan kualitas pelayanan publik, pembangunan infrastruktur, dan pemberdayaan masyarakat."
+    },
+    "values": {
+      "title": "Nilai",
+      "description": "Integritas, transparansi, akuntabilitas, dan profesionalisme dalam setiap aspek pemerintahan."
+    },
+    "commitment": {
+      "title": "Komitmen",
+      "description": "Mengutamakan kepentingan masyarakat dan pembangunan yang berkelanjutan untuk generasi mendatang."
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Contact Us",
+  "subtitle": "Share your questions, suggestions, or complaints with us",
+  "form_title": "Contact Form",
+  "form": {
+    "name": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "email": "Email",
+    "email_placeholder": "name@email.com",
+    "phone": "Phone Number",
+    "phone_placeholder": "+62 812 3456 7890",
+    "company": "Institution/Company",
+    "company_placeholder": "Institution or company name",
+    "subject": "Subject",
+    "subject_placeholder": "Select message subject",
+    "message": "Message",
+    "message_placeholder": "Write your message here...",
+    "consent": "I agree with the",
+    "privacy_policy": "privacy policy",
+    "consent_text": "and give consent to process my personal data",
+    "security_verification": "Security Verification",
+    "security_note": "Security verification is required to prevent spam and abuse",
+    "submit": "Send Message",
+    "submitting": "Sending...",
+    "loading": "Loading...",
+    "required": "*"
+  },
+  "security": {
+    "token_error": "Security token error:",
+    "refresh_token": "Refresh security token"
+  },
+  "messages": {
+    "success": "Your message has been sent successfully. We will respond within 1-2 business days.",
+    "error": "An error occurred while sending the message. Please try again."
+  }
+}

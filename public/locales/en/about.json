@@ -1,0 +1,30 @@
+{
+  "title": "About Sabu Raijua Regency",
+  "description_1": "Sabu Raijua Regency is an archipelagic regency consisting of Sabu Island and Raijua Island, located in the Savu Sea, East Nusa Tenggara Province. Established on November 26, 2008, based on Law No. 52 of 2008, with the capital in Menia, West Sabu District.",
+  "description_2": "With an area of approximately 460.32 km² and a population of more than 72,000 people, Sabu Raijua has unique Hawu cultural heritage, world-renowned ikat weaving traditions, and extraordinary marine tourism potential.",
+  "description_3": "The regency consists of 6 districts and 63 villages/subdistricts, with communities whose majority livelihood is farming, livestock, and fishing. Sabu Raijua is also known for its exotic Sandalwood horses and well-preserved cultural traditions.",
+  "image_alt": "Landscape of Sabu Raijua Regency",
+  "stats": {
+    "districts": "Districts",
+    "villages": "Villages/Subdistricts"
+  },
+  "values": {
+    "title": "Vision, Mission, Values & Commitment",
+    "vision": {
+      "title": "Vision",
+      "description": "To realize a progressive, prosperous, and sustainable Sabu Raijua Regency based on local wisdom and innovation."
+    },
+    "mission": {
+      "title": "Mission",
+      "description": "Improving the quality of public services, infrastructure development, and community empowerment."
+    },
+    "values": {
+      "title": "Values",
+      "description": "Integrity, transparency, accountability, and professionalism in every aspect of governance."
+    },
+    "commitment": {
+      "title": "Commitment",
+      "description": "Prioritizing community interests and sustainable development for future generations."
+    }
+  }
+}

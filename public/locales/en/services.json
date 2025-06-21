@@ -1,0 +1,29 @@
+{
+  "title": "Public Services",
+  "subtitle": "We provide various public services that are easily accessible, fast, and transparent to meet the needs of the Sabu Raijua community.",
+  "learn_more": "Learn More",
+  "more_services": "other services",
+  "cta": {
+    "title": "Need Help with Other Services?",
+    "description": "Our customer service team is ready to help you 24/7 for all your public service needs. Contact us through various available communication channels.",
+    "contact_us": "Contact Us",
+    "view_all_services": "View All Services"
+  },
+  "quick_access": {
+    "online": {
+      "title": "Online",
+      "subtitle": "24/7 Service",
+      "button": "Access Portal"
+    },
+    "fast": {
+      "title": "Fast",
+      "subtitle": "Maximum 3 Days Processing",
+      "button": "Check Status"
+    },
+    "free": {
+      "title": "Free",
+      "subtitle": "Consultation & Information",
+      "button": "Chat Now"
+    }
+  }
+}

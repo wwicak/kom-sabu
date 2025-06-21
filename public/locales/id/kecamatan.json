@@ -1,0 +1,15 @@
+{
+  "title": "Peta Kecamatan Sabu Raijua",
+  "subtitle": "Jelajahi 6 kecamatan di Kabupaten Sabu Raijua dengan informasi lengkap tentang wilayah, demografi, dan potensi daerah",
+  "districts": "Kecamatan",
+  "villages": "Desa/Kelurahan",
+  "population": "Penduduk",
+  "area": "Luas Wilayah",
+  "density": "Kepadatan",
+  "click_to_explore": "Klik untuk menjelajahi",
+  "district_info": "Informasi Kecamatan",
+  "close": "Tutup",
+  "loading": "Memuat peta...",
+  "error": "Gagal memuat peta",
+  "retry": "Coba Lagi"
+}

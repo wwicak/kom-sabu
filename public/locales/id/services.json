@@ -1,0 +1,29 @@
+{
+  "title": "Layanan Publik",
+  "subtitle": "Kami menyediakan berbagai layanan publik yang mudah diakses, cepat, dan transparan untuk memenuhi kebutuhan masyarakat Sabu Raijua.",
+  "learn_more": "Pelajari Lebih Lanjut",
+  "more_services": "layanan lainnya",
+  "cta": {
+    "title": "Butuh Bantuan Layanan Lainnya?",
+    "description": "Tim customer service kami siap membantu Anda 24/7 untuk semua kebutuhan layanan publik. Hubungi kami melalui berbagai saluran komunikasi yang tersedia.",
+    "contact_us": "Hubungi Kami",
+    "view_all_services": "Lihat Semua Layanan"
+  },
+  "quick_access": {
+    "online": {
+      "title": "Online",
+      "subtitle": "Layanan 24/7",
+      "button": "Akses Portal"
+    },
+    "fast": {
+      "title": "Cepat",
+      "subtitle": "Proses Maksimal 3 Hari",
+      "button": "Cek Status"
+    },
+    "free": {
+      "title": "Gratis",
+      "subtitle": "Konsultasi & Informasi",
+      "button": "Chat Sekarang"
+    }
+  }
+}

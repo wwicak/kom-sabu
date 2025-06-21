@@ -1,0 +1,36 @@
+{
+  "title": "Hubungi Kami",
+  "subtitle": "Sampaikan pertanyaan, saran, atau keluhan Anda kepada kami",
+  "form_title": "Form Kontak",
+  "form": {
+    "name": "Nama Lengkap",
+    "name_placeholder": "Masukkan nama lengkap Anda",
+    "email": "Email",
+    "email_placeholder": "nama@email.com",
+    "phone": "Nomor Telepon",
+    "phone_placeholder": "+62 812 3456 7890",
+    "company": "Instansi/Perusahaan",
+    "company_placeholder": "Nama instansi atau perusahaan",
+    "subject": "Subjek",
+    "subject_placeholder": "Pilih subjek pesan",
+    "message": "Pesan",
+    "message_placeholder": "Tuliskan pesan Anda di sini...",
+    "consent": "Saya setuju dengan",
+    "privacy_policy": "kebijakan privasi",
+    "consent_text": "dan memberikan persetujuan untuk memproses data pribadi saya",
+    "security_verification": "Verifikasi Keamanan",
+    "security_note": "Verifikasi keamanan diperlukan untuk mencegah spam dan penyalahgunaan",
+    "submit": "Kirim Pesan",
+    "submitting": "Mengirim...",
+    "loading": "Loading...",
+    "required": "*"
+  },
+  "security": {
+    "token_error": "Security token error:",
+    "refresh_token": "Refresh security token"
+  },
+  "messages": {
+    "success": "Pesan Anda telah berhasil dikirim. Kami akan merespons dalam 1-2 hari kerja.",
+    "error": "Terjadi kesalahan saat mengirim pesan. Silakan coba lagi."
+  }
+}
