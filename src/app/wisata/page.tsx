@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  MapPin, 
-  Camera, 
-  Star, 
+import {
+  MapPin,
+  Camera,
+  Star,
   Clock,
   Waves,
   Mountain,
@@ -167,7 +168,7 @@ const colorClasses = {
 export default function WisataPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
-  const filteredData = selectedCategory 
+  const filteredData = selectedCategory
     ? WISATA_DATA.filter(category => category.id === selectedCategory)
     : WISATA_DATA
 
@@ -185,13 +186,11 @@ export default function WisataPage() {
         {/* Hero Image */}
         <div className="mb-8">
           <div className="relative h-64 md:h-80 rounded-lg overflow-hidden">
-            <img
+            <Image
               src="/images/wisata-hero.jpg"
               alt="Wisata Sabu Raijua"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='320' viewBox='0 0 1200 320'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2306b6d4;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%230891b2;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='320' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='32' fill='%23ffffff'%3EWisata Sabu Raijua%3C/text%3E%3C/svg%3E"
-              }}
+              fill
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div className="text-center text-white">
@@ -231,7 +230,7 @@ export default function WisataPage() {
           {filteredData.map((category) => {
             const IconComponent = category.icon
             const colorClass = colorClasses[category.color as keyof typeof colorClasses]
-            
+
             return (
               <div key={category.id}>
                 <div className="flex items-center mb-6">
@@ -245,13 +244,11 @@ export default function WisataPage() {
                   {category.destinations.map((destination, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
                       <div className="relative h-48 overflow-hidden rounded-t-lg">
-                        <img
+                        <Image
                           src={destination.image}
                           alt={destination.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(destination.name)}%3C/text%3E%3C/svg%3E`
-                          }}
+                          fill
+                          className="object-cover"
                         />
                         <div className="absolute top-4 left-4">
                           <Badge className="bg-white text-gray-800">
@@ -266,14 +263,14 @@ export default function WisataPage() {
                           </Badge>
                         </div>
                       </div>
-                      
+
                       <CardHeader>
                         <CardTitle className="text-lg">{destination.name}</CardTitle>
                       </CardHeader>
-                      
+
                       <CardContent>
                         <p className="text-gray-600 mb-4">{destination.description}</p>
-                        
+
                         <div className="space-y-3">
                           <div>
                             <p className="font-medium text-gray-900 text-sm mb-1">Fasilitas:</p>

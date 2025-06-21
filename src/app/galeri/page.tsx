@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Button } from '@/components/ui/button'
@@ -164,13 +165,12 @@ export default function GalleryPage() {
                 <Card key={item._id} className="group cursor-pointer hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     <div className="relative aspect-video overflow-hidden rounded-t-lg">
-                      <img
+                      <Image
                         src={item.thumbnailUrl || item.imageUrl}
                         alt={item.title}
+                        width={400}
+                        height={225}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(item.title)}%3C/text%3E%3C/svg%3E`
-                        }}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -212,13 +212,12 @@ export default function GalleryPage() {
                   <CardContent className="p-6">
                     <div className="flex gap-4">
                       <div className="flex-shrink-0">
-                        <img
+                        <Image
                           src={item.thumbnailUrl || item.imageUrl}
                           alt={item.title}
+                          width={96}
+                          height={64}
                           className="w-24 h-16 object-cover rounded-lg"
-                          onError={(e) => {
-                            e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'%3E%3Crect width='96' height='64' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='10' fill='%236b7280'%3EImg%3C/text%3E%3C/svg%3E`
-                          }}
                         />
                       </div>
                       <div className="flex-1">

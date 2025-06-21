@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'development') {
   clientPromise = client.connect()
 } else {
   // In production mode, use global caching
-  let globalWithMongo = global as typeof globalThis & {
+  const globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>
   }
 

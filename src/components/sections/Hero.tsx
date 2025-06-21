@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 import { ArrowRight, Play } from 'lucide-react'
@@ -15,13 +16,12 @@ export function Hero() {
     <section className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="/images/sabu-raijua-mountain.jpg"
           alt="Keindahan Gunung Sabu Raijua"
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080' viewBox='0 0 1920 1080'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1920' height='1080' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='48' fill='%23ffffff'%3EKeindahan Gunung Sabu Raijua%3C/text%3E%3C/svg%3E"
-          }}
+          fill
+          className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
       </div>
@@ -92,14 +92,12 @@ export function Hero() {
             <div className="relative mx-auto w-full max-w-lg">
               {/* Main Image */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img
+                <Image
                   src="/images/sabu-raijua-hero.jpg"
                   alt="Pemandangan Kabupaten Sabu Raijua"
+                  width={400}
+                  height={384}
                   className="w-full h-96 object-cover"
-                  onError={(e) => {
-                    // Fallback to a placeholder if image doesn't exist
-                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='18' fill='%236b7280'%3ESabu Raijua%3C/text%3E%3C/svg%3E"
-                  }}
                 />
 
                 {/* Play Button Overlay */}

@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Palette, Music, MapPin, Camera } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function CulturalHeritage() {
   const culturalAssets = [
@@ -65,7 +66,7 @@ export function CulturalHeritage() {
             Warisan Budaya Hawu
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Kekayaan budaya Sabu Raijua yang telah diwariskan turun-temurun, mencerminkan 
+            Kekayaan budaya Sabu Raijua yang telah diwariskan turun-temurun, mencerminkan
             identitas dan jati diri masyarakat Hawu yang unik dan autentik.
           </p>
         </div>
@@ -77,13 +78,12 @@ export function CulturalHeritage() {
               <CardContent className="p-0">
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden rounded-t-lg">
-                  <img
+                  <Image
                     src={asset.image}
                     alt={asset.title}
+                    width={300}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${asset.title}%3C/text%3E%3C/svg%3E`
-                    }}
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
@@ -118,7 +118,7 @@ export function CulturalHeritage() {
               Tradisi & Upacara Adat
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Berbagai tradisi dan upacara adat yang masih dilestarikan sebagai bagian 
+              Berbagai tradisi dan upacara adat yang masih dilestarikan sebagai bagian
               dari identitas budaya masyarakat Sabu Raijua.
             </p>
           </div>
@@ -192,13 +192,12 @@ export function CulturalHeritage() {
           {/* Image */}
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
-              <img
+              <Image
                 src="/images/tourism/sabu-raijua-tourism.jpg"
                 alt="Wisata Sabu Raijua"
+                width={500}
+                height={384}
                 className="w-full h-96 object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='400' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='20' fill='%236b7280'%3EWisata Sabu Raijua%3C/text%3E%3C/svg%3E"
-                }}
               />
 
               {/* Overlay Info */}

@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  MapPin, 
-  Star, 
-  Clock, 
+import {
+  MapPin,
+  Star,
+  Clock,
   Calendar,
   Camera,
   Navigation,
@@ -84,7 +85,7 @@ export default function DestinationDetailPage() {
         if (!response.ok) {
           throw new Error('Destination not found')
         }
-        
+
         const data = await response.json()
         setDestination(data.data)
       } catch (err) {
@@ -169,8 +170,8 @@ export default function DestinationDetailPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => router.push('/wisata')}
             className="mb-4"
           >
@@ -186,10 +187,11 @@ export default function DestinationDetailPage() {
             {destination.images && destination.images.length > 0 && (
               <div className="mb-6">
                 <div className="relative h-64 md:h-96 mb-4 rounded-lg overflow-hidden">
-                  <img
+                  <Image
                     src={destination.images[selectedImageIndex]?.url}
                     alt={destination.images[selectedImageIndex]?.alt || destination.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   {destination.images[selectedImageIndex]?.caption && (
                     <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm">
@@ -197,20 +199,21 @@ export default function DestinationDetailPage() {
                     </div>
                   )}
                 </div>
-                
+
                 {destination.images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto">
                     {destination.images.map((image, index) => (
                       <button
                         key={index}
                         onClick={() => setSelectedImageIndex(index)}
-                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
-                          selectedImageIndex === index ? 'border-blue-500' : 'border-gray-200'
-                        }`}
+                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index ? 'border-blue-500' : 'border-gray-200'
+                          }`}
                       >
-                        <img
+                        <Image
                           src={image.url}
                           alt={image.alt || `${destination.name} ${index + 1}`}
+                          width={80}
+                          height={80}
                           className="w-full h-full object-cover"
                         />
                       </button>
@@ -230,11 +233,11 @@ export default function DestinationDetailPage() {
                   {formatViews(destination.statistics.views)} views
                 </div>
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {destination.name}
               </h1>
-              
+
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center">
@@ -252,7 +255,7 @@ export default function DestinationDetailPage() {
                     </div>
                   )}
                 </div>
-                
+
                 <Button variant="outline" size="sm" onClick={handleShare}>
                   <Share2 className="h-4 w-4 mr-2" />
                   Bagikan
@@ -396,7 +399,7 @@ export default function DestinationDetailPage() {
                       <Globe className="h-4 w-4 mr-2" />
                       Website
                     </h4>
-                    <a 
+                    <a
                       href={destination.contact.website}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -407,8 +410,8 @@ export default function DestinationDetailPage() {
                   </div>
                 )}
 
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={openMaps}
                   disabled={!destination.location.coordinates}
                 >

@@ -150,7 +150,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
         mapInstanceRef.current = null
       }
     }
-  }, [])
+  }, [SABU_RAIJUA_CENTER, DEFAULT_ZOOM])
 
   // Add kecamatan layers
   useEffect(() => {
@@ -255,7 +255,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       const group = new L.FeatureGroup(Object.values(layersRef.current))
       mapInstanceRef.current.fitBounds(group.getBounds(), { padding: [20, 20] })
     }
-  }, [enhancedKecamatanData]) // Remove callback dependencies to prevent re-rendering
+  }, [enhancedKecamatanData, getKecamatanStyle])
 
   // Update selected kecamatan styling
   useEffect(() => {
@@ -265,7 +265,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
         layer.setStyle(getKecamatanStyle(kecamatan))
       }
     })
-  }, [selectedKecamatan, kecamatanData])
+  }, [selectedKecamatan, kecamatanData, getKecamatanStyle])
 
   // Format number with Indonesian locale
   const formatNumber = (num: number): string => {

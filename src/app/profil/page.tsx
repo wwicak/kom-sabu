@@ -1,6 +1,7 @@
 'use client'
 
 import { Layout } from '@/components/layout/Layout'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Users, Calendar, Award, Target, Eye, Heart } from 'lucide-react'
@@ -20,13 +21,11 @@ export default function ProfilPage() {
         {/* Hero Image */}
         <div className="mb-8">
           <div className="relative h-64 md:h-96 rounded-lg overflow-hidden">
-            <img
+            <Image
               src="/images/sabu-raijua-landscape.jpg"
               alt="Pemandangan Kabupaten Sabu Raijua"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='400' viewBox='0 0 1200 400'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2393c5fd;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='400' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='32' fill='%23ffffff'%3EPemandangan Kabupaten Sabu Raijua%3C/text%3E%3C/svg%3E"
-              }}
+              fill
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
               <div className="text-center text-white">
@@ -81,17 +80,17 @@ export default function ProfilPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">
-                  Kabupaten Sabu Raijua dibentuk berdasarkan Undang-Undang Nomor 69 Tahun 2009 
-                  tentang Pembentukan Kabupaten Sabu Raijua di Provinsi Nusa Tenggara Timur. 
+                  Kabupaten Sabu Raijua dibentuk berdasarkan Undang-Undang Nomor 69 Tahun 2009
+                  tentang Pembentukan Kabupaten Sabu Raijua di Provinsi Nusa Tenggara Timur.
                   Kabupaten ini merupakan pemekaran dari Kabupaten Kupang.
                 </p>
                 <p className="text-gray-600 mb-4">
-                  Wilayah Kabupaten Sabu Raijua terdiri dari dua pulau utama yaitu Pulau Sabu 
-                  dan Pulau Raijua, serta beberapa pulau kecil di sekitarnya. Kedua pulau ini 
+                  Wilayah Kabupaten Sabu Raijua terdiri dari dua pulau utama yaitu Pulau Sabu
+                  dan Pulau Raijua, serta beberapa pulau kecil di sekitarnya. Kedua pulau ini
                   memiliki keunikan budaya dan potensi alam yang luar biasa.
                 </p>
                 <p className="text-gray-600">
-                  Masyarakat Sabu Raijua dikenal dengan kearifan lokalnya dalam menjaga 
+                  Masyarakat Sabu Raijua dikenal dengan kearifan lokalnya dalam menjaga
                   kelestarian alam dan tradisi budaya yang telah diwariskan turun-temurun.
                 </p>
               </CardContent>
@@ -136,7 +135,7 @@ export default function ProfilPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 italic text-lg leading-relaxed">
-                  "Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Sejahtera 
+                  "Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Sejahtera
                   Berbasis Kearifan Lokal pada Tahun 2024"
                 </p>
               </CardContent>

@@ -89,7 +89,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         // Add kecamatan polygons source
         map.current.addSource('kecamatan', {
           type: 'geojson',
-          data: geoJsonData as any
+          data: geoJsonData as GeoJSON.FeatureCollection
         })
 
         // Add fill layer
@@ -155,7 +155,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
             onKecamatanSelect?.(kecamatan)
 
             // Fit to bounds
-            const coordinates = (e.features[0].geometry as any).coordinates[0] as number[][]
+            const coordinates = (e.features[0].geometry as GeoJSON.Polygon).coordinates[0] as number[][]
             const bounds = coordinates.reduce((bounds, coord) => {
               return bounds.extend(coord as [number, number])
             }, new maplibregl.LngLatBounds(coordinates[0] as [number, number], coordinates[0] as [number, number]))
@@ -225,7 +225,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
         map.current.remove()
       }
     }
-  }, [kecamatanData, onKecamatanSelect])
+  }, [kecamatanData, onKecamatanSelect, center, zoom, selectedKecamatan, onKecamatanHover])
 
   // Update selected kecamatan styling
   useEffect(() => {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -184,13 +185,11 @@ export default function BeritaPage() {
               {featuredNews.map((news) => (
                 <Card key={news._id} className="hover:shadow-lg transition-shadow">
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
-                    <img
+                    <Image
                       src={news.featuredImage?.url || '/images/placeholder-news.jpg'}
                       alt={news.featuredImage?.alt || news.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(news.title)}%3C/text%3E%3C/svg%3E`
-                      }}
+                      fill
+                      className="object-cover"
                     />
                     <div className="absolute top-4 left-4">
                       <Badge className="bg-red-600 text-white">
@@ -261,13 +260,11 @@ export default function BeritaPage() {
               {regularNews.map((news) => (
                 <Card key={news._id} className="hover:shadow-lg transition-shadow">
                   <div className="relative h-40 overflow-hidden rounded-t-lg">
-                    <img
+                    <Image
                       src={news.featuredImage?.url || '/images/placeholder-news.jpg'}
                       alt={news.featuredImage?.alt || news.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='160' viewBox='0 0 400 160'%3E%3Crect width='400' height='160' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='12' fill='%236b7280'%3E${encodeURIComponent(news.title)}%3C/text%3E%3C/svg%3E`
-                      }}
+                      fill
+                      className="object-cover"
                     />
                   </div>
 

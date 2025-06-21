@@ -35,8 +35,28 @@ interface KecamatanData {
     type: 'Polygon' | 'MultiPolygon'
     coordinates: number[][][]
   }
-  potency: any
-  demographics: any
+  potency: {
+    agriculture?: {
+      mainCrops?: string[]
+      farmingArea?: number
+      productivity?: string
+    }
+    fishery?: {
+      mainSpecies?: string[]
+      fishingArea?: number
+      productivity?: string
+    }
+    tourism?: {
+      attractions?: string[]
+      facilities?: string[]
+      annualVisitors?: number
+    }
+  }
+  demographics: {
+    totalPopulation: number
+    malePopulation: number
+    femalePopulation: number
+  }
   images?: Array<{
     url: string
     caption: string
@@ -53,7 +73,7 @@ interface KecamatanData {
 // Helper function to convert KecamatanData to IKecamatan format
 function convertToIKecamatan(data: KecamatanData): IKecamatan {
   return {
-    _id: data._id as any,
+    _id: data._id as string,
     name: data.name,
     nameEnglish: data.name,
     code: data.slug,

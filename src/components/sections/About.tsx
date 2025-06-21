@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 
 import { Target, Eye, Award, Users } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function About() {
   const values = [
@@ -58,7 +59,7 @@ export function About() {
               yang sakral, dan bahasa Hawu sebagai bahasa daerah yang masih lestari.
             </p>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              Melalui motto "Mira Kaddi" (Membangun Bersama), kami berkomitmen membangun daerah yang maju,
+              Melalui motto &ldquo;Mira Kaddi&rdquo; (Membangun Bersama), kami berkomitmen membangun daerah yang maju,
               sejahtera, dan berkelanjutan dengan mengedepankan kearifan lokal, transparansi, dan akuntabilitas
               dalam setiap aspek pemerintahan.
             </p>
@@ -80,13 +81,13 @@ export function About() {
           {/* Image */}
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
-              <img
+              <Image
                 src="/images/sabu-raijua-landscape.jpg"
                 alt="Pemandangan Kabupaten Sabu Raijua"
+                width={500}
+                height={384}
                 className="w-full h-96 object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='400' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='20' fill='%236b7280'%3EPemandangan Sabu Raijua%3C/text%3E%3C/svg%3E"
-                }}
+                priority
               />
 
               {/* Overlay Stats */}

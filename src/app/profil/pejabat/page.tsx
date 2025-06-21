@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -278,9 +279,11 @@ export default function PejabatPage() {
                     <div className="md:flex">
                       <div className="md:w-1/3 bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex flex-col items-center justify-center">
                         {official.photo?.url ? (
-                          <img
+                          <Image
                             src={official.photo.url}
                             alt={official.photo.alt || official.name}
+                            width={96}
+                            height={96}
                             className="w-24 h-24 rounded-full object-cover mb-4"
                           />
                         ) : (

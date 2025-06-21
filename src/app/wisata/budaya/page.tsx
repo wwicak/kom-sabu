@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -208,10 +209,11 @@ export default function WisataBudayaPage() {
               <Card key={site._id} className="overflow-hidden">
                 <div className="relative h-48 bg-gray-200">
                   {site.images && site.images.length > 0 && (
-                    <img
+                    <Image
                       src={site.images[0].url}
                       alt={site.images[0].alt || site.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />

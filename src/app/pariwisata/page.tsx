@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -254,10 +255,11 @@ export default function PariwisataPage() {
                 <Card key={destination._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-48 bg-gray-200">
                     {destination.images.length > 0 && destination.images[0].url && (
-                      <img
+                      <Image
                         src={destination.images[0].url}
                         alt={destination.images[0].alt || destination.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />

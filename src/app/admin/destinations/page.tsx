@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -15,13 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { 
-  MapPin, 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
+import {
+  MapPin,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
   Eye,
   Star,
   Calendar,
@@ -79,11 +78,7 @@ export default function AdminDestinationsPage() {
   const districts = ['Sabu Barat', 'Sabu Tengah', 'Sabu Timur', 'Raijua', 'Sabu Liae', 'Hawu Mehara']
   const statuses = ['draft', 'published', 'archived']
 
-  useEffect(() => {
-    fetchDestinations()
-  }, [page, searchTerm, selectedCategory, selectedDistrict, selectedStatus])
-
-  const fetchDestinations = async () => {
+  const fetchDestinations = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -276,8 +271,8 @@ export default function AdminDestinationsPage() {
                 <option value="all">Semua Status</option>
                 {statuses.map(status => (
                   <option key={status} value={status}>
-                    {status === 'published' ? 'Dipublikasi' : 
-                     status === 'draft' ? 'Draft' : 'Diarsipkan'}
+                    {status === 'published' ? 'Dipublikasi' :
+                      status === 'draft' ? 'Draft' : 'Diarsipkan'}
                   </option>
                 ))}
               </select>
@@ -387,8 +382,8 @@ export default function AdminDestinationsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(destination.status)}>
-                          {destination.status === 'published' ? 'Dipublikasi' : 
-                           destination.status === 'draft' ? 'Draft' : 'Diarsipkan'}
+                          {destination.status === 'published' ? 'Dipublikasi' :
+                            destination.status === 'draft' ? 'Draft' : 'Diarsipkan'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -429,7 +424,7 @@ export default function AdminDestinationsPage() {
                               <Eye className="h-4 w-4 mr-2" />
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleDelete(destination._id)}
                               className="text-red-600"
                             >

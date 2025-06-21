@@ -1,14 +1,15 @@
 'use client'
 
 import { Layout } from '@/components/layout/Layout'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Music, 
-  Palette, 
-  Home, 
-  Utensils, 
+import {
+  Music,
+  Palette,
+  Home,
+  Utensils,
   Calendar,
   Users,
   Star,
@@ -163,7 +164,7 @@ export default function BudayaPage() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Budaya Sabu Raijua</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Kekayaan budaya Kabupaten Sabu Raijua yang telah diwariskan turun-temurun 
+            Kekayaan budaya Kabupaten Sabu Raijua yang telah diwariskan turun-temurun
             dan tetap lestari hingga kini
           </p>
         </div>
@@ -171,13 +172,11 @@ export default function BudayaPage() {
         {/* Hero Image */}
         <div className="mb-8">
           <div className="relative h-64 md:h-80 rounded-lg overflow-hidden">
-            <img
+            <Image
               src="/images/budaya-hero.jpg"
               alt="Budaya Sabu Raijua"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='320' viewBox='0 0 1200 320'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23fbbf24;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='320' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='32' fill='%23ffffff'%3EBudaya Sabu Raijua%3C/text%3E%3C/svg%3E"
-              }}
+              fill
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div className="text-center text-white">
@@ -193,7 +192,7 @@ export default function BudayaPage() {
           {BUDAYA_DATA.map((category) => {
             const IconComponent = category.icon
             const colorClass = colorClasses[category.color as keyof typeof colorClasses]
-            
+
             return (
               <div key={category.id}>
                 <div className="flex items-center mb-6">
@@ -207,13 +206,11 @@ export default function BudayaPage() {
                   {category.items.map((item, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
                       <div className="relative h-48 overflow-hidden rounded-t-lg">
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3E${encodeURIComponent(item.name)}%3C/text%3E%3C/svg%3E`
-                          }}
+                          fill
+                          className="object-cover"
                         />
                         <div className="absolute top-4 right-4">
                           <Badge className="bg-white text-gray-800">
@@ -221,14 +218,14 @@ export default function BudayaPage() {
                           </Badge>
                         </div>
                       </div>
-                      
+
                       <CardHeader>
                         <CardTitle className="text-lg">{item.name}</CardTitle>
                       </CardHeader>
-                      
+
                       <CardContent>
                         <p className="text-gray-600 mb-4">{item.description}</p>
-                        
+
                         <div className="space-y-2">
                           <div>
                             <p className="font-medium text-gray-900 text-sm">Makna & Filosofi:</p>
