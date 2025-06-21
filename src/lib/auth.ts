@@ -15,7 +15,7 @@ interface AuthResult {
 export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get('admin-token')
+    const token = cookieStore.get('auth-token')
 
     if (!token) {
       return {
@@ -28,10 +28,18 @@ export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult
     const secret = process.env.JWT_SECRET || 'your-secret-key'
     const decoded = jwt.verify(token.value, secret) as any
 
-    if (!decoded || !decoded.userId || decoded.role !== 'admin') {
+    if (!decoded || !decoded.userId) {
       return {
         success: false,
         error: 'Invalid or expired token'
+      }
+    }
+
+    // Check if user has admin role (allow both 'admin' and 'super_admin')
+    if (!['admin', 'super_admin'].includes(decoded.role)) {
+      return {
+        success: false,
+        error: 'Insufficient permissions - admin role required'
       }
     }
 
@@ -56,7 +64,7 @@ export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult
 export async function verifyUserAuth(_request: NextRequest): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get('user-token') || cookieStore.get('admin-token')
+    const token = cookieStore.get('auth-token')
 
     if (!token) {
       return {
