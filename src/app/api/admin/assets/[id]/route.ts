@@ -37,7 +37,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -72,11 +72,11 @@ export async function GET(
 // PUT /api/admin/assets/[id] - Update single asset
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return withCSRF(async () => {
     try {
-      const { id } = params
+      const { id } = await params
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(
@@ -150,11 +150,11 @@ export async function PUT(
 // DELETE /api/admin/assets/[id] - Delete single asset
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return withCSRF(async () => {
     try {
-      const { id } = params
+      const { id } = await params
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json(

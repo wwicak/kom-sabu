@@ -8,26 +8,22 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminBreadcrumb } from '@/components/ui/breadcrumb'
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell
+  Line
 } from 'recharts'
-import { 
-  TrendingUp, 
-  MousePointer, 
-  Eye, 
-  Users, 
+import {
+  TrendingUp,
+  MousePointer,
+  Eye,
   Calendar,
   Download,
   RefreshCw
@@ -72,7 +68,7 @@ interface AnalyticsData {
   }>
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+
 
 export default function BreadcrumbAnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
@@ -95,7 +91,7 @@ export default function BreadcrumbAnalyticsPage() {
       params.append('group_by', groupBy)
 
       const response = await fetch(`/api/analytics/breadcrumb/insights?${params}`)
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data')
       }
@@ -111,7 +107,7 @@ export default function BreadcrumbAnalyticsPage() {
 
   useEffect(() => {
     fetchAnalytics()
-  }, [])
+  }, [dateRange.start, dateRange.end, groupBy])
 
   const handleDateRangeChange = (field: 'start' | 'end', value: string) => {
     setDateRange(prev => ({ ...prev, [field]: value }))
@@ -170,7 +166,7 @@ export default function BreadcrumbAnalyticsPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">
-          <AdminBreadcrumb 
+          <AdminBreadcrumb
             items={[
               { label: 'Dashboard Admin', href: '/admin' },
               { label: 'Analytics', href: '/admin/analytics' },

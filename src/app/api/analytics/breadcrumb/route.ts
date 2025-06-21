@@ -61,7 +61,11 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action') // 'breadcrumb_click' or 'breadcrumb_view'
 
     // Build date filter
-    const dateFilter: any = {}
+    interface DateFilter {
+      $gte?: Date
+      $lte?: Date
+    }
+    const dateFilter: DateFilter = {}
     if (startDate) {
       dateFilter.$gte = new Date(startDate)
     }
@@ -70,7 +74,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query
-    const query: any = {}
+    interface AnalyticsQuery {
+      timestamp?: DateFilter
+      action?: string
+    }
+    const query: AnalyticsQuery = {}
     if (Object.keys(dateFilter).length > 0) {
       query.timestamp = dateFilter
     }

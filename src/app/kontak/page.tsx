@@ -58,7 +58,8 @@ export default function KontakPage() {
       } else {
         throw new Error('Failed to send message')
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Error sending message:', err)
       toast({
         title: "Gagal Mengirim",
         description: "Maaf, terjadi kesalahan saat mengirim pesan. Silakan coba lagi.",

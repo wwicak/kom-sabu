@@ -43,7 +43,12 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build filter query
-    const filter: any = {}
+    interface AssetFilter {
+      category?: string
+      status?: string
+      type?: string
+    }
+    const filter: AssetFilter = {}
     if (category && category !== 'all') filter.category = category
     if (status && status !== 'all') filter.status = status
     if (type && type !== 'all') filter.type = type

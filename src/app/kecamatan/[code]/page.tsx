@@ -13,14 +13,8 @@ import {
   Users,
   Building2,
   Wheat,
-  Phone,
-  Mail,
-  Calendar,
   BarChart3,
-  Home,
-  School,
-  Hospital,
-  ShoppingCart
+  Home
 } from 'lucide-react'
 import { IKecamatan } from '@/lib/models/kecamatan'
 
@@ -246,7 +240,7 @@ export default function KecamatanDetailPage() {
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3">Komoditas Utama</h4>
                         <div className="space-y-2">
-                          {kecamatan.agriculture.mainCrops.map((crop: any, index: number) => (
+                          {kecamatan.agriculture.mainCrops.map((crop: { name: string }, index: number) => (
                             <Badge key={index} variant="secondary">{crop.name}</Badge>
                           ))}
                         </div>

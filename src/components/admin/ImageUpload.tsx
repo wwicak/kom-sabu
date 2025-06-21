@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Upload, X, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
 
@@ -24,18 +24,17 @@ interface ImageUploadProps {
   className?: string
 }
 
-export function ImageUpload({ 
-  images, 
-  onImagesChange, 
-  maxImages = 10, 
-  folder = 'content',
-  className = '' 
+export function ImageUpload({
+  images,
+  onImagesChange,
+  maxImages = 10,
+  className = ''
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const { toast } = useToast()
 
-  const uploadImage = async (file: File): Promise<ImageData> => {
+  const uploadImage = useCallback(async (file: File): Promise<ImageData> => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('title', file.name)
@@ -54,14 +53,14 @@ export function ImageUpload({
     }
 
     const result = await response.json()
-    
+
     return {
       url: result.data.imageUrl,
       caption: '',
       alt: file.name,
       order: images.length
     }
-  }
+  }, [images.length])
 
   const handleFileSelect = useCallback(async (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -80,9 +79,9 @@ export function ImageUpload({
     try {
       const uploadPromises = Array.from(files).map(file => uploadImage(file))
       const uploadedImages = await Promise.all(uploadPromises)
-      
+
       onImagesChange([...images, ...uploadedImages])
-      
+
       toast({
         title: 'Success',
         description: `${uploadedImages.length} image(s) uploaded successfully`
@@ -97,7 +96,7 @@ export function ImageUpload({
     } finally {
       setUploading(false)
     }
-  }, [images, maxImages, onImagesChange, toast])
+  }, [images, maxImages, onImagesChange, toast, uploadImage])
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -113,7 +112,7 @@ export function ImageUpload({
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileSelect(e.dataTransfer.files)
     }
@@ -134,12 +133,12 @@ export function ImageUpload({
     const newImages = [...images]
     const [movedImage] = newImages.splice(fromIndex, 1)
     newImages.splice(toIndex, 0, movedImage)
-    
+
     // Update order
     newImages.forEach((img, index) => {
       img.order = index
     })
-    
+
     onImagesChange(newImages)
   }
 
@@ -167,14 +166,14 @@ export function ImageUpload({
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               disabled={uploading}
             />
-            
+
             <div className="space-y-4">
               {uploading ? (
                 <Loader2 className="h-12 w-12 text-blue-500 mx-auto animate-spin" />
               ) : (
                 <Upload className="h-12 w-12 text-gray-400 mx-auto" />
               )}
-              
+
               <div>
                 <p className="text-lg font-medium text-gray-900">
                   {uploading ? 'Uploading images...' : 'Upload images'}
@@ -186,7 +185,7 @@ export function ImageUpload({
                   Maximum {maxImages} images • PNG, JPG, WEBP up to 10MB each
                 </p>
               </div>
-              
+
               {!uploading && (
                 <Button type="button" variant="outline">
                   <Upload className="h-4 w-4 mr-2" />
@@ -202,7 +201,7 @@ export function ImageUpload({
       {images.length > 0 && (
         <div className="space-y-4">
           <Label className="text-base font-medium">Uploaded Images ({images.length})</Label>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {images.map((image, index) => (
               <Card key={index}>
@@ -216,7 +215,7 @@ export function ImageUpload({
                         fill
                         className="object-cover"
                       />
-                      
+
                       {/* Remove Button */}
                       <button
                         type="button"
@@ -225,13 +224,13 @@ export function ImageUpload({
                       >
                         <X className="h-4 w-4" />
                       </button>
-                      
+
                       {/* Order Badge */}
                       <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                         #{index + 1}
                       </div>
                     </div>
-                    
+
                     {/* Image Metadata */}
                     <div className="space-y-2">
                       <div>
@@ -244,7 +243,7 @@ export function ImageUpload({
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <Label htmlFor={`alt-${index}`} className="text-sm">Alt Text</Label>
                         <Input
@@ -256,7 +255,7 @@ export function ImageUpload({
                         />
                       </div>
                     </div>
-                    
+
                     {/* Move Buttons */}
                     <div className="flex gap-2">
                       <Button

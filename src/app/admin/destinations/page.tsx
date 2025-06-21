@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { AdminBreadcrumb } from '@/components/ui/breadcrumb'
+
 import {
   Table,
   TableBody,
@@ -114,7 +114,7 @@ export default function AdminDestinationsPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, searchTerm, selectedCategory, selectedDistrict, selectedStatus])
+  }, [page, searchTerm, selectedCategory, selectedDistrict, selectedStatus, toast])
 
   useEffect(() => {
     fetchDestinations()

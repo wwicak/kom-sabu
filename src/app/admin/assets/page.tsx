@@ -2,26 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Upload, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Download,
+import {
+  Upload,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
   RefreshCw,
   Image as ImageIcon
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
-import { DEFAULT_ASSETS, ASSET_CATEGORIES, type DefaultAssetKey } from '@/lib/asset-management'
+import { ASSET_CATEGORIES } from '@/lib/asset-management'
 
 interface Asset {
   _id: string
@@ -82,14 +80,14 @@ export default function AssetsPage() {
 
   useEffect(() => {
     fetchAssets()
-  }, [])
+  }, [fetchAssets])
 
   const filteredAssets = assets.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         asset.key.toLowerCase().includes(searchTerm.toLowerCase())
+      asset.key.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = categoryFilter === 'all' || asset.category === categoryFilter
     const matchesStatus = statusFilter === 'all' || asset.status === statusFilter
-    
+
     return matchesSearch && matchesCategory && matchesStatus
   })
 
@@ -171,7 +169,7 @@ export default function AssetsPage() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="category">Category</Label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -237,18 +235,18 @@ export default function AssetsPage() {
                       <ImageIcon className="h-12 w-12 text-gray-400" />
                     </div>
                   )}
-                  
+
                   <div className="absolute top-2 right-2">
                     <Badge className={getStatusColor(asset.status)}>
                       {asset.status}
                     </Badge>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-sm mb-1 truncate">{asset.title}</h3>
                   <p className="text-xs text-gray-500 mb-2 truncate">Key: {asset.key}</p>
-                  
+
                   {asset.metadata && (
                     <div className="text-xs text-gray-500 mb-3">
                       {asset.metadata.dimensions && (
@@ -257,7 +255,7 @@ export default function AssetsPage() {
                       <div>{formatFileSize(asset.metadata.fileSize)}</div>
                     </div>
                   )}
-                  
+
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="flex-1">
                       <Eye className="h-3 w-3" />
@@ -265,9 +263,9 @@ export default function AssetsPage() {
                     <Button size="sm" variant="outline" className="flex-1">
                       <Edit className="h-3 w-3" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="flex-1"
                       onClick={() => handleDeleteAsset(asset._id)}
                     >

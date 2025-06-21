@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
@@ -52,11 +52,7 @@ export default function BeritaPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchNews()
-  }, [selectedCategory, searchTerm])
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -88,7 +84,11 @@ export default function BeritaPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, searchTerm])
+
+  useEffect(() => {
+    fetchNews()
+  }, [fetchNews])
 
   const featuredNews = newsData.filter(news => news.featured)
   const regularNews = newsData.filter(news => !news.featured)

@@ -19,9 +19,7 @@ import {
   Search,
   Menu,
   X,
-  ChevronDown,
   Image as ImageIcon,
-  Calendar,
   BarChart3,
   Globe
 } from 'lucide-react'
@@ -106,7 +104,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         const response = await fetch('/api/auth/profile', {
           credentials: 'include'
         })
-        
+
         if (!response.ok) {
           router.push('/admin/login')
           return
@@ -156,10 +154,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
-        
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -186,16 +183,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <div className="space-y-1">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
-              
+
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
+                  className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
+                    }`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
@@ -247,7 +243,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              
+
               {/* Breadcrumb */}
               <nav className="flex items-center space-x-2 text-sm text-gray-500">
                 <span>Pages</span>

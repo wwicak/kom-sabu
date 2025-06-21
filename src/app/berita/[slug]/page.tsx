@@ -104,7 +104,7 @@ export default function NewsDetailPage() {
           text: news.excerpt,
           url: window.location.href,
         })
-      } catch (err) {
+      } catch {
         // Fallback to copying URL
         navigator.clipboard.writeText(window.location.href)
       }

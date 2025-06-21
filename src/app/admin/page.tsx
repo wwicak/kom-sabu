@@ -5,20 +5,17 @@ import { useRouter } from 'next/navigation'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   Users,
   FileText,
   MapPin,
   BarChart3,
-  Calendar,
   Shield,
   Database,
   Plus,
   Settings,
   Eye,
-  Activity,
-  TrendingUp
+  Activity
 } from 'lucide-react'
 
 interface DashboardStats {

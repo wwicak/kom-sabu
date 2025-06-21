@@ -1,14 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Users, Building2, TrendingUp, Phone, Mail, Clock } from 'lucide-react'
+import { MapPin, Users, Building2, TrendingUp, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { IKecamatan } from '@/lib/models/kecamatan'
 
 // Mock data for kecamatan
 const KECAMATAN_DATA = [
@@ -105,7 +104,6 @@ async function fetchKecamatanData() {
 }
 
 export default function KecamatanPage() {
-  const [selectedKecamatan, setSelectedKecamatan] = useState<string | null>(null)
 
   const { data: kecamatanData, isLoading, error } = useQuery({
     queryKey: ['kecamatan-list'],
@@ -244,7 +242,7 @@ export default function KecamatanPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">{kecamatan.description}</p>
-                  
+
                   {/* Stats */}
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">

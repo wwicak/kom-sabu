@@ -91,7 +91,7 @@ export default function GalleryDetailPage() {
           text: gallery.description,
           url: window.location.href,
         })
-      } catch (err) {
+      } catch {
         navigator.clipboard.writeText(window.location.href)
       }
     } else {

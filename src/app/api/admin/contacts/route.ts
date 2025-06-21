@@ -25,12 +25,16 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort') || 'newest'
 
     // Build filter query
-    const filter: any = {}
-    
+    interface ContactFilter {
+      status?: string
+      $or?: Array<Record<string, { $regex: string; $options: string }>>
+    }
+    const filter: ContactFilter = {}
+
     if (status && status !== 'all') {
       filter.status = status
     }
-    
+
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -41,7 +45,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build sort query
-    let sortQuery: any = { createdAt: -1 } // Default: newest first
+    let sortQuery: Record<string, 1 | -1> = { createdAt: -1 } // Default: newest first
     
     switch (sort) {
       case 'oldest':

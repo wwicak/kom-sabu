@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ArrowLeft, Heart, Upload } from 'lucide-react'
+import { ArrowLeft, Upload } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { ImageUpload } from '@/components/admin/ImageUpload'
 
@@ -107,13 +107,7 @@ export default function NewCulturalHeritagePage() {
     { value: 'culinary', label: 'Culinary' }
   ]
 
-  const districts = [
-    'Sabu Barat', 'Sabu Tengah', 'Sabu Timur', 'Raijua', 'Sabu Liae', 'Hawu Mehara'
-  ]
 
-  const icons = [
-    'Palette', 'Music', 'MapPin', 'Camera', 'Utensils', 'Users', 'Building', 'Heart'
-  ]
 
   const statusOptions = [
     { value: 'active', label: 'Active' },
@@ -122,13 +116,13 @@ export default function NewCulturalHeritagePage() {
     { value: 'reviving', label: 'Reviving' }
   ]
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | boolean | number | string[] | Array<{ url: string; caption?: string; alt?: string; order: number }>) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.')
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof FormData] as any),
+          ...(prev[parent as keyof FormData] as Record<string, unknown>),
           [child]: value
         }
       }))

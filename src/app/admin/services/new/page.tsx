@@ -89,13 +89,13 @@ export default function NewServicePage() {
     { value: 'lingkungan', label: 'Lingkungan' }
   ]
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | boolean | number | string[]) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.')
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof FormData] as any),
+          ...(prev[parent as keyof FormData] as Record<string, unknown>),
           [child]: value
         }
       }))
@@ -135,7 +135,7 @@ export default function NewServicePage() {
   const updateProcedure = (index: number, field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      procedures: prev.procedures.map((proc, i) => 
+      procedures: prev.procedures.map((proc, i) =>
         i === index ? { ...proc, [field]: value } : proc
       )
     }))
@@ -163,7 +163,7 @@ export default function NewServicePage() {
   const updateFee = (index: number, field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      fees: prev.fees.map((fee, i) => 
+      fees: prev.fees.map((fee, i) =>
         i === index ? { ...fee, [field]: value } : fee
       )
     }))
@@ -355,7 +355,7 @@ export default function NewServicePage() {
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                      
+
                       <div>
                         <Label>Deskripsi</Label>
                         <Textarea
@@ -365,7 +365,7 @@ export default function NewServicePage() {
                           rows={2}
                         />
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label>Durasi</Label>

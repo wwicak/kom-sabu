@@ -96,7 +96,7 @@ export default function VisiMisiPage() {
             Visi & Misi Kabupaten Sabu Raijua
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Arah dan tujuan pembangunan Kabupaten Sabu Raijua untuk mewujudkan 
+            Arah dan tujuan pembangunan Kabupaten Sabu Raijua untuk mewujudkan
             masyarakat yang sejahtera, mandiri, dan berbudaya.
           </p>
         </div>
@@ -114,8 +114,8 @@ export default function VisiMisiPage() {
             </CardHeader>
             <CardContent className="text-center">
               <blockquote className="text-xl md:text-2xl font-semibold text-blue-900 leading-relaxed">
-                "Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Berbudaya 
-                Menuju Masyarakat yang Sejahtera Berbasis Kearifan Lokal"
+                &ldquo;Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Berbudaya
+                Menuju Masyarakat yang Sejahtera Berbasis Kearifan Lokal&rdquo;
               </blockquote>
             </CardContent>
           </Card>

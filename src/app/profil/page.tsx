@@ -110,7 +110,7 @@ export default function ProfilPage() {
                 <div className="space-y-3">
                   <div>
                     <p className="font-medium text-gray-900">Koordinat:</p>
-                    <p className="text-gray-600">10°30' LS - 10°45' LS dan 121°50' BT - 122°05' BT</p>
+                    <p className="text-gray-600">10°30&apos; LS - 10°45&apos; LS dan 121°50&apos; BT - 122°05&apos; BT</p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Batas Wilayah:</p>
@@ -141,8 +141,8 @@ export default function ProfilPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 italic text-lg leading-relaxed">
-                  "Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Sejahtera
-                  Berbasis Kearifan Lokal pada Tahun 2024"
+                  &ldquo;Terwujudnya Kabupaten Sabu Raijua yang Maju, Mandiri, dan Sejahtera
+                  Berbasis Kearifan Lokal pada Tahun 2024&rdquo;
                 </p>
               </CardContent>
             </Card>
@@ -189,7 +189,7 @@ export default function ProfilPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 text-center text-xl font-semibold">
-                  "Hamu Kaka Dua Dolu"
+                  &ldquo;Hamu Kaka Dua Dolu&rdquo;
                 </p>
                 <p className="text-gray-500 text-center mt-2">
                   (Kita Bersatu Membangun Negeri)

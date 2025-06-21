@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+
 import {
   Crown,
   Shield,
@@ -58,8 +58,6 @@ interface Official {
 export default function PejabatPage() {
   const [officials, setOfficials] = useState<Official[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedLevel, setSelectedLevel] = useState('all')
-  const [selectedCategory, setSelectedCategory] = useState('all')
 
   useEffect(() => {
     fetchOfficials()
@@ -93,27 +91,6 @@ export default function PejabatPage() {
       setLoading(false)
     }
   }
-
-  // Filter officials based on selection
-  const filteredOfficials = officials.filter(official => {
-    const matchesLevel = selectedLevel === 'all' || official.level === selectedLevel
-    const matchesCategory = selectedCategory === 'all' || official.category === selectedCategory
-    return matchesLevel && matchesCategory
-  })
-
-  // Group officials by level and category
-  const groupedOfficials = filteredOfficials.reduce((acc: any, official) => {
-    const key = `${official.level}_${official.category}`
-    if (!acc[key]) {
-      acc[key] = {
-        level: official.level,
-        category: official.category,
-        officials: []
-      }
-    }
-    acc[key].officials.push(official)
-    return acc
-  }, {})
 
   // Get main officials (pimpinan level) - use CMS data or fallback to static
   const mainOfficials = officials.length > 0
@@ -352,7 +329,7 @@ export default function PejabatPage() {
                         {official.vision && (
                           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                             <h4 className="font-semibold text-blue-900 mb-2">Visi</h4>
-                            <p className="text-blue-800 text-sm italic">"{official.vision}"</p>
+                            <p className="text-blue-800 text-sm italic">&ldquo;{official.vision}&rdquo;</p>
                           </div>
                         )}
 

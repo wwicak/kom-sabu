@@ -38,8 +38,7 @@ import {
   Archive,
   CheckCircle,
   Clock,
-  Reply,
-  Filter
+  Reply
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -159,7 +158,8 @@ export default function ContactsPage() {
       // Refresh the list
       fetchContacts()
       setSelectedContacts([])
-    } catch (error) {
+    } catch (err) {
+      console.error('Error updating contact status:', err)
       toast({
         title: 'Error',
         description: 'Failed to update contact status',
@@ -191,7 +191,8 @@ export default function ContactsPage() {
       // Refresh the list
       fetchContacts()
       setSelectedContacts([])
-    } catch (error) {
+    } catch (err) {
+      console.error('Error deleting contacts:', err)
       toast({
         title: 'Error',
         description: 'Failed to delete contacts',

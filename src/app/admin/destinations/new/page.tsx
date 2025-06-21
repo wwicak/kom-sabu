@@ -125,13 +125,13 @@ export default function NewDestinationPage() {
     'Sabu Barat', 'Sabu Tengah', 'Sabu Timur', 'Raijua', 'Sabu Liae', 'Hawu Mehara'
   ]
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | boolean | number | string[] | Array<{ url: string; caption?: string; alt?: string; order: number }>) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.')
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof FormData] as any),
+          ...(prev[parent as keyof FormData] as Record<string, unknown>),
           [child]: value
         }
       }))
