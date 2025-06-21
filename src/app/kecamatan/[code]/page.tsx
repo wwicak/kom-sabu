@@ -6,7 +6,7 @@ import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
+import {
   ArrowLeft,
   MapPin,
   Users,
@@ -37,7 +37,7 @@ export default function KecamatanDetailPage() {
         if (!response.ok) {
           throw new Error('Kecamatan not found')
         }
-        
+
         const data = await response.json()
         setKecamatan(data.data)
       } catch (err) {
@@ -86,8 +86,8 @@ export default function KecamatanDetailPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => router.push('/peta-kecamatan')}
             className="mb-4"
           >
@@ -183,15 +183,15 @@ export default function KecamatanDetailPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>0-14 tahun:</span>
-                        <span className="font-medium">{kecamatan.demographics.ageGroups.children.toLocaleString()}</span>
+                        <span className="font-medium">{kecamatan.demographics.ageGroups.under15.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>15-64 tahun:</span>
-                        <span className="font-medium">{kecamatan.demographics.ageGroups.adults.toLocaleString()}</span>
+                        <span className="font-medium">{kecamatan.demographics.ageGroups.age15to64.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>65+ tahun:</span>
-                        <span className="font-medium">{kecamatan.demographics.ageGroups.elderly.toLocaleString()}</span>
+                        <span className="font-medium">{kecamatan.demographics.ageGroups.over64.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -213,13 +213,8 @@ export default function KecamatanDetailPage() {
                     <div key={index} className="p-3 border rounded-lg">
                       <h4 className="font-medium text-gray-900">{village.name}</h4>
                       <p className="text-sm text-gray-600">
-                        {village.population.toLocaleString()} penduduk • {village.area.toFixed(1)} km²
+                        {village.population?.toLocaleString() || 'N/A'} penduduk • {village.type}
                       </p>
-                      {village.headName && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Kepala: {village.headName}
-                        </p>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -237,22 +232,22 @@ export default function KecamatanDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {kecamatan.economy.mainSectors && (
+                    {kecamatan.economy.mainIndustries && (
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Sektor Utama</h4>
+                        <h4 className="font-semibold text-gray-900 mb-3">Industri Utama</h4>
                         <div className="space-y-2">
-                          {kecamatan.economy.mainSectors.map((sector, index) => (
-                            <Badge key={index} variant="outline">{sector}</Badge>
+                          {kecamatan.economy.mainIndustries.map((industry: string, index: number) => (
+                            <Badge key={index} variant="outline">{industry}</Badge>
                           ))}
                         </div>
                       </div>
                     )}
-                    {kecamatan.economy.majorCrops && (
+                    {kecamatan.agriculture.mainCrops && (
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3">Komoditas Utama</h4>
                         <div className="space-y-2">
-                          {kecamatan.economy.majorCrops.map((crop, index) => (
-                            <Badge key={index} variant="secondary">{crop}</Badge>
+                          {kecamatan.agriculture.mainCrops.map((crop: any, index: number) => (
+                            <Badge key={index} variant="secondary">{crop.name}</Badge>
                           ))}
                         </div>
                       </div>
@@ -280,18 +275,7 @@ export default function KecamatanDetailPage() {
                         {kecamatan.capital}, Kecamatan {kecamatan.name}
                       </span>
                     </div>
-                    {kecamatan.contact?.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">{kecamatan.contact.phone}</span>
-                      </div>
-                    )}
-                    {kecamatan.contact?.email && (
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">{kecamatan.contact.email}</span>
-                      </div>
-                    )}
+
                   </div>
                 </div>
               </CardContent>
@@ -328,16 +312,16 @@ export default function KecamatanDetailPage() {
                 <CardTitle className="text-lg">Navigasi</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full justify-start"
                   onClick={() => router.push('/peta-kecamatan')}
                 >
                   <MapPin className="h-4 w-4 mr-2" />
                   Lihat di Peta
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full justify-start"
                   onClick={() => router.push('/kecamatan')}
                 >

@@ -50,13 +50,13 @@ export async function GET(_request: NextRequest) {
 
     // Format recent activity
     const recentActivity = [
-      ...recentDestinations.map((dest: { title: string; createdAt: string; status?: string }) => ({
+      ...recentDestinations.map((dest: any) => ({
         type: 'destination',
-        title: dest.title,
+        title: dest.title || dest.name || 'Untitled',
         date: new Date(dest.createdAt).toLocaleDateString('id-ID'),
         status: dest.status || 'draft'
       })),
-      ...recentOfficials.map((official: { name: string; position: string; createdAt: string }) => ({
+      ...recentOfficials.map((official: any) => ({
         type: 'official',
         title: `${official.name} - ${official.position}`,
         date: new Date(official.createdAt).toLocaleDateString('id-ID'),

@@ -10,68 +10,8 @@ import { MapPin, Users, Building2, TrendingUp, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { IKecamatan } from '@/lib/models/kecamatan'
 
-interface KecamatanData {
-  _id: string
-  name: string
-  slug: string
-  description?: string
-  area: number
-  population: number
-  villages: number
-  coordinates: {
-    center: { lat: number; lng: number }
-    bounds?: {
-      north: number
-      south: number
-      east: number
-      west: number
-    }
-  }
-  polygon: {
-    type: 'Polygon' | 'MultiPolygon'
-    coordinates: number[][][]
-  }
-  geometry?: {
-    type: 'Polygon' | 'MultiPolygon'
-    coordinates: number[][][]
-  }
-  potency: {
-    agriculture?: {
-      mainCrops?: string[]
-      farmingArea?: number
-      productivity?: string
-    }
-    fishery?: {
-      mainSpecies?: string[]
-      fishingArea?: number
-      productivity?: string
-    }
-    tourism?: {
-      attractions?: string[]
-      facilities?: string[]
-      annualVisitors?: number
-    }
-  }
-  demographics: {
-    totalPopulation: number
-    malePopulation: number
-    femalePopulation: number
-  }
-  images?: Array<{
-    url: string
-    caption: string
-    category: string
-  }>
-  headOffice?: {
-    address: string
-    phone: string
-    email: string
-    head: string
-  }
-}
-
 // Helper function to convert KecamatanData to IKecamatan format
-function convertToIKecamatan(data: KecamatanData): IKecamatan {
+function convertToIKecamatan(data: any): IKecamatan {
   return {
     _id: data._id as string,
     name: data.name,
@@ -176,8 +116,8 @@ function convertToIKecamatan(data: KecamatanData): IKecamatan {
 
 export function KecamatanMap() {
   const { data: kecamatanData, isLoading, error } = useKecamatanList()
-  const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanData | null>(null)
-  const [hoveredKecamatan, setHoveredKecamatan] = useState<KecamatanData | null>(null)
+  const [selectedKecamatan, setSelectedKecamatan] = useState<any>(null)
+  const [hoveredKecamatan, setHoveredKecamatan] = useState<any>(null)
 
   // Convert KecamatanData to IKecamatan format for the map
   const convertedKecamatanData = kecamatanData?.map(convertToIKecamatan) || []
