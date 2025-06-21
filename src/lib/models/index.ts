@@ -326,6 +326,76 @@ const userSchema = new mongoose.Schema({
 
 // Note: Kecamatan schema moved to dedicated file src/lib/models/kecamatan.ts
 
+// Asset Schema (for dynamic asset management)
+const assetSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  url: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 200
+  },
+  description: {
+    type: String,
+    trim: true,
+    maxlength: 500
+  },
+  alt: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['image', 'video', 'document', 'audio'],
+    default: 'image'
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: ['hero', 'landscape', 'culture', 'tourism', 'profile', 'logo', 'icon', 'background', 'gallery', 'content'],
+    default: 'content'
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'archived'],
+    default: 'active'
+  },
+  order: {
+    type: Number,
+    default: 0
+  },
+  metadata: {
+    fileSize: Number,
+    dimensions: {
+      width: Number,
+      height: Number
+    },
+    format: String,
+    originalName: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+})
+
 // Audit Log Schema
 const auditLogSchema = new mongoose.Schema({
   userId: {
@@ -361,6 +431,10 @@ newsSchema.index({ publishedAt: -1 })
 agendaSchema.index({ startDate: 1 })
 agendaSchema.index({ isPublic: 1, status: 1 })
 // userSchema email and username already have unique: true, no need for manual indexes
+// assetSchema key already has unique: true, no need for manual index
+assetSchema.index({ category: 1, status: 1 })
+assetSchema.index({ type: 1, status: 1 })
+assetSchema.index({ order: 1 })
 auditLogSchema.index({ timestamp: -1 })
 auditLogSchema.index({ userId: 1 })
 
@@ -370,6 +444,7 @@ export const GalleryItem = mongoose.models.GalleryItem || mongoose.model('Galler
 export const News = mongoose.models.News || mongoose.model('News', newsSchema)
 export const Agenda = mongoose.models.Agenda || mongoose.model('Agenda', agendaSchema)
 export const User = mongoose.models.User || mongoose.model('User', userSchema)
+export const Asset = mongoose.models.Asset || mongoose.model('Asset', assetSchema)
 export const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema)
 
 // Export the comprehensive Kecamatan model from the dedicated file

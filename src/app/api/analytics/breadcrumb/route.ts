@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
+import { connectToDatabase } from '@/lib/mongodb'
 import { BreadcrumbAnalytics } from '@/models/BreadcrumbAnalytics'
 
 // POST - Track breadcrumb events
 export async function POST(request: NextRequest) {
   try {
-    await connectDB()
+    await connectToDatabase()
 
     const body = await request.json()
     
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 // GET - Retrieve analytics insights
 export async function GET(request: NextRequest) {
   try {
-    await connectDB()
+    await connectToDatabase()
 
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('start_date')
