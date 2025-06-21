@@ -190,12 +190,12 @@ export async function POST(request: NextRequest) {
     }
 
     await connectToDatabase()
-    
+
     const body = await request.json()
-    
+
     // Validate input
     const validatedData = culturalAssetSchema.parse(body)
-    
+
     // Generate slug from title
     const slug = generateSlug(validatedData.title)
 
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Create cultural asset error:', error)
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },

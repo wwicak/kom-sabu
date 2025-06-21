@@ -101,10 +101,12 @@ export default function AdminDashboard() {
   const quickActions = [
     { name: 'Kelola Destinasi', href: '/admin/destinations', icon: MapPin, color: 'bg-blue-500' },
     { name: 'Kelola Pejabat', href: '/admin/officials', icon: Users, color: 'bg-green-500' },
-    { name: 'Tambah Pejabat', href: '/admin/officials/new', icon: Users, color: 'bg-purple-500' },
+    { name: 'Kelola Layanan Publik', href: '/admin/services', icon: FileText, color: 'bg-indigo-500' },
+    { name: 'Kelola Warisan Budaya', href: '/admin/cultural-heritage', icon: Shield, color: 'bg-purple-500' },
+    { name: 'Pesan Kontak', href: '/admin/contacts', icon: Database, color: 'bg-yellow-500' },
+    { name: 'Tambah Pejabat', href: '/admin/officials/new', icon: Users, color: 'bg-emerald-500' },
     { name: 'Lihat Website', href: '/', icon: FileText, color: 'bg-orange-500' },
     { name: 'Peta Kecamatan', href: '/peta-kecamatan', icon: MapPin, color: 'bg-gray-500' },
-    { name: 'Data Desa', href: '/desa', icon: BarChart3, color: 'bg-red-500' },
   ]
 
   return (

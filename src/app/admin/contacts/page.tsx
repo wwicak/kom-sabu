@@ -28,12 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+
 import {
   Mail,
   Search,
@@ -79,10 +74,9 @@ export default function ContactsPage() {
   const { toast } = useToast()
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
-  const [showDetailDialog, setShowDetailDialog] = useState(false)
+
   const [selectedContacts, setSelectedContacts] = useState<string[]>([])
-  
+
   // Filters and pagination
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -261,7 +255,7 @@ export default function ContactsPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-2">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-40">
@@ -413,8 +407,7 @@ export default function ContactsPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
                                 onClick={() => {
-                                  setSelectedContact(contact)
-                                  setShowDetailDialog(true)
+                                  alert(`Contact Details:\n\nName: ${contact.name}\nEmail: ${contact.email}\nSubject: ${contact.subject}\nMessage: ${contact.message}\nDate: ${formatDate(contact.createdAt)}`)
                                 }}
                               >
                                 <Eye className="h-4 w-4 mr-2" />
@@ -486,65 +479,7 @@ export default function ContactsPage() {
           </CardContent>
         </Card>
 
-        {/* Contact Detail Dialog */}
-        <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Contact Details</DialogTitle>
-            </DialogHeader>
-            {selectedContact && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Name</label>
-                    <p className="text-sm">{selectedContact.name}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Email</label>
-                    <p className="text-sm">{selectedContact.email}</p>
-                  </div>
-                  {selectedContact.phone && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Phone</label>
-                      <p className="text-sm">{selectedContact.phone}</p>
-                    </div>
-                  )}
-                  {selectedContact.company && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Company</label>
-                      <p className="text-sm">{selectedContact.company}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Subject</label>
-                  <p className="text-sm">{selectedContact.subject}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Message</label>
-                  <div className="text-sm bg-gray-50 p-3 rounded-md whitespace-pre-wrap">
-                    {selectedContact.message}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Status</label>
-                    <div className="mt-1">
-                      {getStatusBadge(selectedContact.status)}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <label className="text-sm font-medium text-gray-500">Submitted</label>
-                    <p className="text-sm">{formatDate(selectedContact.createdAt)}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+
       </div>
     </Layout>
   )
