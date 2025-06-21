@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -71,6 +72,11 @@ export default function KontakPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb />
+        </div>
+
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Hubungi Kami</h1>
@@ -99,7 +105,7 @@ export default function KontakPage() {
                     Nusa Tenggara Timur 85391
                   </p>
                 </div>
-                
+
                 <div>
                   <p className="font-medium text-gray-900 flex items-center">
                     <Phone className="h-4 w-4 mr-2" />
@@ -257,9 +263,9 @@ export default function KontakPage() {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  <Button
+                    type="submit"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -278,7 +284,7 @@ export default function KontakPage() {
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Catatan:</strong> Pesan Anda akan diproses dalam 1-2 hari kerja. 
+                    <strong>Catatan:</strong> Pesan Anda akan diproses dalam 1-2 hari kerja.
                     Untuk urusan mendesak, silakan hubungi langsung melalui telepon.
                   </p>
                 </div>
