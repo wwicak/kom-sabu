@@ -35,10 +35,10 @@ export function About() {
   ]
 
   const achievements = [
-    { number: '95%', label: 'Tingkat Kepuasan Masyarakat' },
-    { number: '100%', label: 'Transparansi Anggaran' },
-    { number: '24/7', label: 'Layanan Online' },
-    { number: '63', label: 'Desa/Kelurahan Terlayani' },
+    { number: '95%', label: t('achievements.items.satisfaction') },
+    { number: '100%', label: t('achievements.items.transparency') },
+    { number: '24/7', label: t('achievements.items.online_service') },
+    { number: '63', label: t('achievements.items.villages_served') },
   ]
 
   return (
@@ -140,10 +140,10 @@ export function About() {
         <div className="bg-blue-600 rounded-2xl p-8 lg:p-12 text-white">
           <div className="text-center mb-12">
             <h3 className="text-2xl font-bold mb-4">
-              Pencapaian Kami
+              {t('achievements.title')}
             </h3>
             <p className="text-blue-100 max-w-2xl mx-auto">
-              Komitmen kami dalam memberikan pelayanan terbaik tercermin dalam berbagai pencapaian yang telah diraih.
+              {t('achievements.subtitle')}
             </p>
           </div>
 

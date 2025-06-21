@@ -26,5 +26,15 @@
       "title": "Commitment",
       "description": "Prioritizing community interests and sustainable development for future generations."
     }
+  },
+  "achievements": {
+    "title": "Our Achievements",
+    "subtitle": "Our commitment to providing the best service is reflected in the various achievements we have accomplished.",
+    "items": {
+      "satisfaction": "Community Satisfaction Rate",
+      "transparency": "Budget Transparency",
+      "online_service": "Online Service",
+      "villages_served": "Villages/Subdistricts Served"
+    }
   }
 }
