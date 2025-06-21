@@ -10,117 +10,116 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ArrowLeft, MapPin, Upload, X } from 'lucide-react'
+import { ArrowLeft, Heart, Upload } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { ImageUpload } from '@/components/admin/ImageUpload'
 
 interface FormData {
-  name: string
+  title: string
   description: string
-  shortDescription: string
   category: string
-  subcategory: string
-  location: {
-    district: string
-    village: string
-    address: string
-    coordinates: {
-      latitude: number | null
-      longitude: number | null
-    }
-  }
-  facilities: string[]
-  activities: string[]
-  accessibility: {
-    parking: boolean
-    restroom: boolean
-    restaurant: boolean
-    guide: boolean
-    wheelchair: boolean
-  }
-  pricing: {
-    entrance: number | null
-    parking: number | null
-    guide: number | null
-  }
-  operatingHours: {
-    open: string
-    close: string
-    days: string[]
-  }
-  contact: {
-    phone: string
-    email: string
-    website: string
-  }
+  type: string
   images: Array<{
     url: string
     caption?: string
     alt?: string
     order: number
   }>
-  featured: boolean
+  icon: string
+  content: string
+  metadata: {
+    origin: string
+    period: string
+    significance: string
+    preservation: string
+    practitioners: string
+    materials: string[]
+    techniques: string[]
+    occasions: string[]
+  }
+  location: {
+    district: string
+    village: string
+    coordinates: {
+      latitude: number | null
+      longitude: number | null
+    }
+  }
   status: string
+  featured: boolean
+  order: number
+  visibility: string
+  tags: string[]
 }
 
-export default function NewDestinationPage() {
+export default function NewCulturalHeritagePage() {
   const router = useRouter()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<FormData>({
-    name: '',
+    title: '',
     description: '',
-    shortDescription: '',
     category: '',
-    subcategory: '',
+    type: '',
+    images: [],
+    icon: 'Heart',
+    content: '',
+    metadata: {
+      origin: '',
+      period: '',
+      significance: '',
+      preservation: '',
+      practitioners: '',
+      materials: [],
+      techniques: [],
+      occasions: []
+    },
     location: {
       district: '',
       village: '',
-      address: '',
       coordinates: {
         latitude: null,
         longitude: null
       }
     },
-    facilities: [],
-    activities: [],
-    accessibility: {
-      parking: false,
-      restroom: false,
-      restaurant: false,
-      guide: false,
-      wheelchair: false
-    },
-    pricing: {
-      entrance: null,
-      parking: null,
-      guide: null
-    },
-    operatingHours: {
-      open: '',
-      close: '',
-      days: []
-    },
-    contact: {
-      phone: '',
-      email: '',
-      website: ''
-    },
-    images: [],
+    status: 'active',
     featured: false,
-    status: 'draft'
+    order: 0,
+    visibility: 'draft',
+    tags: []
   })
 
   const categories = [
-    'Pantai', 'Bukit', 'Hutan', 'Mata Air', 'Budaya', 'Sejarah', 'Religi', 'Kuliner'
+    'Kerajinan Tradisional',
+    'Seni Pertunjukan',
+    'Bahasa & Sastra',
+    'Wisata Alam',
+    'Kuliner',
+    'Upacara Adat',
+    'Arsitektur',
+    'Musik Tradisional'
   ]
 
-  const subcategories = [
-    'Wisata Alam', 'Wisata Budaya', 'Wisata Religi', 'Wisata Kuliner', 'Wisata Sejarah'
+  const types = [
+    { value: 'asset', label: 'Asset' },
+    { value: 'tradition', label: 'Tradition' },
+    { value: 'destination', label: 'Destination' },
+    { value: 'culinary', label: 'Culinary' }
   ]
 
   const districts = [
     'Sabu Barat', 'Sabu Tengah', 'Sabu Timur', 'Raijua', 'Sabu Liae', 'Hawu Mehara'
+  ]
+
+  const icons = [
+    'Palette', 'Music', 'MapPin', 'Camera', 'Utensils', 'Users', 'Building', 'Heart'
+  ]
+
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'endangered', label: 'Endangered' },
+    { value: 'extinct', label: 'Extinct' },
+    { value: 'reviving', label: 'Reviving' }
   ]
 
   const handleInputChange = (field: string, value: any) => {
@@ -141,10 +140,15 @@ export default function NewDestinationPage() {
     }
   }
 
+  const handleArrayChange = (field: string, value: string) => {
+    const items = value.split(',').map(item => item.trim()).filter(item => item.length > 0)
+    handleInputChange(field, items)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.name || !formData.description || !formData.category || !formData.location.district) {
+    if (!formData.title || !formData.description || !formData.category || !formData.type) {
       toast({
         title: 'Error',
         description: 'Please fill in all required fields',
@@ -156,7 +160,7 @@ export default function NewDestinationPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/admin/destinations', {
+      const response = await fetch('/api/admin/cultural-heritage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,18 +172,18 @@ export default function NewDestinationPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create destination')
+        throw new Error(data.error || 'Failed to create cultural asset')
       }
 
       toast({
         title: 'Success',
-        description: 'Destination created successfully',
+        description: 'Cultural heritage asset created successfully',
       })
 
-      router.push('/admin/destinations')
+      router.push('/admin/cultural-heritage')
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create destination'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create cultural asset'
       toast({
         title: 'Error',
         description: errorMessage,
@@ -204,8 +208,8 @@ export default function NewDestinationPage() {
             Kembali
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tambah Destinasi Wisata</h1>
-            <p className="text-gray-600">Create a new tourism destination</p>
+            <h1 className="text-3xl font-bold text-gray-900">Tambah Warisan Budaya</h1>
+            <p className="text-gray-600">Create a new cultural heritage asset</p>
           </div>
         </div>
 
@@ -219,37 +223,24 @@ export default function NewDestinationPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Nama Destinasi *</Label>
+                    <Label htmlFor="title">Judul *</Label>
                     <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Masukkan nama destinasi"
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => handleInputChange('title', e.target.value)}
+                      placeholder="Masukkan judul warisan budaya"
                       required
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="shortDescription">Deskripsi Singkat *</Label>
-                    <Textarea
-                      id="shortDescription"
-                      value={formData.shortDescription}
-                      onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                      placeholder="Deskripsi singkat destinasi (max 300 karakter)"
-                      maxLength={300}
-                      rows={3}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Deskripsi Lengkap *</Label>
+                    <Label htmlFor="description">Deskripsi *</Label>
                     <Textarea
                       id="description"
                       value={formData.description}
                       onChange={(e) => handleInputChange('description', e.target.value)}
-                      placeholder="Deskripsi lengkap destinasi"
-                      rows={6}
+                      placeholder="Deskripsi warisan budaya"
+                      rows={4}
                       required
                     />
                   </div>
@@ -272,69 +263,30 @@ export default function NewDestinationPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="subcategory">Sub Kategori</Label>
-                      <Select value={formData.subcategory} onValueChange={(value) => handleInputChange('subcategory', value)}>
+                      <Label htmlFor="type">Tipe *</Label>
+                      <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih sub kategori" />
+                          <SelectValue placeholder="Pilih tipe" />
                         </SelectTrigger>
                         <SelectContent>
-                          {subcategories.map((subcategory) => (
-                            <SelectItem key={subcategory} value={subcategory}>
-                              {subcategory}
+                          {types.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Location Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Informasi Lokasi
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="district">Kecamatan *</Label>
-                      <Select value={formData.location.district} onValueChange={(value) => handleInputChange('location.district', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih kecamatan" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {districts.map((district) => (
-                            <SelectItem key={district} value={district}>
-                              {district}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="village">Desa/Kelurahan</Label>
-                      <Input
-                        id="village"
-                        value={formData.location.village}
-                        onChange={(e) => handleInputChange('location.village', e.target.value)}
-                        placeholder="Nama desa/kelurahan"
-                      />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="address">Alamat Lengkap</Label>
+                    <Label htmlFor="content">Konten Lengkap</Label>
                     <Textarea
-                      id="address"
-                      value={formData.location.address}
-                      onChange={(e) => handleInputChange('location.address', e.target.value)}
-                      placeholder="Alamat lengkap destinasi"
-                      rows={3}
+                      id="content"
+                      value={formData.content}
+                      onChange={(e) => handleInputChange('content', e.target.value)}
+                      placeholder="Konten lengkap tentang warisan budaya"
+                      rows={6}
                     />
                   </div>
                 </CardContent>
@@ -345,7 +297,7 @@ export default function NewDestinationPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Upload className="h-5 w-5" />
-                    Gambar Destinasi
+                    Gambar Warisan Budaya
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -353,8 +305,59 @@ export default function NewDestinationPage() {
                     images={formData.images}
                     onImagesChange={(images) => handleInputChange('images', images)}
                     maxImages={10}
-                    folder="destinations"
+                    folder="cultural-heritage"
                   />
+                </CardContent>
+              </Card>
+
+              {/* Metadata */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Metadata</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="origin">Asal Daerah</Label>
+                      <Input
+                        id="origin"
+                        value={formData.metadata.origin}
+                        onChange={(e) => handleInputChange('metadata.origin', e.target.value)}
+                        placeholder="Asal daerah warisan budaya"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="period">Periode/Era</Label>
+                      <Input
+                        id="period"
+                        value={formData.metadata.period}
+                        onChange={(e) => handleInputChange('metadata.period', e.target.value)}
+                        placeholder="Periode atau era"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="significance">Makna/Signifikansi</Label>
+                    <Textarea
+                      id="significance"
+                      value={formData.metadata.significance}
+                      onChange={(e) => handleInputChange('metadata.significance', e.target.value)}
+                      placeholder="Makna dan signifikansi budaya"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="materials">Bahan-bahan (pisahkan dengan koma)</Label>
+                    <Input
+                      id="materials"
+                      value={formData.metadata.materials.join(', ')}
+                      onChange={(e) => handleArrayChange('metadata.materials', e.target.value)}
+                      placeholder="Contoh: Kapas, Pewarna alami, Benang"
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -366,15 +369,6 @@ export default function NewDestinationPage() {
                   <CardTitle>Pengaturan</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="featured"
-                      checked={formData.featured}
-                      onCheckedChange={(checked) => handleInputChange('featured', checked)}
-                    />
-                    <Label htmlFor="featured">Destinasi Unggulan</Label>
-                  </div>
-
                   <div>
                     <Label htmlFor="status">Status</Label>
                     <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
@@ -382,11 +376,36 @@ export default function NewDestinationPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
+                        {statusOptions.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="visibility">Visibilitas</Label>
+                    <Select value={formData.visibility} onValueChange={(value) => handleInputChange('visibility', value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="public">Public</SelectItem>
+                        <SelectItem value="private">Private</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="featured"
+                      checked={formData.featured}
+                      onCheckedChange={(checked) => handleInputChange('featured', checked)}
+                    />
+                    <Label htmlFor="featured">Warisan Budaya Unggulan</Label>
                   </div>
                 </CardContent>
               </Card>
@@ -397,13 +416,13 @@ export default function NewDestinationPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Menyimpan...' : 'Simpan Destinasi'}
+                    {loading ? 'Menyimpan...' : 'Simpan Warisan Budaya'}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => router.push('/admin/destinations')}
+                    onClick={() => router.push('/admin/cultural-heritage')}
                   >
                     Batal
                   </Button>
