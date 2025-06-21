@@ -1,4 +1,36 @@
-import mongoose from 'mongoose'
+import mongoose, { Document, Model } from 'mongoose'
+
+interface IBreadcrumbAnalytics extends Document {
+  action: 'breadcrumb_click' | 'breadcrumb_view'
+  category: string
+  label: string
+  value?: number
+  custom_parameters: {
+    source_page?: string
+    target_page?: string
+    breadcrumb_position?: number
+    breadcrumb_depth?: number
+    page_url?: string
+    breadcrumb_items?: string[]
+    user_session_id?: string
+  }
+  clientIP: string
+  userAgent: string
+  referrer?: string
+  screen_resolution?: string
+  viewport_size?: string
+  sessionId?: string
+  timestamp: Date
+  isClick(): boolean
+  isView(): boolean
+  getSessionEvents(): Promise<IBreadcrumbAnalytics[]>
+}
+
+interface IBreadcrumbAnalyticsModel extends Model<IBreadcrumbAnalytics> {
+  getPopularPaths(startDate?: Date, endDate?: Date): Promise<any[]>
+  getClickThroughRate(startDate?: Date, endDate?: Date): Promise<any>
+  getDropOffAnalysis(startDate?: Date, endDate?: Date): Promise<any>
+}
 
 const BreadcrumbAnalyticsSchema = new mongoose.Schema({
   // Event details
@@ -181,15 +213,15 @@ BreadcrumbAnalyticsSchema.methods.isView = function() {
   return this.action === 'breadcrumb_view'
 }
 
-BreadcrumbAnalyticsSchema.methods.getSessionEvents = async function() {
+BreadcrumbAnalyticsSchema.methods.getSessionEvents = async function(this: IBreadcrumbAnalytics) {
   if (!this.sessionId) return []
-  
-  return this.constructor.find({ 
-    sessionId: this.sessionId 
+
+  return (this.constructor as IBreadcrumbAnalyticsModel).find({
+    sessionId: this.sessionId
   }).sort({ timestamp: 1 })
 }
 
-export const BreadcrumbAnalytics = mongoose.models.BreadcrumbAnalytics || 
-  mongoose.model('BreadcrumbAnalytics', BreadcrumbAnalyticsSchema)
+export const BreadcrumbAnalytics = (mongoose.models.BreadcrumbAnalytics ||
+  mongoose.model<IBreadcrumbAnalytics, IBreadcrumbAnalyticsModel>('BreadcrumbAnalytics', BreadcrumbAnalyticsSchema)) as IBreadcrumbAnalyticsModel
 
 export default BreadcrumbAnalytics

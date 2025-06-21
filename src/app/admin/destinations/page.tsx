@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Layout } from '@/components/layout/Layout'
+import { AdminLayout } from '@/components/admin/AdminLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -221,32 +221,22 @@ export default function AdminDestinationsPage() {
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <AdminBreadcrumb
-            items={[
-              { label: 'Dashboard Admin', href: '/admin' },
-              { label: 'Kelola Destinasi', current: true }
-            ]}
-          />
-        </div>
-
+    <AdminLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Kelola Destinasi Wisata</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Destinations</h1>
             <p className="text-gray-600">Manage tourism destinations and attractions</p>
           </div>
           <Button onClick={() => router.push('/admin/destinations/new')}>
             <Plus className="h-4 w-4 mr-2" />
-            Tambah Destinasi
+            Add Destination
           </Button>
         </div>
 
         {/* Filters */}
-        <Card className="mb-6">
+        <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div className="relative">
@@ -319,7 +309,7 @@ export default function AdminDestinationsPage() {
         </Card>
 
         {/* Destinations Table */}
-        <Card>
+        <Card className="border-0 shadow-sm">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
@@ -482,6 +472,6 @@ export default function AdminDestinationsPage() {
           </div>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   )
 }

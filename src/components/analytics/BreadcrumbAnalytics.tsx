@@ -39,8 +39,8 @@ interface AnalyticsService {
 // Google Analytics 4 implementation
 class GA4Analytics implements AnalyticsService {
   track(event: BreadcrumbClickEvent | BreadcrumbViewEvent) {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', event.action, {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', event.action, {
         event_category: event.category,
         event_label: event.label,
         value: 'value' in event ? event.value : undefined,
@@ -83,12 +83,12 @@ class BreadcrumbAnalyticsManager {
 
   constructor() {
     this.sessionId = this.generateSessionId()
-    
+
     // Initialize analytics services
     if (process.env.NODE_ENV === 'production') {
       this.services.push(new GA4Analytics())
     }
-    
+
     // Always include custom analytics for internal insights
     this.services.push(new CustomAnalytics())
   }
@@ -115,9 +115,9 @@ class BreadcrumbAnalyticsManager {
   }
 
   trackBreadcrumbClick(
-    sourcePage: string, 
-    targetPage: string, 
-    position: number, 
+    sourcePage: string,
+    targetPage: string,
+    position: number,
     totalDepth: number,
     label: string
   ) {
@@ -183,10 +183,10 @@ interface BreadcrumbAnalyticsProps {
 
 export function BreadcrumbAnalytics({ breadcrumbItems }: BreadcrumbAnalyticsProps) {
   const itemLabels = breadcrumbItems.map(item => item.label)
-  
+
   // Track breadcrumb view
   useBreadcrumbAnalytics(itemLabels)
-  
+
   return null // This component doesn't render anything
 }
 
@@ -201,14 +201,14 @@ interface AnalyticsLinkProps {
   onClick?: () => void
 }
 
-export function BreadcrumbAnalyticsLink({ 
-  href, 
-  children, 
-  position, 
-  totalDepth, 
-  label, 
+export function BreadcrumbAnalyticsLink({
+  href,
+  children,
+  position,
+  totalDepth,
+  label,
   className,
-  onClick 
+  onClick
 }: AnalyticsLinkProps) {
   const handleClick = () => {
     trackBreadcrumbClick(href, position, totalDepth, label)
@@ -216,9 +216,9 @@ export function BreadcrumbAnalyticsLink({
   }
 
   return (
-    <a 
-      href={href} 
-      className={className} 
+    <a
+      href={href}
+      className={className}
       onClick={handleClick}
     >
       {children}
@@ -228,7 +228,7 @@ export function BreadcrumbAnalyticsLink({
 
 // Utility function to get breadcrumb analytics insights
 export async function getBreadcrumbAnalytics(
-  startDate?: string, 
+  startDate?: string,
   endDate?: string
 ): Promise<{
   totalViews: number
@@ -241,7 +241,7 @@ export async function getBreadcrumbAnalytics(
     const params = new URLSearchParams()
     if (startDate) params.append('start_date', startDate)
     if (endDate) params.append('end_date', endDate)
-    
+
     const response = await fetch(`/api/analytics/breadcrumb/insights?${params}`)
     return await response.json()
   } catch (error) {

@@ -34,7 +34,7 @@ const assetUpdateSchema = z.object({
 // GET /api/admin/assets/[id] - Get single asset
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = params
