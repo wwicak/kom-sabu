@@ -13,7 +13,7 @@ import {
   Search,
   Home
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface Village {
   _id: string
@@ -73,11 +73,7 @@ export default function DesaPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    fetchVillages()
-  }, [page, searchTerm, selectedDistrict])
-
-  const fetchVillages = async () => {
+  const fetchVillages = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -105,7 +101,11 @@ export default function DesaPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [page, searchTerm, selectedDistrict])
+
+  useEffect(() => {
+    fetchVillages()
+  }, [fetchVillages])
 
   // Remove static data - now using dynamic content from API
 

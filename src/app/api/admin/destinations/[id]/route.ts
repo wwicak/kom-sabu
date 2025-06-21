@@ -123,7 +123,22 @@ export async function PUT(
     }
 
     // Generate new slug if name is being updated
-    let updateData: any = { ...validatedData }
+    const updateData: {
+      name?: string
+      description?: string
+      category?: string
+      location?: object
+      images?: object[]
+      facilities?: string[]
+      activities?: string[]
+      pricing?: object
+      contact?: object
+      status?: string
+      featured?: boolean
+      slug?: string
+      publishedAt?: Date
+      updatedAt?: Date
+    } = { ...validatedData }
     if (validatedData.name) {
       const newSlug = validatedData.name
         .toLowerCase()

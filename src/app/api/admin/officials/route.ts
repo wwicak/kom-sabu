@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import { Official } from '@/lib/models/content'
-import { verifyAdminAuth, generateSlug } from '@/lib/auth'
+import { verifyAdminAuth } from '@/lib/auth'
 import { z } from 'zod'
 
 // Validation schema
@@ -56,7 +56,18 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
 
     // Build filter query
-    const filter: any = {}
+    const filter: {
+      level?: string
+      category?: string
+      department?: string
+      status?: string
+      featured?: boolean
+      $or?: Array<{
+        name?: { $regex: string; $options: string }
+        position?: { $regex: string; $options: string }
+        department?: { $regex: string; $options: string }
+      }>
+    } = {}
     if (level) filter.level = level
     if (category) filter.category = category
     if (department) filter.department = department

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { seedDatabase } from '@/lib/seed'
 
 // POST - Seed database with initial data
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Only allow in development environment for security
     if (process.env.NODE_ENV === 'production') {

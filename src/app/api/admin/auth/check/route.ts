@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('auth-token') // Changed from 'admin-token' to 'auth-token'
@@ -16,7 +16,7 @@ export async function GET(_request: NextRequest) {
 
     // Verify JWT token
     const secret = process.env.JWT_SECRET || 'your-secret-key'
-    const decoded = jwt.verify(token.value, secret) as any
+    const decoded = jwt.verify(token.value, secret) as { id: string; username: string; email: string; role: string }
 
     // Check if user has admin role (allow both 'admin' and 'super_admin')
     if (!decoded || !decoded.id || !['admin', 'super_admin'].includes(decoded.role)) {

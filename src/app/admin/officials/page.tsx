@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -15,12 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { 
-  Users, 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
   Eye,
   Crown,
   Shield,
@@ -74,11 +73,7 @@ export default function AdminOfficialsPage() {
   const categories = ['pimpinan', 'kepala_dinas', 'camat', 'sekretaris', 'staff']
   const statuses = ['active', 'inactive', 'retired']
 
-  useEffect(() => {
-    fetchOfficials()
-  }, [page, searchTerm, selectedLevel, selectedCategory, selectedStatus])
-
-  const fetchOfficials = async () => {
+  const fetchOfficials = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -113,7 +108,11 @@ export default function AdminOfficialsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [page, searchTerm, selectedLevel, selectedCategory, selectedStatus])
+
+  useEffect(() => {
+    fetchOfficials()
+  }, [fetchOfficials])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this official?')) return
@@ -166,7 +165,7 @@ export default function AdminOfficialsPage() {
           method: 'DELETE'
         })
       } else {
-        const updates: any = {}
+        const updates: { status?: string; featured?: boolean } = {}
         if (action === 'activate') updates.status = 'active'
         if (action === 'deactivate') updates.status = 'inactive'
         if (action === 'feature') updates.featured = true
@@ -327,6 +326,7 @@ export default function AdminOfficialsPage() {
                           setSelectedItems([])
                         }
                       }}
+                      aria-label="Select all officials"
                     />
                   </TableHead>
                   <TableHead>Nama</TableHead>
@@ -367,6 +367,7 @@ export default function AdminOfficialsPage() {
                                 setSelectedItems(selectedItems.filter(id => id !== official._id))
                               }
                             }}
+                            aria-label={`Select ${official.name}`}
                           />
                         </TableCell>
                         <TableCell>
@@ -403,7 +404,7 @@ export default function AdminOfficialsPage() {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
+                              <Button variant="ghost" size="sm" aria-label={`Actions for ${official.name}`}>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -416,7 +417,7 @@ export default function AdminOfficialsPage() {
                                 <Eye className="h-4 w-4 mr-2" />
                                 View
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleDelete(official._id)}
                                 className="text-red-600"
                               >

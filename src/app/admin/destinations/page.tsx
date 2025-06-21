@@ -113,7 +113,11 @@ export default function AdminDestinationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [page, searchTerm, selectedCategory, selectedDistrict, selectedStatus])
+
+  useEffect(() => {
+    fetchDestinations()
+  }, [fetchDestinations])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this destination?')) return
@@ -166,7 +170,7 @@ export default function AdminDestinationsPage() {
           method: 'DELETE'
         })
       } else {
-        const updates: any = {}
+        const updates: { status?: string; featured?: boolean } = {}
         if (action === 'publish') updates.status = 'published'
         if (action === 'draft') updates.status = 'draft'
         if (action === 'archive') updates.status = 'archived'
@@ -320,6 +324,7 @@ export default function AdminDestinationsPage() {
                           setSelectedItems([])
                         }
                       }}
+                      aria-label="Select all destinations"
                     />
                   </TableHead>
                   <TableHead>Nama</TableHead>
@@ -359,6 +364,7 @@ export default function AdminDestinationsPage() {
                               setSelectedItems(selectedItems.filter(id => id !== destination._id))
                             }
                           }}
+                          aria-label={`Select ${destination.name}`}
                         />
                       </TableCell>
                       <TableCell>
@@ -411,7 +417,7 @@ export default function AdminDestinationsPage() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" aria-label={`Actions for ${destination.name}`}>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>

@@ -53,7 +53,14 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
 
     // Build filter query
-    const filter: any = {}
+    const filter: {
+      type?: string
+      status?: string
+      $or?: Array<{
+        title?: { $regex: string; $options: string }
+        content?: { $regex: string; $options: string }
+      }>
+    } = {}
     if (type) filter.type = type
     if (status) filter.status = status
     if (search) {

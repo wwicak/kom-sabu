@@ -155,6 +155,7 @@ export function Header() {
                       size="sm"
                       className="absolute right-1"
                       onClick={() => setSearchOpen(false)}
+                      aria-label="Close search"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -165,6 +166,7 @@ export function Header() {
                     size="sm"
                     onClick={() => setSearchOpen(true)}
                     className="text-gray-600 hover:text-blue-600"
+                    aria-label="Open search"
                   >
                     <Search className="h-5 w-5" />
                   </Button>
@@ -194,6 +196,7 @@ export function Header() {
                 size="sm"
                 onClick={() => setSearchOpen(!searchOpen)}
                 className="text-gray-600 hover:text-blue-600 md:hidden"
+                aria-label="Toggle search"
               >
                 <Search className="h-5 w-5" />
               </Button>
@@ -204,6 +207,7 @@ export function Header() {
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle mobile menu"
+                aria-expanded={mobileMenuOpen}
                 className="text-gray-600 hover:text-blue-600"
               >
                 {mobileMenuOpen ? (
@@ -230,6 +234,7 @@ export function Header() {
                   size="sm"
                   className="absolute right-1 top-1/2 transform -translate-y-1/2"
                   onClick={() => setSearchOpen(false)}
+                  aria-label="Close search"
                 >
                   <X className="h-4 w-4" />
                 </Button>

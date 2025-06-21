@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -66,30 +66,11 @@ export default function NewOfficialPage() {
     }))
   }
 
-  const handleArrayChange = (field: 'experience' | 'achievements', index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
-    }))
-  }
 
-  const addArrayItem = (field: 'experience' | 'achievements') => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: [...prev[field], '']
-    }))
-  }
-
-  const removeArrayItem = (field: 'experience' | 'achievements', index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.name || !formData.position || !formData.level || !formData.category || !formData.department) {
       toast({
         title: 'Error',
@@ -347,8 +328,9 @@ export default function NewOfficialPage() {
                       checked={formData.featured}
                       onChange={(e) => handleInputChange('featured', e.target.checked)}
                       className="rounded border-gray-300"
+                      aria-describedby="featured-description"
                     />
-                    <Label htmlFor="featured">Featured Official</Label>
+                    <Label htmlFor="featured" id="featured-description">Featured Official</Label>
                   </div>
                 </CardContent>
               </Card>

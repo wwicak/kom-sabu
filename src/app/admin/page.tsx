@@ -10,11 +10,8 @@ import {
   Users,
   FileText,
   MapPin,
-  Image,
-  Settings,
   BarChart3,
   Calendar,
-  MessageSquare,
   Shield,
   Database
 } from 'lucide-react'

@@ -102,7 +102,17 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
 
     // Build filter query
-    const filter: any = {}
+    const filter: {
+      district?: string
+      type?: string
+      status?: string
+      featured?: boolean
+      $or?: Array<{
+        name?: { $regex: string; $options: string }
+        'head.name'?: { $regex: string; $options: string }
+        description?: { $regex: string; $options: string }
+      }>
+    } = {}
     if (district) filter.district = district
     if (type) filter.type = type
     if (status) filter.status = status

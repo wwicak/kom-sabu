@@ -70,7 +70,17 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
 
     // Build filter query
-    const filter: any = {}
+    const filter: {
+      category?: string
+      'location.district'?: string
+      status?: string
+      featured?: boolean
+      $or?: Array<{
+        name?: { $regex: string; $options: string }
+        description?: { $regex: string; $options: string }
+        shortDescription?: { $regex: string; $options: string }
+      }>
+    } = {}
     if (category) filter.category = category
     if (district) filter['location.district'] = district
     if (status) filter.status = status

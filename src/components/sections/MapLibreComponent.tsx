@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
@@ -18,7 +18,7 @@ export function MapLibreComponent({ kecamatanData, selectedKecamatan, onKecamata
   const map = useRef<maplibregl.Map | null>(null)
 
   // Sabu Raijua coordinates (more accurate center)
-  const center: [number, number] = [121.8267, -10.4833] // Seba, the capital
+  const center: [number, number] = useMemo(() => [121.8267, -10.4833], []) // Seba, the capital
   const zoom = 11
 
   useEffect(() => {

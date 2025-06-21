@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { IKecamatan } from '@/lib/models/kecamatan'
@@ -89,7 +89,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
   }
 
   // Style function for kecamatan polygons
-  const getKecamatanStyle = (kecamatan: IKecamatan, isHovered: boolean = false) => {
+  const getKecamatanStyle = useCallback((kecamatan: IKecamatan, isHovered: boolean = false) => {
     const isSelected = selectedKecamatan === kecamatan.code
     const baseColor = getKecamatanColor(kecamatan.code, isSelected)
 
@@ -101,7 +101,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
       dashArray: '',
       fillOpacity: isSelected ? 0.8 : isHovered ? 0.7 : 0.6
     }
-  }
+  }, [selectedKecamatan])
 
   // Initialize map
   useEffect(() => {
@@ -150,7 +150,7 @@ const SabuRaijuaMap: React.FC<SabuRaijuaMapProps> = ({
         mapInstanceRef.current = null
       }
     }
-  }, [SABU_RAIJUA_CENTER, DEFAULT_ZOOM])
+  }, [])
 
   // Add kecamatan layers
   useEffect(() => {

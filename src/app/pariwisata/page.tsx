@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -75,11 +75,7 @@ export default function PariwisataPage() {
   })
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchTourismData()
-  }, [])
-
-  const fetchTourismData = async () => {
+  const fetchTourismData = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -105,7 +101,11 @@ export default function PariwisataPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchTourismData()
+  }, [fetchTourismData])
 
   const tourismCategories = [
     {
