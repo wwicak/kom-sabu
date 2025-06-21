@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { AdminBreadcrumb } from '@/components/ui/breadcrumb'
 import {
   Table,
   TableBody,
@@ -222,6 +223,16 @@ export default function AdminDestinationsPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <AdminBreadcrumb
+            items={[
+              { label: 'Dashboard Admin', href: '/admin' },
+              { label: 'Kelola Destinasi', current: true }
+            ]}
+          />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

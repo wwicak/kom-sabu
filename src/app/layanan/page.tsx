@@ -4,12 +4,13 @@ import { Layout } from '@/components/layout/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  FileText, 
-  Users, 
-  Building2, 
-  Heart, 
-  GraduationCap, 
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import {
+  FileText,
+  Users,
+  Building2,
+  Heart,
+  GraduationCap,
   Briefcase,
   Home,
   Car,
@@ -179,11 +180,16 @@ export default function LayananPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb />
+        </div>
+
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Layanan Publik</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Berbagai layanan publik yang tersedia untuk masyarakat Kabupaten Sabu Raijua. 
+            Berbagai layanan publik yang tersedia untuk masyarakat Kabupaten Sabu Raijua.
             Kami berkomitmen memberikan pelayanan terbaik dengan proses yang mudah dan transparan.
           </p>
         </div>
@@ -220,7 +226,7 @@ export default function LayananPage() {
           {LAYANAN_DATA.map((category) => {
             const IconComponent = category.icon
             const colorClass = colorClasses[category.color as keyof typeof colorClasses]
-            
+
             return (
               <div key={category.id}>
                 <div className="flex items-center mb-6">
@@ -245,7 +251,7 @@ export default function LayananPage() {
                       </CardHeader>
                       <CardContent>
                         <p className="text-gray-600 mb-4">{service.description}</p>
-                        
+
                         <div className="space-y-3">
                           <div>
                             <p className="font-medium text-gray-900 mb-1">Persyaratan:</p>

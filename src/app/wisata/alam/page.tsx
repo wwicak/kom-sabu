@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
   Waves,
   Mountain,
@@ -179,6 +180,17 @@ export default function WisataAlamPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb
+            items={[
+              { label: 'Beranda', href: '/' },
+              { label: 'Wisata', href: '/wisata' },
+              { label: 'Wisata Alam', current: true }
+            ]}
+          />
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">

@@ -4,12 +4,18 @@ import { Layout } from '@/components/layout/Layout'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { MapPin, Users, Calendar, Award, Target, Eye, Heart } from 'lucide-react'
 
 export default function ProfilPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb />
+        </div>
+
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Profil Kabupaten</h1>
