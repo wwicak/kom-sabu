@@ -12,7 +12,6 @@ import {
   Star,
   Clock,
   Calendar,
-  Camera,
   Navigation,
   ArrowLeft,
   Share2,
@@ -120,7 +119,7 @@ export default function DestinationDetailPage() {
           text: destination.description,
           url: window.location.href,
         })
-      } catch (err) {
+      } catch {
         navigator.clipboard.writeText(window.location.href)
       }
     } else {

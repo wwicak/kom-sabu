@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next'
 
 export function ContactForm() {
   const { t } = useTranslation('contact')
-  const { t: tCommon } = useTranslation('common')
   const { csrfToken, isLoading: csrfLoading, error: csrfError, refreshToken } = useCSRF()
 
   const [formData, setFormData] = useState<ContactFormData>({
@@ -82,10 +81,11 @@ export function ContactForm() {
 
       setErrors({})
       return true
-    } catch (error: any) {
+    } catch (error: unknown) {
       const fieldErrors: Record<string, string> = {}
-      if (error?.errors) {
-        error.errors.forEach((err: { path?: string[]; message: string }) => {
+      if (error && typeof error === 'object' && 'errors' in error) {
+        const zodError = error as { errors: Array<{ path?: string[]; message: string }> }
+        zodError.errors.forEach((err) => {
           if (err.path && err.path[0]) {
             fieldErrors[err.path[0]] = err.message
           }

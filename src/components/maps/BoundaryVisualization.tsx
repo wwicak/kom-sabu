@@ -8,7 +8,6 @@ interface BoundaryVisualizationProps {
 }
 
 export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ className = '' }) => {
-  const geoJson = getSabuRaijuaBoundariesGeoJSON()
 
   // Calculate SVG viewBox from all coordinates
   const allCoords = REAL_SABU_RAIJUA_BOUNDARIES.flatMap(boundary => {
@@ -165,7 +164,7 @@ export const BoundaryVisualization: React.FC<BoundaryVisualizationProps> = ({ cl
         <div className="bg-green-50 rounded-lg p-4">
           <h4 className="font-medium text-green-900 mb-2">Kualitas Batas Wilayah</h4>
           <div className="space-y-2">
-            {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary, index) => {
+            {REAL_SABU_RAIJUA_BOUNDARIES.map((boundary) => {
               const coords = boundary.geometry?.coordinates?.[0] as number[][] | undefined
               const coordCount = coords?.length || 0
               const quality = coordCount > 10 ? 'Tinggi' : coordCount > 6 ? 'Sedang' : 'Rendah'

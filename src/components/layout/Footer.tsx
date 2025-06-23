@@ -14,7 +14,6 @@ const socialIcons = {
 export function Footer() {
   const { t } = useTranslation('footer')
   const { t: tNav } = useTranslation('navigation')
-  const { t: tCommon } = useTranslation('common')
 
   return (
     <footer className="bg-gray-900 text-white">

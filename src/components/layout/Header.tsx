@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input'
 export function Header() {
   const { t: tHeader } = useTranslation('header')
   const { t: tNav } = useTranslation('navigation')
-  const { t: tCommon } = useTranslation('common')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)

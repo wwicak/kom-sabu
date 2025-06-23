@@ -16,7 +16,6 @@ const iconMap = {
 
 export function Services() {
   const { t } = useTranslation('services')
-  const { t: tCommon } = useTranslation('common')
 
   return (
     <section className="py-24 bg-gray-50">

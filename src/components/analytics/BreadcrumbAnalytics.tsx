@@ -37,10 +37,14 @@ interface AnalyticsService {
 }
 
 // Google Analytics 4 implementation
+interface WindowWithGtag extends Window {
+  gtag?: (...args: unknown[]) => void
+}
+
 class GA4Analytics implements AnalyticsService {
   track(event: BreadcrumbClickEvent | BreadcrumbViewEvent) {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', event.action, {
+    if (typeof window !== 'undefined' && (window as WindowWithGtag).gtag) {
+      (window as WindowWithGtag).gtag!('event', event.action, {
         event_category: event.category,
         event_label: event.label,
         value: 'value' in event ? event.value : undefined,

@@ -76,18 +76,6 @@ export default function AdminDashboard() {
     checkAuth()
   }, [router])
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      })
-      router.push('/admin/login')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
-  }
-
   if (loading) {
     return (
       <AdminLayout>
@@ -97,17 +85,6 @@ export default function AdminDashboard() {
       </AdminLayout>
     )
   }
-
-  const quickActions = [
-    { name: 'Kelola Destinasi', href: '/admin/destinations', icon: MapPin, color: 'bg-blue-500' },
-    { name: 'Kelola Pejabat', href: '/admin/officials', icon: Users, color: 'bg-green-500' },
-    { name: 'Kelola Layanan Publik', href: '/admin/services', icon: FileText, color: 'bg-indigo-500' },
-    { name: 'Kelola Warisan Budaya', href: '/admin/cultural-heritage', icon: Shield, color: 'bg-purple-500' },
-    { name: 'Pesan Kontak', href: '/admin/contacts', icon: Database, color: 'bg-yellow-500' },
-    { name: 'Tambah Pejabat', href: '/admin/officials/new', icon: Users, color: 'bg-emerald-500' },
-    { name: 'Lihat Website', href: '/', icon: FileText, color: 'bg-orange-500' },
-    { name: 'Peta Kecamatan', href: '/peta-kecamatan', icon: MapPin, color: 'bg-gray-500' },
-  ]
 
   return (
     <AdminLayout>

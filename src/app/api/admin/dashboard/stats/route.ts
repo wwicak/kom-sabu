@@ -8,7 +8,7 @@ import { verifyAdminAuth } from '@/lib/auth'
 export async function GET(_request: NextRequest) {
   try {
     // Verify admin authentication
-    const authResult = await verifyAdminAuth(_request)
+    const authResult = await verifyAdminAuth()
     if (!authResult.success) {
       return NextResponse.json(
         { error: 'Unauthorized' },

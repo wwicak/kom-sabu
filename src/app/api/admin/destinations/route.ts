@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const authResult = await verifyAdminAuth(request)
+    const authResult = await verifyAdminAuth()
     if (!authResult.success) {
       return NextResponse.json(
         { error: authResult.error },
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Verify admin authentication
-    const authResult = await verifyAdminAuth(request)
+    const authResult = await verifyAdminAuth()
     if (!authResult.success) {
       return NextResponse.json(
         { error: authResult.error },
@@ -251,7 +251,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Verify admin authentication
-    const authResult = await verifyAdminAuth(request)
+    const authResult = await verifyAdminAuth()
     if (!authResult.success) {
       return NextResponse.json(
         { error: authResult.error },

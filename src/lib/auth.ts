@@ -12,7 +12,7 @@ interface AuthResult {
   error?: string
 }
 
-export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult> {
+export async function verifyAdminAuth(): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('auth-token')
@@ -26,7 +26,7 @@ export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult
 
     // Verify JWT token
     const secret = process.env.JWT_SECRET || 'your-secret-key'
-    const decoded = jwt.verify(token.value, secret) as any
+    const decoded = jwt.verify(token.value, secret) as { userId: string; email: string; role: string }
 
     if (!decoded || !decoded.userId) {
       return {
@@ -61,7 +61,7 @@ export async function verifyAdminAuth(_request: NextRequest): Promise<AuthResult
   }
 }
 
-export async function verifyUserAuth(_request: NextRequest): Promise<AuthResult> {
+export async function verifyUserAuth(): Promise<AuthResult> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('auth-token')
@@ -75,7 +75,7 @@ export async function verifyUserAuth(_request: NextRequest): Promise<AuthResult>
 
     // Verify JWT token
     const secret = process.env.JWT_SECRET || 'your-secret-key'
-    const decoded = jwt.verify(token.value, secret) as any
+    const decoded = jwt.verify(token.value, secret) as { userId: string; email: string; role?: string }
 
     if (!decoded || !decoded.userId) {
       return {

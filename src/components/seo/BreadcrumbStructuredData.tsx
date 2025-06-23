@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import Head from 'next/head'
 
 interface BreadcrumbItem {
   label: string
@@ -36,7 +35,7 @@ const ROUTE_MAPPINGS: Record<string, string> = {
   '/layanan': 'Layanan Publik',
   '/berita': 'Berita',
   '/kontak': 'Kontak',
-  
+
   // Admin routes
   '/admin': 'Dashboard Admin',
   '/admin/destinations': 'Kelola Destinasi',
@@ -55,23 +54,23 @@ const ROUTE_MAPPINGS: Record<string, string> = {
 function generateBreadcrumbItems(pathname: string, baseUrl: string): BreadcrumbItem[] {
   const segments = pathname.split('/').filter(Boolean)
   const items: BreadcrumbItem[] = []
-  
+
   // Always start with home
   items.push({
     label: 'Beranda',
     href: baseUrl,
   })
-  
+
   // Build breadcrumb path
   let currentPath = ''
-  
+
   segments.forEach((segment, index) => {
     currentPath += `/${segment}`
     const isLast = index === segments.length - 1
-    
+
     // Get label from mapping or format segment
     let label = ROUTE_MAPPINGS[currentPath]
-    
+
     if (!label) {
       // Format segment as fallback
       label = segment
@@ -79,14 +78,14 @@ function generateBreadcrumbItems(pathname: string, baseUrl: string): BreadcrumbI
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
     }
-    
+
     items.push({
       label,
       href: isLast ? undefined : `${baseUrl}${currentPath}`,
       current: isLast,
     })
   })
-  
+
   return items
 }
 
@@ -106,22 +105,22 @@ function generateBreadcrumbStructuredData(items: BreadcrumbItem[], baseUrl: stri
   }
 }
 
-export function BreadcrumbStructuredData({ 
-  items, 
-  baseUrl = 'https://saburajua.go.id' 
+export function BreadcrumbStructuredData({
+  items,
+  baseUrl = 'https://saburajua.go.id'
 }: BreadcrumbStructuredDataProps) {
   const pathname = usePathname()
-  
+
   // Use provided items or generate from pathname
   const breadcrumbItems = items || generateBreadcrumbItems(pathname, baseUrl)
-  
+
   // Don't render if only one item (home page)
   if (breadcrumbItems.length <= 1) {
     return null
   }
-  
+
   const structuredData = generateBreadcrumbStructuredData(breadcrumbItems, baseUrl)
-  
+
   return (
     <script
       type="application/ld+json"
@@ -133,22 +132,22 @@ export function BreadcrumbStructuredData({
 }
 
 // Enhanced breadcrumb structured data with organization context
-export function EnhancedBreadcrumbStructuredData({ 
-  items, 
-  baseUrl = 'https://saburajua.go.id' 
+export function EnhancedBreadcrumbStructuredData({
+  items,
+  baseUrl = 'https://saburajua.go.id'
 }: BreadcrumbStructuredDataProps) {
   const pathname = usePathname()
-  
+
   // Use provided items or generate from pathname
   const breadcrumbItems = items || generateBreadcrumbItems(pathname, baseUrl)
-  
+
   // Don't render if only one item (home page)
   if (breadcrumbItems.length <= 1) {
     return null
   }
-  
+
   const breadcrumbStructuredData = generateBreadcrumbStructuredData(breadcrumbItems, baseUrl)
-  
+
   // Add organization context for government website
   const organizationData = {
     "@context": "https://schema.org",
@@ -177,7 +176,7 @@ export function EnhancedBreadcrumbStructuredData({
       "https://instagram.com/saburajuakab"
     ]
   }
-  
+
   return (
     <>
       <script

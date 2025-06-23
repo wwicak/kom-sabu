@@ -34,8 +34,8 @@ export function DynamicImage({
   blurDataURL
 }: DynamicImageProps) {
   const [imageUrl, setImageUrl] = useState<string>(fallback || '/images/placeholder.jpg')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [, setLoading] = useState(true)
+  const [, setError] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -89,6 +89,7 @@ export function DynamicImage({
       <Image
         {...imageProps}
         fill
+        alt={alt || 'Dynamic image'}
       />
     )
   }
@@ -98,6 +99,7 @@ export function DynamicImage({
       {...imageProps}
       width={width || 400}
       height={height || 300}
+      alt={alt || 'Dynamic image'}
     />
   )
 }

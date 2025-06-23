@@ -115,7 +115,6 @@ export function Breadcrumb({
   collapsible = true
 }: BreadcrumbProps) {
   const pathname = usePathname()
-  const { t } = useTranslation('navigation')
 
   // Use provided items or generate from pathname
   const breadcrumbItems = items || generateBreadcrumbItems(pathname)
