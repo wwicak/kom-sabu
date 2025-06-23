@@ -97,14 +97,28 @@ function enhanceKecamatanWithLocalBoundaries(kecamatanData: IKecamatan[]): IKeca
   })
 }
 
+// Interface for external boundary data
+interface ExternalBoundaryFeature {
+  properties: {
+    name?: string
+    NAME_3?: string
+    admin_name?: string
+  }
+  geometry?: GeometryData
+}
+
+interface ExternalBoundaryData {
+  features?: ExternalBoundaryFeature[]
+}
+
 // Enhance kecamatan data with external boundary data (OSM, GADM, etc.)
 function enhanceKecamatanWithExternalBoundaries(
-  kecamatanData: IKecamatan[], 
-  externalBoundaries: any
+  kecamatanData: IKecamatan[],
+  externalBoundaries: ExternalBoundaryData
 ): IKecamatan[] {
   return kecamatanData.map(kecamatan => {
     // Find matching boundary in external data
-    const matchingFeature = externalBoundaries.features?.find((feature: any) => {
+    const matchingFeature = externalBoundaries.features?.find((feature: ExternalBoundaryFeature) => {
       const props = feature.properties
       return (
         props.name?.toLowerCase().includes(kecamatan.name.toLowerCase()) ||
@@ -128,16 +142,22 @@ function enhanceKecamatanWithExternalBoundaries(
   })
 }
 
+// Interface for geometry
+interface GeometryData {
+  type: string
+  coordinates: number[][][] | number[][][][]
+}
+
 // Calculate centroid of a polygon
-function calculateCentroid(geometry: any): { type: 'Point'; coordinates: [number, number] } | null {
+function calculateCentroid(geometry: GeometryData): { type: 'Point'; coordinates: [number, number] } | null {
   if (!geometry || !geometry.coordinates) return null
 
   let coordinates: number[][]
   
   if (geometry.type === 'Polygon') {
-    coordinates = geometry.coordinates[0] // Use outer ring
+    coordinates = (geometry.coordinates as number[][][])[0] // Use outer ring
   } else if (geometry.type === 'MultiPolygon') {
-    coordinates = geometry.coordinates[0][0] // Use first polygon's outer ring
+    coordinates = (geometry.coordinates as number[][][][])[0][0] // Use first polygon's outer ring
   } else {
     return null
   }

@@ -94,7 +94,68 @@ interface ApiResponse<T> {
   success: boolean
   data?: T
   error?: string
-  details?: any
+  details?: unknown
+}
+
+// Interface for raw API data from kecamatan endpoint
+interface RawKecamatanData {
+  _id: string
+  name: string
+  code: string
+  capital: string
+  area: number
+  demographics?: {
+    totalPopulation?: number
+    ageGroups?: {
+      under15?: number
+      age15to64?: number
+      over64?: number
+    }
+  }
+  villages?: unknown[]
+  centroid?: {
+    coordinates?: [number, number]
+  }
+  geometry?: {
+    type?: string
+    coordinates?: unknown[]
+  }
+  agriculture?: {
+    mainCrops?: Array<{ name: string }>
+    totalAgriculturalArea?: number
+    fishery?: {
+      marineCapture?: number
+    }
+  }
+  tourism?: {
+    attractions?: Array<{ name: string }>
+    annualVisitors?: number
+  }
+  economy?: {
+    mainIndustries?: string[]
+    averageIncome?: number
+    economicSectors?: {
+      agriculture?: number
+      industry?: number
+      services?: number
+    }
+  }
+  infrastructure?: {
+    utilities?: {
+      electricityAccess?: number
+      cleanWaterAccess?: number
+      internetAccess?: number
+    }
+    education?: {
+      elementarySchools?: number
+      juniorHighSchools?: number
+      seniorHighSchools?: number
+      universities?: number
+    }
+  }
+  isActive?: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 // Fetch all kecamatan data
@@ -106,7 +167,7 @@ export function useKecamatanList(includeInactive = false) {
       try {
         const geoJsonResponse = await fetch('/api/geojson/kecamatan')
         if (geoJsonResponse.ok) {
-          const geoJsonResult: ApiResponse<any[]> = await geoJsonResponse.json()
+          const geoJsonResult: ApiResponse<KecamatanData[]> = await geoJsonResponse.json()
           if (geoJsonResult.success && geoJsonResult.data) {
             console.log('Using GeoJSON data for accurate polygons')
             return geoJsonResult.data
@@ -130,13 +191,13 @@ export function useKecamatanList(includeInactive = false) {
         throw new Error('Failed to fetch kecamatan data')
       }
 
-      const result: ApiResponse<any[]> = await response.json()
+      const result: ApiResponse<RawKecamatanData[]> = await response.json()
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to fetch kecamatan data')
       }
 
       // Transform API data to match expected structure
-      const transformedData: KecamatanData[] = result.data.map((item: any) => ({
+      const transformedData: KecamatanData[] = result.data.map((item: RawKecamatanData) => ({
         _id: item._id,
         name: item.name,
         slug: item.code, // Use code as slug for now
@@ -151,16 +212,16 @@ export function useKecamatanList(includeInactive = false) {
           }
         },
         polygon: {
-          type: item.geometry?.type || 'Polygon',
-          coordinates: item.geometry?.coordinates || []
+          type: (item.geometry?.type === 'MultiPolygon' ? 'MultiPolygon' : 'Polygon') as 'Polygon' | 'MultiPolygon',
+          coordinates: (item.geometry?.coordinates as number[][][]) || []
         },
         geometry: {
-          type: item.geometry?.type || 'Polygon',
-          coordinates: item.geometry?.coordinates || []
+          type: (item.geometry?.type === 'MultiPolygon' ? 'MultiPolygon' : 'Polygon') as 'Polygon' | 'MultiPolygon',
+          coordinates: (item.geometry?.coordinates as number[][][]) || []
         },
         potency: {
           agriculture: item.agriculture ? {
-            mainCrops: item.agriculture.mainCrops?.map((crop: any) => crop.name) || [],
+            mainCrops: item.agriculture.mainCrops?.map((crop) => crop.name) || [],
             productivity: 'Tinggi',
             farmingArea: item.agriculture.totalAgriculturalArea || 0
           } : undefined,
@@ -170,7 +231,7 @@ export function useKecamatanList(includeInactive = false) {
             fishingArea: item.agriculture.fishery.marineCapture || 0
           } : undefined,
           tourism: item.tourism ? {
-            attractions: item.tourism.attractions?.map((attr: any) => attr.name) || [],
+            attractions: item.tourism.attractions?.map((attr) => attr.name) || [],
             facilities: ['Homestay'],
             annualVisitors: item.tourism.annualVisitors || 0
           } : undefined,
